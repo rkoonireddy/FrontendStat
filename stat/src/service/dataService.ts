@@ -12,7 +12,20 @@ const data: DataPoint[] = [
     {x: 4, y: 30},
 ];
 
-export function getData(): Promise<DataPoint[]> {
+const data2: DataPoint[] = [
+    {x: 0, y: 5},
+    {x: 1, y: 12},
+    {x: 2, y: 30},
+    {x: 3, y: 18},
+    {x: 4, y: 30},
+    {x: 5, y: 54},
+    {x: 6, y: 23},
+    {x: 7, y: 30},
+    {x: 8, y: 32},
+    {x: 9, y: 40}
+];
+
+export function getData(): Promise<DataPoint[][]> {
     return fetch(baseurl + "data")
         .then(response => {
 
@@ -22,7 +35,7 @@ export function getData(): Promise<DataPoint[]> {
                 });
             } else {
                 // return response.json();
-                return data;
+                return [data, data2];
             }
         });
 }

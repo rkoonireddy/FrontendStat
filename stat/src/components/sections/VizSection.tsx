@@ -32,7 +32,7 @@ const StyledChartContainer = styled.div`
 
 
 //chart component
-function LineChart({chartData}: {chartData: DataPoint[]}) {
+function LineChart({chartData}: {chartData: DataPoint[][]}) {
 
     const minMax = getMinMax(chartData);
 
@@ -66,7 +66,7 @@ function LineChart({chartData}: {chartData: DataPoint[]}) {
 
         //scales
         const xScale = scaleLinear()
-            .domain([minMax.x.min, chartData.length - 1])
+            .domain([minMax.x.min, minMax.x.max])
             .range([minMax.x.min, width]);
 
         const yScale = scaleLinear()
@@ -97,17 +97,18 @@ function LineChart({chartData}: {chartData: DataPoint[]}) {
             .x((d: { x: number; y: number }, i: number) => xScale(i))
             .y((d: { x: number; y: number }) => yScale(d.y))
             .curve(curveCardinal);
+        console.log(chartData);
 
         //drawing the line
         svg
             .selectAll(".line")
-            .data([chartData])
+            .data(chartData)
             .join("path")
             .attr("class", "line")
             .attr("d", myLine)
             .attr("fill", "none")
-            .attr("stroke", "#00bfa6")
-            .attr("stroke-width", "3px")
+            .attr("stroke", (d, i) => (i === 0 ? "#00bfa6" : "#ff5733"))
+            .attr("stroke-width", "2px")
             .attr("transform", `translate(${margin.left}, ${margin.top})`);
     }, [chartData, dimensions]);
 
@@ -117,10 +118,13 @@ function LineChart({chartData}: {chartData: DataPoint[]}) {
             <g className="y-axis" />
         </svg>
     );
-};
+}
+
+// controls
+
 
 export function VizSection() {
-    const [chartData, setChartData] = useState<DataPoint[]>([]);
+    const [chartData, setChartData] = useState<DataPoint[][]>([]);
 
     useEffect(() => {
         getData().then(data => setChartData(data));
