@@ -4,6 +4,7 @@ import {ReactComponent as MenuSVG} from "../../assets/menu.svg";
 import {useNavigate} from "react-router-dom";
 import {StepsSection} from "../sections/StepsSection";
 import {VizSection} from "../sections/VizSection";
+import {ControlSection} from "../sections/ControlSection";
 
 
 const StyledMainPage = styled.div`

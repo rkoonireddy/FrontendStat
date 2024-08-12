@@ -11,12 +11,14 @@ import {useEffect, useRef, useState} from "react";
 import {getMinMax} from "../../util/util";
 import {DataPoint} from "../../types/dataType";
 import {getData} from "../../service/dataService";
+import {ControlSection} from "./ControlSection";
 
 const StyledVizSectionContainer = styled.div`
   display: flex;
   background-color: #ffffff08;
   height: calc(100vh - 10px);
   margin: 5px;
+  flex-direction: column;
 `;
 
 const StyledChartContainer = styled.div`
@@ -26,8 +28,8 @@ const StyledChartContainer = styled.div`
   background-color: #ffffff08;
   padding: 5px;
   width: calc(100% - 20px);
-  height: 50%;
-  border-radius: 5px;
+  height: calc(50% - 30px);
+  border-radius: 15px;
 `;
 
 
@@ -131,10 +133,11 @@ export function VizSection() {
     }, []);
 
     return (
-        <StyledVizSectionContainer>
+        <StyledVizSectionContainer id={"viz-section"}>
             <StyledChartContainer>
                 <LineChart chartData={chartData}/>
             </StyledChartContainer>
+            <ControlSection />
         </StyledVizSectionContainer>
     )
 }
