@@ -7,3 +7,7 @@
 body {
   font-family: 'Gaoel', sans-serif;
 }
+
+.p-component {
+    margin: auto;
+}
