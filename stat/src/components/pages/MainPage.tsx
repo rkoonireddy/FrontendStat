@@ -4,12 +4,11 @@ import {ReactComponent as MenuSVG} from "../../assets/menu.svg";
 import {useNavigate} from "react-router-dom";
 import {StepsSection} from "../sections/StepsSection";
 import {VizSection} from "../sections/VizSection";
-import {ControlSection} from "../sections/ControlSection";
 
 
 const StyledMainPage = styled.div`
   display: grid;
-  grid-template-columns: 100px 500px 1fr;
+  grid-template-columns: 100px 600px 1fr;
   background: linear-gradient(to bottom right, #3D3D3D 0%, #000000 100%);
 `;
 

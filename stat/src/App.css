@@ -11,3 +11,24 @@ body {
 .p-component {
     margin: auto;
 }
+
+.p-inputswitch.p-highlight .p-inputswitch-slider {
+    background: #73B5B4!important;
+}
+
+.p-slider .p-slider-range {
+    background: #73B5B4;
+}
+
+.p-slider.p-slider-vertical {
+    width: 0.5rem;
+}
+
+.p-slider .p-slider-handle {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.p-slider .p-slider-handle {
+    margin-left: -0.7rem;
+}

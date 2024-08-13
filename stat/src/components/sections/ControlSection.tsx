@@ -3,6 +3,9 @@ import {useState} from "react";
 import {Knob} from "primereact/knob";
 import {PlusButton} from "../buttons/PlusButton";
 import {MinusButton} from "../buttons/MinusButton";
+import {InputSwitch} from "primereact/inputswitch";
+import {FormBooleanEvent} from "primereact/ts-helpers";
+import {Slider} from "primereact/slider";
 
 
 const StyledControlContainer = styled.div`
@@ -23,11 +26,11 @@ const StyledControl = styled.div`
 `;
 
 const StyledControlTitle = styled.div`
-    font-size: 1.25rem;
-    display: flex;
-    justify-content: center;
-    color: #ffffff;
-    
+  font-size: 1.25rem;
+  display: flex;
+  justify-content: center;
+  color: #ffffff;
+  margin-bottom: auto;
 `;
 
 const StyledButtonControls = styled.div`
@@ -38,7 +41,29 @@ const StyledButtonControls = styled.div`
   margin-top: -15px;
 `;
 
-export function KnobControl({title, min, max, step, start}: { title: string, min: number, max: number, step: number, start: number }) {
+const StyledSliderContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+
+`;
+
+const StyledSliderValue = styled.div`
+  font-size: 1.5rem;
+  display: flex;
+  justify-content: center;
+  color: #ffffff;
+  margin: 0 -30px 0 10px;
+`;
+
+export function KnobControl({title, min, max, step, start}: {
+    title: string,
+    min: number,
+    max: number,
+    step: number,
+    start: number
+}) {
     const [value, setValue] = useState(start);
 
     function add() {
@@ -79,12 +104,61 @@ export function KnobControl({title, min, max, step, start}: { title: string, min
 
 }
 
+export function FilterControl({title, onLabel, offLabel, value}: {
+    title: string,
+    onLabel: string,
+    offLabel: string,
+    value: boolean
+}) {
+    const [filterValue, setFilterValue] = useState(value);
+    const [label, setLabel] = useState(filterValue ? onLabel : offLabel);
+
+    function toggle() {
+        setFilterValue(!filterValue);
+        setLabel(filterValue ? offLabel : onLabel);
+    }
+
+    return (
+        <StyledControl>
+            <StyledControlTitle>{title}</StyledControlTitle>
+            <InputSwitch id={"input switch"}
+                         checked={filterValue}
+                         name={label}
+                         onChange={toggle}/>
+        </StyledControl>
+    )
+
+}
+
+export function VerticalSliderControl({title, min, max, step, start}: {
+    title: string,
+    min: number,
+    max: number,
+    step: number,
+    start: number
+}) {
+
+    const [value, setValue] = useState<number | [number, number]>(start);
+
+
+    return (
+        <StyledControl>
+            <StyledControlTitle>{title}</StyledControlTitle>
+            <StyledSliderContainer>
+                <StyledSliderValue>{value}</StyledSliderValue>
+                <Slider min={min} max={max} step={step} value={value} orientation={"vertical"}
+                        onChange={(e) => setValue(e.value)}/>
+            </StyledSliderContainer>
+        </StyledControl>
+    )
+}
+
 
 export function ControlSection() {
     return (
         <StyledControlContainer id={"control-section"}>
-            <StyledControl>Control 1</StyledControl>
-            <StyledControl>Control 2</StyledControl>
+            <VerticalSliderControl title={"Slider 1"} min={10} max={20} step={1} start={6}/>
+            <FilterControl title={"Filter 1"} onLabel={"On"} offLabel={"Off"} value={true}/>
             <KnobControl title={"Control 1"} min={0} max={100} step={5} start={20}/>
             <KnobControl title={"Control 2"} min={0} max={10} step={2} start={6}/>
         </StyledControlContainer>
