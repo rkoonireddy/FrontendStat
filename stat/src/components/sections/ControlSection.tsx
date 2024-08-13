@@ -22,6 +22,14 @@ const StyledControl = styled.div`
   flex-direction: column;
 `;
 
+const StyledControlTitle = styled.div`
+    font-size: 1.25rem;
+    display: flex;
+    justify-content: center;
+    color: #ffffff;
+    
+`;
+
 const StyledButtonControls = styled.div`
   display: flex;
   flex-direction: row;
@@ -30,8 +38,8 @@ const StyledButtonControls = styled.div`
   margin-top: -15px;
 `;
 
-export function KnobControl({min, max, step}: { min: number, max: number, step: number }) {
-    const [value, setValue] = useState(min);
+export function KnobControl({title, min, max, step, start}: { title: string, min: number, max: number, step: number, start: number }) {
+    const [value, setValue] = useState(start);
 
     function add() {
         if (value + step <= max) {
@@ -51,6 +59,7 @@ export function KnobControl({min, max, step}: { min: number, max: number, step: 
 
     return (
         <StyledControl>
+            <StyledControlTitle>{title}</StyledControlTitle>
             <Knob value={value}
                   onChange={(e) => setValue(e.value)}
                   min={min}
@@ -59,7 +68,7 @@ export function KnobControl({min, max, step}: { min: number, max: number, step: 
                   valueColor={"#73B5B4"}
                   rangeColor={"#727272"}
                   textColor={"#ffffff"}
-                  size={130}
+                  size={110}
                   readOnly/>
             <StyledButtonControls>
                 <MinusButton action={() => subtract()}/>
@@ -76,8 +85,8 @@ export function ControlSection() {
         <StyledControlContainer id={"control-section"}>
             <StyledControl>Control 1</StyledControl>
             <StyledControl>Control 2</StyledControl>
-            <StyledControl>Control 3</StyledControl>
-            <KnobControl min={0} max={10} step={2}/>
+            <KnobControl title={"Control 1"} min={0} max={100} step={5} start={20}/>
+            <KnobControl title={"Control 2"} min={0} max={10} step={2} start={6}/>
         </StyledControlContainer>
     )
 }
