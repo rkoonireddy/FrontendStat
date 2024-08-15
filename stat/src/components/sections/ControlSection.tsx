@@ -7,8 +7,8 @@ import {DropdownControl} from "../controls/DropdownControl";
 import {RangeControl} from "../controls/RangeControl";
 
 
-const StyledControlContainer = styled.div`
-  display: grid;
+const StyledControlContainer = styled.div<{ visible: boolean }>`
+  display: ${props => (props.visible ? "grid" : "none")};
   grid-template-columns: repeat(4, minmax(150px, 1fr));
   grid-template-rows: repeat(2, minmax(150px, 1fr));
   gap: 1fr;
@@ -38,9 +38,9 @@ export const StyledControlTitle = styled.div<{ margin?: string }>`
 `;
 
 
-export function ControlSection() {
+export function ControlSection({visible}: {visible: boolean}) {
     return (
-        <StyledControlContainer id={"control-section"}>
+        <StyledControlContainer id={"control-section"} visible={visible}>
             <VerticalSliderControl title={"Slider 1"} min={10} max={20} step={1} start={6} rowSpan={2}/>
             <FilterControl title={"Filter 1"} onLabel={"On"} offLabel={"Off"} value={true}/>
             <KnobControl title={"Control 1"} min={0} max={100} step={5} start={20}/>

@@ -12,6 +12,9 @@ import {getMinMax} from "../../util/util";
 import {DataPoint} from "../../types/dataType";
 import {getData} from "../../service/dataService";
 import {ControlSection} from "./ControlSection";
+import {ReactComponent as HideControlsSVG} from "../../assets/caret-down-fill.svg";
+import {ReactComponent as ShowControlsSVG} from "../../assets/caret-up-fill.svg";
+
 
 const StyledVizSectionContainer = styled.div`
   display: flex;
@@ -21,15 +24,28 @@ const StyledVizSectionContainer = styled.div`
   flex-direction: column;
 `;
 
-const StyledChartContainer = styled.div`
+const StyledChartContainer = styled.div<{controlsVisible: boolean}>`
   display: flex;
   justify-content: center;
   margin: 10px;
   background-color: #ffffff08;
   padding: 5px;
   width: calc(100% - 20px);
-  height: calc(65% - 30px);
+  height: calc(${props => props.controlsVisible ? '65%' : '100%'} - 30px);
   border-radius: 15px;
+`;
+
+const StyledShowHideControls = styled.div`
+  display: flex;
+  justify-content: center;
+  height: 25px;
+  opacity: 0.25;
+  background-color: #ffffff08;
+  
+  &:hover {
+    cursor: pointer;
+    opacity: 1;
+  }
 `;
 
 
@@ -127,6 +143,7 @@ function LineChart({chartData}: {chartData: DataPoint[][]}) {
 
 export function VizSection() {
     const [chartData, setChartData] = useState<DataPoint[][]>([]);
+    const [controlsVisible, setControlsVisible] = useState<boolean>(true);
 
     useEffect(() => {
         getData().then(data => setChartData(data));
@@ -134,10 +151,18 @@ export function VizSection() {
 
     return (
         <StyledVizSectionContainer id={"viz-section"}>
-            <StyledChartContainer>
+            <StyledChartContainer controlsVisible={controlsVisible}>
                 <LineChart chartData={chartData}/>
             </StyledChartContainer>
-            <ControlSection />
+            {controlsVisible &&
+            <StyledShowHideControls onClick={() => setControlsVisible(false)}>
+                <HideControlsSVG style={{width: "25px", height: "25px", color: "#ffffff"}}/>
+            </StyledShowHideControls> }
+            <ControlSection visible={controlsVisible}/>
+            {!controlsVisible &&
+            <StyledShowHideControls onClick={() => setControlsVisible(true)}>
+                <ShowControlsSVG style={{width: "25px", height: "25px", color: "#ffffff"}}/>
+            </StyledShowHideControls>}
         </StyledVizSectionContainer>
     )
 }
