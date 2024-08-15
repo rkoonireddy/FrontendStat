@@ -12,8 +12,6 @@ export function getMinMax(data: DataPoint[][]): {x: {min: number, max: number}, 
         });
     });
 
-    console.log(xMin, xMax, yMin, yMax);
-
     return {
         x: {min: xMin, max: xMax},
         y: {min: yMin, max: yMax}

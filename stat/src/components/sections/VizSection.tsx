@@ -28,7 +28,7 @@ const StyledChartContainer = styled.div`
   background-color: #ffffff08;
   padding: 5px;
   width: calc(100% - 20px);
-  height: calc(50% - 30px);
+  height: calc(70% - 30px);
   border-radius: 15px;
 `;
 
