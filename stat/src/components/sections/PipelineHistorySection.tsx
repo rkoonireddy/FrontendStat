@@ -10,17 +10,32 @@ const StyledPipelineHistorySection = styled.div<{ historyVisible: boolean }>`
   height: ${props => props.historyVisible ? 'calc(35% - 30px)' : '5%'};
   opacity: ${props => props.historyVisible ? '1' : '0.25'};
   position: ${props => props.historyVisible ? 'relative' : 'absolute'};
+  overflow-y: auto;
   
   &:hover {
     opacity: 1;
   }
-  
+`;
+
+const StyledHistoryItemContainer = styled.div<{ historyVisible: boolean }>`
+  display: flex;
+  min-width: ${props => props.historyVisible ? 'calc(23% - 10px)' : 'calc(13% - 10px)'};
+  height: calc(100% - 10px);
+  background-color: blue;
+  margin: 5px;
 `;
 
 
 export function PipelineHistorySection({visible}: { visible: boolean }) {
 
     return (
-        <StyledPipelineHistorySection historyVisible={visible}/>
+        <StyledPipelineHistorySection historyVisible={visible}>
+            <StyledHistoryItemContainer historyVisible={visible}/>
+            <StyledHistoryItemContainer historyVisible={visible}/>
+            <StyledHistoryItemContainer historyVisible={visible}/>
+            <StyledHistoryItemContainer historyVisible={visible}/>
+            <StyledHistoryItemContainer historyVisible={visible}/>
+            <StyledHistoryItemContainer historyVisible={visible}/>
+        </StyledPipelineHistorySection>
     )
 }
