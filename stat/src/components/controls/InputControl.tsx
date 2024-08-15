@@ -6,7 +6,7 @@ import {PrimaryButton} from "../buttons/PrimaryButton";
 const StyledInputContainer = styled.div`
   width: 100%;
   margin: auto;
-  max-width: 120px;
+  max-width: 150px;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -18,7 +18,7 @@ const StyledInput = styled.input`
   border: 1px solid #727272;
   background-color: #2B2B2B;
   color: #ffffff;
-  max-width: 100px;
+  max-width: 120px;
 `;
 
 const StyledUnit = styled.span`
@@ -49,7 +49,7 @@ export function InputControl({title, unit, columnSpan = 1, rowSpan = 1}: {
                          onChange={(e) => setValue(e.target.value)}/>
             <StyledUnit>{unit}</StyledUnit>
             </StyledInputContainer>
-            <PrimaryButton text={"Confirm"} action={action} size={120}/>
+            <PrimaryButton text={"Confirm"} action={action} size={130}/>
         </StyledControl>
     )
 }

@@ -33,7 +33,7 @@ export function VerticalSliderControl({title, min, max, step, start, columnSpan 
 }) {
 
     const [value, setValue] = useState<number | [number, number]>(start);
-    const height = 140 * rowSpan;
+    const height = 150 * rowSpan;
 
     return (
         <StyledControl columnSpan={columnSpan} rowSpan={rowSpan}>

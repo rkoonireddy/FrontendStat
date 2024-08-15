@@ -52,7 +52,7 @@ export function KnobControl({title, min, max, step, start, columnSpan = 1, rowSp
                   valueColor={"#73B5B4"}
                   rangeColor={"#727272"}
                   textColor={"#ffffff"}
-                  size={110}
+                  size={130}
                   readOnly/>
             <StyledButtonControls>
                 <MinusButton action={() => subtract()}/>
