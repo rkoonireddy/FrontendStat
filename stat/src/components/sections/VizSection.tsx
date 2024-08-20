@@ -51,7 +51,7 @@ const StyledShowHideControls = styled.div<{marginTop?: string}>`
 export function VizSection() {
     const [chartData, setChartData] = useState<DataPoint[][]>([]);
     const [controlsVisible, setControlsVisible] = useState<boolean>(true);
-    const [historyVisible, setHistoryVisible] = useState<boolean>(true);
+    const [historyVisible, setHistoryVisible] = useState<boolean>(false);
 
     useEffect(() => {
         getData().then(data => setChartData(data));

@@ -39,3 +39,33 @@ export function getData(): Promise<DataPoint[][]> {
             }
         });
 }
+
+export function parseCSV({ formData }: { formData: FormData }): Promise<Array<{ [key: string]: string }>> {
+    return new Promise((resolve, reject) => {
+        const file = formData.get('csvFile') as File;
+
+        if (file && file.type === 'text/csv') {
+            const reader = new FileReader();
+            reader.onload = (e: ProgressEvent<FileReader>) => {
+                const text = e.target?.result as string | null;
+                if (text) {
+                    const rows = text.split('\n');
+                    const headers = rows[0].split(',');
+                    const data = rows.slice(1).map((row: string) => {
+                        const values = row.split(',');
+                        return headers.reduce((obj: { [key: string]: string }, header: string, index: number) => {
+                            obj[header] = values[index];
+                            return obj;
+                        }, {});
+                    });
+                    resolve(data);
+                } else {
+                    reject(new Error('Error reading the file.'));
+                }
+            };
+            reader.readAsText(file);
+        } else {
+            reject(new Error('Please upload a valid CSV file.'));
+        }
+    });
+}

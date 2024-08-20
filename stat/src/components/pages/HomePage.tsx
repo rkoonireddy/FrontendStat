@@ -2,6 +2,10 @@ import styled from "styled-components";
 import logoNoBg from "../../assets/logo-no-bg.png";
 import {PrimaryButton} from "../buttons/PrimaryButton";
 import {useNavigate} from "react-router-dom";
+import {useDispatch} from "react-redux";
+import {useRef} from "react";
+import {parseCSV} from "../../service/dataService";
+import {readData} from "../../redux/dataSlice";
 
 
 const StyledHomeContainer = styled.div`
@@ -45,6 +49,22 @@ const StyledDividor = styled.div`
 
 export default function HomePage() {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            const formData = new FormData();
+            formData.append('csvFile', file);
+            dispatch(readData(formData) as any);
+            navigate('/main');
+        }
+    }
+
+    const handleButtonClick = () => {
+        fileInputRef.current?.click();
+    };
 
     return (
         <StyledHomeContainer>
@@ -68,7 +88,14 @@ export default function HomePage() {
                         with different manipulation and data wrangling
                         approaches!
                     </p>
-                    <PrimaryButton text={"Upload Sample"} action={() => navigate("/main")}/>
+                    <PrimaryButton text={"Upload Sample"} action={handleButtonClick}/>
+                    <input
+                        type="file"
+                        ref={fileInputRef}
+                        style={{ display: 'none' }}
+                        accept=".csv"
+                        onChange={handleFileChange}
+                    />
                 </StyledContentContainer>
             </StyledHomeContentContainer>
         </StyledHomeContainer>
