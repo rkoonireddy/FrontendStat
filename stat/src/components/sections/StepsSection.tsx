@@ -11,8 +11,10 @@ import {
 import '@xyflow/react/dist/style.css';
 import {useCallback, useState} from "react";
 import {useAppSelector} from "../../hooks";
-import {getPipeline} from "../../redux/pipelineSlice";
-import {createNodes} from "../../util/util";
+import {changeActiveStep, getPipeline} from "../../redux/pipelineSlice";
+import {createEdges, createNodes} from "../../util/util";
+import {NodeType} from "../../types/dataType";
+import {useDispatch} from "react-redux";
 
 
 const StyledStepsContainer = styled.div`
@@ -40,9 +42,10 @@ const initialNodes = [
 ];
 
 function Flow() {
-
+    const dispatch = useDispatch();
     const pipeline = useAppSelector(getPipeline);
     const initialNodes = createNodes(pipeline);
+    const initialEdges = createEdges(pipeline);
 
     const [nodes, setNodes] = useState(initialNodes);
     const [edges, setEdges] = useState(initialEdges);
@@ -75,12 +78,17 @@ function Flow() {
         [],
     );
 
+    const selectStep = useCallback((event: React.MouseEvent, node: NodeType) => {
+        dispatch(changeActiveStep({ stepId: node.id }));
+    }, []);
+
     return (
         <ReactFlow
             nodes={nodes}
             onNodesChange={onNodesChange}
             edges={edges}
             onEdgesChange={onEdgesChange}
+            onNodeClick={selectStep}
             fitView
         >
             <Background/>

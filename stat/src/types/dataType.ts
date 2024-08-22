@@ -18,3 +18,10 @@ export type Pipeline = {
     id: string,
     steps: PipelineStep[],
 }
+
+export interface NodeType {
+    id: string;
+    data: { label: string };
+    position: { x: number; y: number };
+    type?: string;
+}

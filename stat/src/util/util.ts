@@ -32,3 +32,18 @@ export function createNodes(pipeline: Pipeline) {
         };
     });
 }
+
+export function createEdges(pipeline: Pipeline): {id: string, source: string, target: string}[] {
+    let edges : {id: string, source: string, target: string}[] = [];
+    pipeline.steps.forEach((step, index) => {
+        if(index !== 0){
+            edges.push({
+                id: `${pipeline.steps[index - 1].id}-${step.id}`,
+                source: pipeline.steps[index - 1].id,
+                target: step.id
+            });
+        }
+    });
+
+    return edges;
+}

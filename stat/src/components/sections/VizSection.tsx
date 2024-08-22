@@ -85,8 +85,8 @@ export function VizSection() {
             )}
 
             <StyledChartContainer controlsVisible={controlsVisible}>
-                <CSVViewer/>
-                {/*<LineChart chartData={chartData}/>*/}
+                {activeStep && activeStep.type === "CSV" ? <CSVViewer/> :
+                    <LineChart/>}
             </StyledChartContainer>
 
             {controlsVisible && (
