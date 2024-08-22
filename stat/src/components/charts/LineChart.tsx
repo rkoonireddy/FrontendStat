@@ -2,8 +2,15 @@ import {DataPoint} from "../../types/dataType";
 import {getMinMax} from "../../util/util";
 import {useEffect, useRef, useState} from "react";
 import {axisBottom, axisLeft, curveCardinal, line, scaleLinear, select} from "d3";
+import {getData} from "../../service/dataService";
 
-export function LineChart({chartData}: {chartData: DataPoint[][]}) {
+export function LineChart() {
+
+    const [chartData, setChartData] = useState<DataPoint[][]>([]);
+
+    useEffect(() => {
+        getData().then(data => setChartData(data));
+    }, []);
 
     const minMax = getMinMax(chartData);
 

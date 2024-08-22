@@ -1,13 +1,13 @@
 import styled from "styled-components";
 import {useEffect, useState} from "react";
-import {DataPoint} from "../../types/dataType";
-import {getData} from "../../service/dataService";
 import {ControlSection} from "./ControlSection";
 import {ReactComponent as DownSVG} from "../../assets/caret-down-fill.svg";
 import {ReactComponent as UpSVG} from "../../assets/caret-up-fill.svg";
 import {PipelineHistorySection} from "./PipelineHistorySection";
 import {LineChart} from "../charts/LineChart";
 import CSVViewer from "../charts/CSVViewer";
+import {useAppSelector} from "../../hooks";
+import {getActivePipelineStep, getPipeline} from "../../redux/pipelineSlice";
 
 
 const StyledVizSectionContainer = styled.div`
@@ -19,7 +19,7 @@ const StyledVizSectionContainer = styled.div`
   flex-direction: column;
 `;
 
-const StyledChartContainer = styled.div<{controlsVisible: boolean}>`
+const StyledChartContainer = styled.div<{ controlsVisible: boolean }>`
   display: flex;
   justify-content: center;
   margin: 10px;
@@ -30,7 +30,7 @@ const StyledChartContainer = styled.div<{controlsVisible: boolean}>`
   border-radius: 15px;
 `;
 
-const StyledShowHideControls = styled.div<{marginTop?: string}>`
+const StyledShowHideControls = styled.div<{ marginTop?: string }>`
   display: flex;
   justify-content: center;
   height: 25px;
@@ -48,43 +48,63 @@ const StyledShowHideControls = styled.div<{marginTop?: string}>`
 `;
 
 
-
 export function VizSection() {
-    const [chartData, setChartData] = useState<DataPoint[][]>([]);
-    const [controlsVisible, setControlsVisible] = useState<boolean>(true);
+    const activeStep = useAppSelector(getActivePipelineStep);
+
     const [historyVisible, setHistoryVisible] = useState<boolean>(false);
+    const [historyExpanded, setHistoryExpanded] = useState<boolean>(false);
+    const [controlsVisible, setControlsVisible] = useState<boolean>(false);
+    const [controlsExpanded, setControlsExpanded] = useState<boolean>(false);
 
     useEffect(() => {
-        getData().then(data => setChartData(data));
-    }, []);
+        if (activeStep !== undefined) {
+            setHistoryVisible(activeStep.historyVisible);
+            setHistoryExpanded(activeStep.historyExpanded);
+            setControlsVisible(activeStep.controlsVisible);
+            setControlsExpanded(activeStep.controlsExpanded);
+        }
+    }, [activeStep]);
 
     return (
         <StyledVizSectionContainer id={"viz-section"}>
 
-            {!historyVisible &&
-            <StyledShowHideControls marginTop={"5%"} onClick={() => setHistoryVisible(true)}>
-                <DownSVG style={{width: "25px", height: "25px", color: "#ffffff"}}/>
-            </StyledShowHideControls>}
-            <PipelineHistorySection visible={historyVisible}/>
-            {historyVisible &&
-                <StyledShowHideControls onClick={() => setHistoryVisible(false)}>
-                    <UpSVG style={{width: "25px", height: "25px", color: "#ffffff"}}/>
-                </StyledShowHideControls>}
+            {historyVisible && (
+                <>
+                    {!historyExpanded &&
+                        <StyledShowHideControls marginTop={"5%"} onClick={() => setHistoryVisible(true)}>
+                            <DownSVG style={{width: "25px", height: "25px", color: "#ffffff"}}/>
+                        </StyledShowHideControls>
+                    }
+                    <PipelineHistorySection visible={historyExpanded}/>
+                    {historyExpanded &&
+                        <StyledShowHideControls onClick={() => setHistoryVisible(false)}>
+                            <UpSVG style={{width: "25px", height: "25px", color: "#ffffff"}}/>
+                        </StyledShowHideControls>
+                    }
+                </>
+            )}
 
             <StyledChartContainer controlsVisible={controlsVisible}>
-                <CSVViewer />
+                <CSVViewer/>
                 {/*<LineChart chartData={chartData}/>*/}
             </StyledChartContainer>
 
-            {controlsVisible &&
-            <StyledShowHideControls onClick={() => setControlsVisible(false)}>
-                <DownSVG style={{width: "25px", height: "25px", color: "#ffffff"}}/>
-            </StyledShowHideControls> }
-            <ControlSection visible={controlsVisible}/>
-            {!controlsVisible &&
-            <StyledShowHideControls onClick={() => setControlsVisible(true)}>
-                <UpSVG style={{width: "25px", height: "25px", color: "#ffffff"}}/>
-            </StyledShowHideControls>}
+            {controlsVisible && (
+                <>
+                    {controlsExpanded &&
+                        <StyledShowHideControls onClick={() => setControlsVisible(false)}>
+                            <DownSVG style={{width: "25px", height: "25px", color: "#ffffff"}}/>
+                        </StyledShowHideControls>
+                    }
+                    <ControlSection visible={controlsExpanded}/>
+                    {!controlsExpanded &&
+                        <StyledShowHideControls onClick={() => setControlsVisible(true)}>
+                            <UpSVG style={{width: "25px", height: "25px", color: "#ffffff"}}/>
+                        </StyledShowHideControls>
+                    }
+                </>
+            )}
+
 
         </StyledVizSectionContainer>
     )

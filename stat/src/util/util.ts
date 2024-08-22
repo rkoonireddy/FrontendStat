@@ -1,4 +1,4 @@
-import {DataPoint} from "../types/dataType";
+import {DataPoint, Pipeline} from "../types/dataType";
 
 export function getMinMax(data: DataPoint[][]): {x: {min: number, max: number}, y: {min: number, max: number}} {
     let xMin = Infinity, xMax = -Infinity, yMin = Infinity, yMax = -Infinity;
@@ -16,4 +16,19 @@ export function getMinMax(data: DataPoint[][]): {x: {min: number, max: number}, 
         x: {min: xMin, max: xMax},
         y: {min: yMin, max: yMax}
     };
+}
+
+export function createNodes(pipeline: Pipeline) {
+    let x = -100;
+    let y = -100;
+    return pipeline.steps.map(step => {
+        x += 100;
+        y += 100;
+        return {
+            id: step.id,
+            data: { label: step.name },
+            position: { x: x, y: y },
+            ...(x === 0 && { type: "input" })
+        };
+    });
 }

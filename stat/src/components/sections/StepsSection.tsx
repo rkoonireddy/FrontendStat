@@ -10,6 +10,9 @@ import {
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import {useCallback, useState} from "react";
+import {useAppSelector} from "../../hooks";
+import {getPipeline} from "../../redux/pipelineSlice";
+import {createNodes} from "../../util/util";
 
 
 const StyledStepsContainer = styled.div`
@@ -24,19 +27,22 @@ const initialEdges = [{id: '1-2', source: '1', target: '2'}];
 
 const initialNodes = [
     {
-        id: '1',
-        data: {label: 'Hello'},
+        id: '5',
+        data: {label: 'Raw Data'},
         position: {x: 0, y: 0},
         type: 'input',
     },
     {
-        id: '2',
-        data: {label: 'World'},
+        id: '6',
+        data: {label: 'Visualization'},
         position: {x: 100, y: 100},
     },
 ];
 
 function Flow() {
+
+    const pipeline = useAppSelector(getPipeline);
+    const initialNodes = createNodes(pipeline);
 
     const [nodes, setNodes] = useState(initialNodes);
     const [edges, setEdges] = useState(initialEdges);

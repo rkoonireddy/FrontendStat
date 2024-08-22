@@ -10,6 +10,7 @@ export type PipelineStep = {
     controlsVisible: boolean,
     controlsExpanded: boolean,
     controls: string[],
+    active: boolean
 
 }
 
