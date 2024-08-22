@@ -50,7 +50,7 @@ export const { setRawData, setFilteredData } = dataSlice.actions;
 
 export default dataSlice.reducer;
 
-export const getData = (state: RootState) => state.appData.rawData;
+export const getData = (state: RootState) => state.data.rawData;
 
 // a function which checks if there is existing raw data
 export const rawDataExists = createSelector(
