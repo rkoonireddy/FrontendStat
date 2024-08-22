@@ -22,7 +22,8 @@
     "@types/d3": "^7.4.3",
     "primeicons": "^7.0.0",
     "primereact": "^10.8.2",
-    "react-redux": "^9.1.2"
+    "react-redux": "^9.1.2",
+    "redux-persist": "^6.0.0"
   },
   "scripts": {
     "start": "react-scripts start",

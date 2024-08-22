@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import {useEffect, useRef, useState} from "react";
+import {useEffect, useState} from "react";
 import {DataPoint} from "../../types/dataType";
 import {getData} from "../../service/dataService";
 import {ControlSection} from "./ControlSection";

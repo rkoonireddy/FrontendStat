@@ -13,7 +13,8 @@ export function LineChart({chartData}: {chartData: DataPoint[][]}) {
 
 
     useEffect(() => {
-        if (!svgRef.current) return;
+        const svgElement = svgRef.current;
+        if (!svgElement) return;
 
         const resizeObserver = new ResizeObserver((entries) => {
             if (!entries || entries.length === 0) return;
@@ -21,9 +22,13 @@ export function LineChart({chartData}: {chartData: DataPoint[][]}) {
             setDimensions({ width, height });
         });
 
-        resizeObserver.observe(svgRef.current as Element);
+        resizeObserver.observe(svgElement);
 
-        return () => resizeObserver.unobserve(svgRef.current as Element);
+        return () => {
+            if (resizeObserver && svgElement) {
+                resizeObserver.unobserve(svgElement);
+            }
+        };
     }, []);
 
     //draws chart

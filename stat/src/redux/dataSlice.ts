@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSelector, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {parseCSV} from "../service/dataService";
+import {RootState} from "../store";
 
 
 interface IDataState {
@@ -48,3 +49,12 @@ export const dataSlice = createSlice({
 export const { setRawData, setFilteredData } = dataSlice.actions;
 
 export default dataSlice.reducer;
+
+export const getData = (state: RootState) => state.appData.rawData;
+
+// a function which checks if there is existing raw data
+export const rawDataExists = createSelector(
+    getData,
+    (data) => data.length > 0
+);
+
