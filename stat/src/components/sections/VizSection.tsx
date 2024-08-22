@@ -7,6 +7,7 @@ import {ReactComponent as DownSVG} from "../../assets/caret-down-fill.svg";
 import {ReactComponent as UpSVG} from "../../assets/caret-up-fill.svg";
 import {PipelineHistorySection} from "./PipelineHistorySection";
 import {LineChart} from "../charts/LineChart";
+import CSVViewer from "../charts/CSVViewer";
 
 
 const StyledVizSectionContainer = styled.div`
@@ -71,7 +72,8 @@ export function VizSection() {
                 </StyledShowHideControls>}
 
             <StyledChartContainer controlsVisible={controlsVisible}>
-                <LineChart chartData={chartData}/>
+                <CSVViewer />
+                {/*<LineChart chartData={chartData}/>*/}
             </StyledChartContainer>
 
             {controlsVisible &&

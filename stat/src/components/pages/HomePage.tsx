@@ -4,7 +4,7 @@ import {PrimaryButton} from "../buttons/PrimaryButton";
 import {useNavigate} from "react-router-dom";
 import {useDispatch} from "react-redux";
 import {useRef} from "react";
-import {getData, rawDataExists, readData} from "../../redux/dataSlice";
+import {rawDataExists, readData} from "../../redux/dataSlice";
 import {useAppSelector} from "../../hooks";
 
 

@@ -24,7 +24,9 @@ const StyledTableCell = styled.td`
 
 
 export default function CSVViewer() {
-    const data = useSelector(getData);
+    const rawData = useSelector(getData);
+
+    const data = rawData.slice(0, 20);
 
 
     if (data.length === 0) {
