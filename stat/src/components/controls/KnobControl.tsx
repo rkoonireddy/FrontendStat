@@ -42,7 +42,7 @@ export function KnobControl({title, min, max, step, start, columnSpan = 1, rowSp
     }
 
     return (
-        <StyledControl columnSpan={columnSpan} rowSpan={rowSpan}>
+        <StyledControl $columnSpan={columnSpan} $rowSpan={rowSpan}>
             <StyledControlTitle>{title}</StyledControlTitle>
             <Knob value={value}
                   onChange={(e) => setValue(e.value)}

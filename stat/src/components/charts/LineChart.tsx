@@ -80,7 +80,6 @@ export function LineChart() {
             .x((d: { x: number; y: number }, i: number) => xScale(i))
             .y((d: { x: number; y: number }) => yScale(d.y))
             .curve(curveCardinal);
-        console.log(chartData);
 
         //drawing the line
         svg

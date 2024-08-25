@@ -19,7 +19,7 @@ export function FilterControl({title, onLabel, offLabel, value, columnSpan = 1, 
     }
 
     return (
-        <StyledControl columnSpan={columnSpan} rowSpan={rowSpan}>
+        <StyledControl $columnSpan={columnSpan} $rowSpan={rowSpan}>
             <StyledControlTitle>{title}</StyledControlTitle>
             <InputSwitch id={"input switch"}
                          checked={filterValue}

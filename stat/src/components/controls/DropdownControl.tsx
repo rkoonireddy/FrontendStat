@@ -15,7 +15,7 @@ export function DropdownControl({title, options, placeHolder = "Select...", colu
     const width = 150 * columnSpan;
 
     return (
-        <StyledControl columnSpan={columnSpan} rowSpan={rowSpan}>
+        <StyledControl $columnSpan={columnSpan} $rowSpan={rowSpan}>
             <StyledControlTitle margin={'0'}>{title}</StyledControlTitle>
             <Dropdown id={"dropdown"}
                       value={selectedOption}

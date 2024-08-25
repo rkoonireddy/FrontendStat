@@ -15,15 +15,15 @@ const StyledControlContainer = styled.div<{ visible: boolean }>`
   height: 35%;
 `;
 
-export const StyledControl = styled.div<{ columnSpan: number, rowSpan: number }>`
+export const StyledControl = styled.div<{ $columnSpan: number, $rowSpan: number }>`
   background-color: #ffffff08;
   padding: 5px;
   border-radius: 15px;
   display: flex;
   justify-content: center;
   flex-direction: column;
-  grid-column: span ${props => props.columnSpan};
-  grid-row: span ${props => props.rowSpan};
+  grid-column: span ${props => props.$columnSpan};
+  grid-row: span ${props => props.$rowSpan};
   margin: auto;
   min-width: 175px;
   min-height: 175px;

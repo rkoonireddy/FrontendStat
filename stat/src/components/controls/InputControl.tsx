@@ -41,7 +41,7 @@ export function InputControl({title, unit, columnSpan = 1, rowSpan = 1}: {
     }
 
     return (
-        <StyledControl columnSpan={columnSpan} rowSpan={rowSpan}>
+        <StyledControl $columnSpan={columnSpan} $rowSpan={rowSpan}>
             <StyledControlTitle margin={'0'}>{title}</StyledControlTitle>
             <StyledInputContainer>
             <StyledInput id={"input text"}

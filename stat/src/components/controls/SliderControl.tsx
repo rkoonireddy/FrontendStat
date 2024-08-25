@@ -36,7 +36,7 @@ export function VerticalSliderControl({title, min, max, step, start, columnSpan 
     const height = 150 * rowSpan;
 
     return (
-        <StyledControl columnSpan={columnSpan} rowSpan={rowSpan}>
+        <StyledControl $columnSpan={columnSpan} $rowSpan={rowSpan}>
             <StyledControlTitle>{title}</StyledControlTitle>
             <StyledSliderContainer>
                 <StyledSliderValue>{value}</StyledSliderValue>

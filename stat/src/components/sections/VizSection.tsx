@@ -19,18 +19,18 @@ const StyledVizSectionContainer = styled.div`
   flex-direction: column;
 `;
 
-const StyledChartContainer = styled.div<{ controlsVisible: boolean }>`
+const StyledChartContainer = styled.div<{ $controlsVisible: boolean }>`
   display: flex;
   justify-content: center;
   margin: 10px;
   background-color: #ffffff08;
   padding: 5px;
   width: calc(100% - 20px);
-  height: calc(${props => props.controlsVisible ? '65%' : '100%'} - 30px);
+  height: calc(${props => props.$controlsVisible ? '65%' : '100%'} - 30px);
   border-radius: 15px;
 `;
 
-const StyledShowHideControls = styled.div<{ marginTop?: string }>`
+const StyledShowHideControls = styled.div<{ $marginTop?: string }>`
   display: flex;
   justify-content: center;
   height: 25px;
@@ -38,8 +38,8 @@ const StyledShowHideControls = styled.div<{ marginTop?: string }>`
   margin-left: 10px;
   background-color: #ffffff08;
   width: calc(100% - 20px);
-  margin-top: ${props => props.marginTop ? props.marginTop : '0'};
-  position: ${props => props.marginTop ? 'absolute' : 'relative'};
+  margin-top: ${props => props.$marginTop ? props.$marginTop : '0'};
+  position: ${props => props.$marginTop ? 'absolute' : 'relative'};
 
   &:hover {
     cursor: pointer;
@@ -71,7 +71,7 @@ export function VizSection() {
             {historyVisible && (
                 <>
                     {!historyExpanded &&
-                        <StyledShowHideControls marginTop={"5%"} onClick={() => setHistoryVisible(true)}>
+                        <StyledShowHideControls $marginTop={"5%"} onClick={() => setHistoryVisible(true)}>
                             <DownSVG style={{width: "25px", height: "25px", color: "#ffffff"}}/>
                         </StyledShowHideControls>
                     }
@@ -84,7 +84,7 @@ export function VizSection() {
                 </>
             )}
 
-            <StyledChartContainer controlsVisible={controlsVisible}>
+            <StyledChartContainer $controlsVisible={controlsVisible}>
                 {activeStep && activeStep.type === "CSV" ? <CSVViewer/> :
                     <LineChart/>}
             </StyledChartContainer>
