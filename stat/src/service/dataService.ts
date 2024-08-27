@@ -1,4 +1,5 @@
-import {DataPoint} from "../types/dataType";
+import {DataPoint, PipelineModel} from "../types/dataType";
+import {CreateBlockResponse} from "../types/responseType";
 
 
 const baseurl = process.env.REACT_APP_API_BASEURL;
@@ -68,4 +69,40 @@ export function parseCSV({ formData }: { formData: FormData }): Promise<Array<{ 
             reject(new Error('Please upload a valid CSV file.'));
         }
     });
+}
+
+export function createPipeline(): Promise<PipelineModel> {
+    return fetch(baseurl + "pipeline",
+        {
+            method: "POST"
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.text().then(err => {
+                    throw new Error(err);
+                });
+            } else {
+                return response.json();
+            }
+        });
+}
+
+export function createBlock({blockType, blockName}: {blockType: string, blockName: string}): Promise<CreateBlockResponse> {
+    return fetch(baseurl + "block",
+        {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({"block_type": blockType, "block_name": blockName})
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.text().then(err => {
+                    throw new Error(err);
+                });
+            } else {
+                return response.json();
+            }
+        })
 }

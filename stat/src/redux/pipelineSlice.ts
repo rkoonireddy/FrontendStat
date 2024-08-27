@@ -1,10 +1,14 @@
-import {Pipeline} from "../types/dataType";
-import {createSelector, createSlice, PayloadAction} from "@reduxjs/toolkit";
+import {Pipeline, PipelineModel} from "../types/dataType";
+import {createAsyncThunk, createSelector, createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {RootState} from "../store";
+import {createBlock, createPipeline, parseCSV} from "../service/dataService";
+import {CreateBlockResponse} from "../types/responseType";
 
 
 interface IPipelineState {
-    pipeline: Pipeline
+    pipeline: Pipeline,
+    pipelineModel: null | PipelineModel
+    blocks: CreateBlockResponse[]
 }
 
 const initialState: IPipelineState = {
@@ -34,8 +38,33 @@ const initialState: IPipelineState = {
                 active: false
             }
         ]
-    }
+    },
+    pipelineModel: null,
+    blocks: []
 }
+
+export const createNewPipeline = createAsyncThunk<PipelineModel, void, { rejectValue: string }>(
+    'pipeline/new',
+    async (_, thunkAPI) => {
+        try {
+            return await createPipeline();
+        } catch (error) {
+            return thunkAPI.rejectWithValue('Failed to create pipeline');
+        }
+    }
+);
+
+export const createNewBlock = createAsyncThunk<CreateBlockResponse, { blockType: string, blockName: string }, { rejectValue: string }>(
+    'pipeline/newBlock',
+    async ({ blockType, blockName }, thunkAPI) => {
+        try {
+            return await createBlock({ blockType, blockName });
+        } catch (error) {
+            return thunkAPI.rejectWithValue('Failed to create block');
+        }
+    }
+);
+
 
 export const pipelineSlice = createSlice({
     name: 'pipeline',
@@ -73,7 +102,7 @@ export const pipelineSlice = createSlice({
                 return step;
             });
         },
-        addStep: (state: { pipeline: { steps: any; }; }, action: PayloadAction<{ step: any }>) => {
+        addStep: (state: { pipeline: { steps: any; }; }, action: PayloadAction<{ step: IPipelineState }>) => {
             state.pipeline.steps = state.pipeline.steps.map((step: { active: boolean; }) => {
                 if (step.active) {
                     step.active = false;
@@ -88,6 +117,17 @@ export const pipelineSlice = createSlice({
                 return step;
             });
         }
+    },
+    extraReducers: builder => {
+        builder.addCase(createNewPipeline.fulfilled, (state, action) => {
+            state.pipelineModel = action.payload;
+        });
+        builder.addCase(createNewPipeline.rejected, (state, action) => {
+            console.log(action.error.message);
+        });
+        builder.addCase(createNewBlock.fulfilled, (state, action) => {
+            state.blocks.push(action.payload);
+        });
     }
 })
 
@@ -113,3 +153,5 @@ export const getActivePipelineStep = createSelector(
     getPipeline,
     (pipeline) => pipeline.steps.find(step => step.active)
 );
+
+export const getPipelineModel = (state: RootState) => state.pipeline.pipelineModel;

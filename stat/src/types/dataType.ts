@@ -25,3 +25,10 @@ export interface NodeType {
     position: { x: number; y: number };
     type?: string;
 }
+
+export interface PipelineModel {
+    block_dict: { [key: string]: string[] },
+    edge_dict: { [key: string]: string },
+    id: string,
+    type: string
+}

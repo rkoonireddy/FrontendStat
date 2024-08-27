@@ -4,6 +4,11 @@ import {ReactComponent as MenuSVG} from "../../assets/menu.svg";
 import {useNavigate} from "react-router-dom";
 import {StepsSection} from "../sections/StepsSection";
 import {VizSection} from "../sections/VizSection";
+import {useDispatch} from "react-redux";
+import {addStep, createNewBlock, createNewPipeline, getPipelineModel} from "../../redux/pipelineSlice";
+import {AppDispatch} from "../../store";
+import {useAppSelector} from "../../hooks";
+import {useState} from "react";
 
 
 const StyledMainPage = styled.div`
@@ -18,7 +23,7 @@ const StyledSideBar = styled.div`
   display: flex;
   justify-content: space-between;
   flex-direction: column;
-  
+
   & svg:hover {
     scale: 1.05;
     cursor: pointer;
@@ -28,15 +33,29 @@ const StyledSideBar = styled.div`
 
 function MainPage() {
     const navigate = useNavigate();
+    const dispatch = useDispatch<AppDispatch>();
+    dispatch(createNewPipeline());
+    const pipeline = useAppSelector(getPipelineModel);
+
+    const [blockType, setBlockType] = useState<string>()
+    const [blockName, setBlockName] = useState<string>()
+
+
+    function addNewBlock() {
+        if (blockType !== undefined && blockName !== undefined) {
+            dispatch(createNewBlock({blockType: blockType, blockName: blockName}))
+        }
+
+    }
 
     return (
         <StyledMainPage>
             <StyledSideBar>
                 <STATIconSVG style={{width: "50px", height: "50px", margin: "10px"}} onClick={() => navigate("/")}/>
-                <MenuSVG style={{width: "50px", height: "50px", margin: "10px"}} />
+                <MenuSVG style={{width: "50px", height: "50px", margin: "10px"}}/>
             </StyledSideBar>
             <StepsSection/>
-            <VizSection />
+            <VizSection/>
         </StyledMainPage>
     );
 }
