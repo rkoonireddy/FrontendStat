@@ -1,8 +1,9 @@
 import {Pipeline, PipelineModel} from "../types/dataType";
 import {createAsyncThunk, createSelector, createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {RootState} from "../store";
-import {createBlock, createPipeline, parseCSV} from "../service/dataService";
 import {CreateBlockResponse} from "../types/responseType";
+import {createPipeline} from "../service/pipelineService";
+import {createBlock} from "../service/blockService";
 
 
 interface IPipelineState {

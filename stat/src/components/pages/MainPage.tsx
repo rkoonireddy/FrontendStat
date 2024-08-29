@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import {ReactComponent as STATIconSVG} from "../../assets/icon.svg";
 import {ReactComponent as MenuSVG} from "../../assets/menu.svg";
+import {ReactComponent as PlusSVG} from "../../assets/plus-square.svg";
 import {useNavigate} from "react-router-dom";
 import {StepsSection} from "../sections/StepsSection";
 import {VizSection} from "../sections/VizSection";
@@ -13,7 +14,7 @@ import {useState} from "react";
 
 const StyledMainPage = styled.div`
   display: grid;
-  grid-template-columns: 100px 600px 1fr;
+  grid-template-columns: 70px 600px 1fr;
   background: linear-gradient(to bottom right, #3D3D3D 0%, #000000 100%);
 `;
 
@@ -23,6 +24,7 @@ const StyledSideBar = styled.div`
   display: flex;
   justify-content: space-between;
   flex-direction: column;
+  align-items: center;
 
   & svg:hover {
     scale: 1.05;
@@ -52,6 +54,7 @@ function MainPage() {
         <StyledMainPage>
             <StyledSideBar>
                 <STATIconSVG style={{width: "50px", height: "50px", margin: "10px"}} onClick={() => navigate("/")}/>
+                <PlusSVG style={{width: "50px", height: "50px", margin: "10px", fill: "#73B5B4"}} onClick={() => addNewBlock()}/>
                 <MenuSVG style={{width: "50px", height: "50px", margin: "10px"}}/>
             </StyledSideBar>
             <StepsSection/>
