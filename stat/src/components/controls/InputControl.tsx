@@ -12,13 +12,13 @@ const StyledInputContainer = styled.div`
   align-items: center;
 `;
 
-const StyledInput = styled.input`
+export const StyledInput = styled.input<{ $large?: boolean}>`
   border-radius: 5px;
   font-size: 1.5rem;
   border: 1px solid #727272;
   background-color: #2B2B2B;
   color: #ffffff;
-  max-width: 120px;
+  max-width: ${props => props.$large? '200px' : '120px'};
 `;
 
 const StyledUnit = styled.span`

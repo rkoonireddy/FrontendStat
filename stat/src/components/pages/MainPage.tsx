@@ -9,7 +9,10 @@ import {useDispatch} from "react-redux";
 import {addStep, createNewBlock, createNewPipeline, getActiveBlock, getPipelineModel} from "../../redux/pipelineSlice";
 import {AppDispatch} from "../../store";
 import {useAppSelector} from "../../hooks";
-import {useState} from "react";
+import {useEffect, useState} from "react";
+import {StyledInput} from "../controls/InputControl";
+import {Dropdown} from "primereact/dropdown";
+import {PrimaryButton} from "../buttons/PrimaryButton";
 
 
 const StyledMainPage = styled.div`
@@ -61,13 +64,22 @@ const StyledCreateBlockTitle = styled.div`
 function MainPage() {
     const navigate = useNavigate();
     const dispatch = useDispatch<AppDispatch>();
-    dispatch(createNewPipeline());
     const pipeline = useAppSelector(getPipelineModel);
     const activeBlock = useAppSelector(getActiveBlock);
-
+    const blockTypes = [
+        {label: "Mean Imputor", value: "MeanImputor"},
+        {label: "ECG Cleaner", value: "ECGCleaner"},
+        {label: "Polynomial Fitting", value: "PolynomialFitting"},
+        {label: "Notch Filter", value: "NotchFilter"},
+        {label: "Loader", value: "Loader"},
+        {label: "CSV String Loader", value: "CSVStringLoader"},
+        {label: "Line Plot Visualizer", value: "LinePlotVisualizer"}]
     const [blockType, setBlockType] = useState<string>()
     const [blockName, setBlockName] = useState<string>()
 
+    useEffect(() => {
+        dispatch(createNewPipeline());
+    }, []);
 
     function addNewBlock() {
         if (blockType !== undefined && blockName !== undefined) {
@@ -81,13 +93,21 @@ function MainPage() {
         <StyledMainPage>
             <StyledCreateBlockPopup>
                 <StyledCreateBlockTitle>Create Block</StyledCreateBlockTitle>
-                <input type="text" placeholder="Block Name" onChange={(e) => setBlockName(e.target.value)}/>
-                <input type="text" placeholder="Block Type" onChange={(e) => setBlockType(e.target.value)}/>
-                <button onClick={() => addNewBlock()}>Create Block</button>
+                <StyledInput $large={true} type="text" placeholder="Block Name"
+                             onChange={(e) => setBlockName(e.target.value)}/>
+                <Dropdown id={"typeDropdown"} placeholder="Block Type"
+                          value={blockType} options={blockTypes}
+                          onChange={(e) => {
+                              console.log(e.target.value)
+                              setBlockType(e.target.value)
+                          }
+                          }/>
+                <PrimaryButton text={"Create Block"} action={addNewBlock}/>
             </StyledCreateBlockPopup>
             <StyledSideBar>
                 <STATIconSVG style={{width: "50px", height: "50px", margin: "10px"}} onClick={() => navigate("/")}/>
-                <PlusSVG style={{width: "50px", height: "50px", margin: "10px", fill: "#73B5B4"}} onClick={() => addNewBlock()}/>
+                <PlusSVG style={{width: "50px", height: "50px", margin: "10px", fill: "#73B5B4"}}
+                         onClick={() => addNewBlock()}/>
                 <MenuSVG style={{width: "50px", height: "50px", margin: "10px"}}/>
             </StyledSideBar>
             <StepsSection/>

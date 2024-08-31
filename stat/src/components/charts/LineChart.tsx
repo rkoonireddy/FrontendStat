@@ -8,9 +8,9 @@ export function LineChart() {
 
     const [chartData, setChartData] = useState<DataPoint[][]>([]);
 
-    useEffect(() => {
-        getData().then(data => setChartData(data));
-    }, []);
+    // useEffect(() => {
+    //     getData().then(data => setChartData(data));
+    // }, []);
 
     const minMax = getMinMax(chartData);
 
