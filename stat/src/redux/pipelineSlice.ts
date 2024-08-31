@@ -10,6 +10,7 @@ interface IPipelineState {
     pipeline: Pipeline,
     pipelineModel: null | PipelineModel
     blocks: CreateBlockResponse[]
+    activeBlockId: string | null
 }
 
 const initialState: IPipelineState = {
@@ -41,7 +42,8 @@ const initialState: IPipelineState = {
         ]
     },
     pipelineModel: null,
-    blocks: []
+    blocks: [],
+    activeBlockId: null
 }
 
 export const createNewPipeline = createAsyncThunk<PipelineModel, void, { rejectValue: string }>(
@@ -117,6 +119,9 @@ export const pipelineSlice = createSlice({
                 step.active = step.id === action.payload.stepId;
                 return step;
             });
+        },
+        setActiveStepId(state, action: PayloadAction<string>) {
+            state.activeBlockId = action.payload;
         }
     },
     extraReducers: builder => {
@@ -128,6 +133,7 @@ export const pipelineSlice = createSlice({
         });
         builder.addCase(createNewBlock.fulfilled, (state, action) => {
             state.blocks.push(action.payload);
+            state.activeBlockId = action.payload.block_id;
         });
     }
 })
@@ -138,7 +144,8 @@ export const {
     setStepControlsVisible,
     setStepControlsExpanded,
     addStep,
-    changeActiveStep
+    changeActiveStep,
+    setActiveStepId
 } = pipelineSlice.actions;
 
 export default pipelineSlice.reducer;
@@ -154,5 +161,11 @@ export const getActivePipelineStep = createSelector(
     getPipeline,
     (pipeline) => pipeline.steps.find(step => step.active)
 );
+
+export const getActiveBlock = (state: RootState) => {
+    const activeBlockId = state.pipeline.activeBlockId;
+    return state.pipeline.blocks.find(block => block.block_id === activeBlockId);
+
+}
 
 export const getPipelineModel = (state: RootState) => state.pipeline.pipelineModel;
