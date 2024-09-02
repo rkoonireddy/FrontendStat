@@ -13,6 +13,7 @@ import {useEffect, useState} from "react";
 import {StyledInput} from "../controls/InputControl";
 import {Dropdown} from "primereact/dropdown";
 import {PrimaryButton} from "../buttons/PrimaryButton";
+import {getBlockTypes} from "../../service/blockService";
 
 
 const StyledMainPage = styled.div`
@@ -42,7 +43,7 @@ const StyledCreateBlockPopup = styled.div`
   flex-direction: column;
   align-items: center;
   width: 600px;
-  height: 600px;
+  height: 400px;
   background: linear-gradient(to bottom right, #3D3D3D 0%, #000000 100%);;
   bottom: 0;
   left: 0;
@@ -52,6 +53,7 @@ const StyledCreateBlockPopup = styled.div`
   z-index: 100;
   border-radius: 15px;
   box-shadow: 5px 5px 5px 0 rgba(147, 147, 147, 0.75);
+  padding: 20px;
 `;
 
 const StyledCreateBlockTitle = styled.div`
@@ -66,19 +68,16 @@ function MainPage() {
     const dispatch = useDispatch<AppDispatch>();
     const pipeline = useAppSelector(getPipelineModel);
     const activeBlock = useAppSelector(getActiveBlock);
-    const blockTypes = [
-        {label: "Mean Imputor", value: "MeanImputor"},
-        {label: "ECG Cleaner", value: "ECGCleaner"},
-        {label: "Polynomial Fitting", value: "PolynomialFitting"},
-        {label: "Notch Filter", value: "NotchFilter"},
-        {label: "Loader", value: "Loader"},
-        {label: "CSV String Loader", value: "CSVStringLoader"},
-        {label: "Line Plot Visualizer", value: "LinePlotVisualizer"}]
+    const [blockTypes, setBlockTypes] = useState<{ label: string, value: string }[]>([]);
     const [blockType, setBlockType] = useState<string>()
     const [blockName, setBlockName] = useState<string>()
 
     useEffect(() => {
         dispatch(createNewPipeline());
+        getBlockTypes().then((types) => {
+            const bTypes = types.map((type) => ({label: type.name, value: type.name}));
+            setBlockTypes(bTypes);
+        });
     }, []);
 
     function addNewBlock() {
@@ -97,6 +96,7 @@ function MainPage() {
                              onChange={(e) => setBlockName(e.target.value)}/>
                 <Dropdown id={"typeDropdown"} placeholder="Block Type"
                           value={blockType} options={blockTypes}
+                          style={{width: "200px"}}
                           onChange={(e) => {
                               console.log(e.target.value)
                               setBlockType(e.target.value)

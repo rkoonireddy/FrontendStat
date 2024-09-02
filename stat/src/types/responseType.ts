@@ -27,7 +27,7 @@ type DataCollection = {
     };
 };
 
-export type BlockType = {
+export type BlockModel = {
     id: string;
     name: string;
     type: string;
@@ -42,3 +42,18 @@ export type BlockType = {
         some_other_metadata: string;
     };
 };
+
+export type SettableField = {
+    [key: string]: {
+        title: string,
+        description: string,
+        example: string
+    }
+}
+
+export type BlockTypeModel =  {
+    type: string,
+    name: string,
+    description: string,
+    settable_fields: SettableField[]
+}

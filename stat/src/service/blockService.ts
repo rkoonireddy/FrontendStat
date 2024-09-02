@@ -1,9 +1,12 @@
-import {BlockType, CreateBlockResponse} from "../types/responseType";
+import {BlockModel, BlockTypeModel, CreateBlockResponse} from "../types/responseType";
 
 const baseurl = process.env.REACT_APP_API_BASEURL;
 
 
-export function createBlock({blockType, blockName}: {blockType: string, blockName: string}): Promise<CreateBlockResponse> {
+export function createBlock({blockType, blockName}: {
+    blockType: string,
+    blockName: string
+}): Promise<CreateBlockResponse> {
     return fetch(baseurl + "block",
         {
             method: "POST",
@@ -23,7 +26,12 @@ export function createBlock({blockType, blockName}: {blockType: string, blockNam
         })
 }
 
-export function blockToCSVLoader({blockId, csvString, frequency_hz, header}: {blockId: string, csvString: string, frequency_hz: number, header: boolean}): Promise<BlockType>  {
+export function blockToCSVLoader({blockId, csvString, frequency_hz, header}: {
+    blockId: string,
+    csvString: string,
+    frequency_hz: number,
+    header: boolean
+}): Promise<BlockModel> {
     return fetch(baseurl + `block/${blockId}`,
         {
             method: "PUT",
@@ -43,7 +51,7 @@ export function blockToCSVLoader({blockId, csvString, frequency_hz, header}: {bl
         });
 }
 
-export function getFullBlock({blockId}: {blockId: string}): Promise<BlockType> {
+export function getFullBlock({blockId}: { blockId: string }): Promise<BlockModel> {
     return fetch(baseurl + `block_full/${blockId}`)
         .then(response => {
             if (!response.ok) {
@@ -54,4 +62,18 @@ export function getFullBlock({blockId}: {blockId: string}): Promise<BlockType> {
                 return response.json();
             }
         });
+}
+
+export async function getBlockTypes(): Promise<BlockTypeModel[]> {
+    const response = await fetch(baseurl + "block_types");
+    if (!response.ok) {
+        const err = await response.text();
+        throw new Error(err);
+    } else {
+        const blockTypes: BlockTypeModel[] = [];
+        const r = await response.json();
+        r.loader.map((l: BlockTypeModel) => blockTypes.push(l));
+        r.processor.map((p: BlockTypeModel) => blockTypes.push(p));
+        return blockTypes;
+    }
 }
