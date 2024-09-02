@@ -13,7 +13,7 @@ export function createBlock({blockType, blockName}: {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({"block_type": blockType, "block_name": blockName})
+            body: JSON.stringify({"block_type": blockType, "name": blockName})
         })
         .then(response => {
             if (!response.ok) {

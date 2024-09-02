@@ -9,10 +9,10 @@ import {
     EdgeChange, addEdge
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import {useCallback, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {useAppSelector} from "../../hooks";
-import {changeActiveStep, getPipeline} from "../../redux/pipelineSlice";
-import {createEdges, createNodes} from "../../util/util";
+import {changeActiveStep, getAllNodes, getBlocks, getPipeline} from "../../redux/pipelineSlice";
+import {createEdges, createNodes, createNodesFromBlocks} from "../../util/util";
 import {NodeType} from "../../types/dataType";
 import {useDispatch} from "react-redux";
 
@@ -44,11 +44,19 @@ const initialNodes = [
 function Flow() {
     const dispatch = useDispatch();
     const pipeline = useAppSelector(getPipeline);
-    const initialNodes = createNodes(pipeline);
+    // const initialNodes = createNodes(pipeline);
     const initialEdges = createEdges(pipeline);
+    const blocks = useAppSelector(getBlocks);
+    const initialNodes = useAppSelector(getAllNodes);
+
 
     const [nodes, setNodes] = useState(initialNodes);
     const [edges, setEdges] = useState(initialEdges);
+
+    useEffect(() => {
+        const ns = createNodesFromBlocks(blocks);
+        setNodes(ns);
+    }, [blocks])
 
     const onNodesChange = useCallback(
         (changes: NodeChange<{

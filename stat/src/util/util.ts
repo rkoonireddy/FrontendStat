@@ -1,4 +1,5 @@
 import {DataPoint, Pipeline} from "../types/dataType";
+import {BlockModel, CreateBlockResponse} from "../types/responseType";
 
 export function getMinMax(data: DataPoint[][]): {x: {min: number, max: number}, y: {min: number, max: number}} {
     let xMin = Infinity, xMax = -Infinity, yMin = Infinity, yMax = -Infinity;
@@ -32,6 +33,23 @@ export function createNodes(pipeline: Pipeline) {
         };
     });
 }
+
+// blocks to nodes
+export function createNodesFromBlocks(blocks: BlockModel[]) {
+    let x = -100;
+    let y = -100;
+    return blocks.map((block: any) => {
+        x += 100;
+        y += 100;
+        return {
+            id: block.id,
+            data: { label: block.name },
+            position: { x: x, y: y },
+            ...(x === 0 && { type: "input" })
+        };
+    });
+}
+
 
 export function createEdges(pipeline: Pipeline): {id: string, source: string, target: string}[] {
     let edges : {id: string, source: string, target: string}[] = [];

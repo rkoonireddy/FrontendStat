@@ -1,15 +1,16 @@
 import {Pipeline, PipelineModel} from "../types/dataType";
 import {createAsyncThunk, createSelector, createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {RootState} from "../store";
-import {CreateBlockResponse} from "../types/responseType";
+import {BlockModel, CreateBlockResponse} from "../types/responseType";
 import {createPipeline} from "../service/pipelineService";
-import {createBlock} from "../service/blockService";
+import {createBlock, getFullBlock} from "../service/blockService";
+import {createNodesFromBlocks} from "../util/util";
 
 
 interface IPipelineState {
     pipeline: Pipeline,
     pipelineModel: null | PipelineModel
-    blocks: CreateBlockResponse[]
+    blocks: BlockModel[]
     activeBlockId: string | null
 }
 
@@ -61,9 +62,23 @@ export const createNewBlock = createAsyncThunk<CreateBlockResponse, { blockType:
     'pipeline/newBlock',
     async ({ blockType, blockName }, thunkAPI) => {
         try {
-            return await createBlock({ blockType, blockName });
+            const response = await createBlock({ blockType, blockName });
+            thunkAPI.dispatch(fetchFullBlock(response.block_id));
+            return response;
         } catch (error) {
             return thunkAPI.rejectWithValue('Failed to create block');
+        }
+    }
+);
+
+export const fetchFullBlock = createAsyncThunk<BlockModel, string, { rejectValue: string }>(
+    'pipeline/fetchFullBlock',
+    async (blockId, thunkAPI) => {
+        try {
+            console.log("fetching full block", blockId);
+            return await getFullBlock({blockId});
+        } catch (error) {
+            return thunkAPI.rejectWithValue('Failed to fetch full block');
         }
     }
 );
@@ -132,8 +147,10 @@ export const pipelineSlice = createSlice({
             console.log(action.error.message);
         });
         builder.addCase(createNewBlock.fulfilled, (state, action) => {
-            state.blocks.push(action.payload);
             state.activeBlockId = action.payload.block_id;
+        });
+        builder.addCase(fetchFullBlock.fulfilled, (state, action) => {
+            state.blocks.push(action.payload);
         });
     }
 })
@@ -162,9 +179,16 @@ export const getActivePipelineStep = createSelector(
     (pipeline) => pipeline.steps.find(step => step.active)
 );
 
+export const getBlocks = (state: RootState) => state.pipeline.blocks;
+
+export const getAllNodes = (state: RootState) => {
+    const blocks = getBlocks(state);
+    return createNodesFromBlocks(blocks);
+}
+
 export const getActiveBlock = (state: RootState) => {
     const activeBlockId = state.pipeline.activeBlockId;
-    return state.pipeline.blocks.find(block => block.block_id === activeBlockId);
+    return state.pipeline.blocks.find(block => block.id === activeBlockId);
 
 }
 

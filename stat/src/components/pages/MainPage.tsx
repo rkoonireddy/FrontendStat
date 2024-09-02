@@ -66,6 +66,7 @@ const StyledCreateBlockTitle = styled.div`
 function MainPage() {
     const navigate = useNavigate();
     const dispatch = useDispatch<AppDispatch>();
+    const [showCreateBlockPopup, setShowCreateBlockPopup] = useState(false);
     const pipeline = useAppSelector(getPipelineModel);
     const activeBlock = useAppSelector(getActiveBlock);
     const [blockTypes, setBlockTypes] = useState<{ label: string, value: string }[]>([]);
@@ -83,13 +84,13 @@ function MainPage() {
     function addNewBlock() {
         if (blockType !== undefined && blockName !== undefined) {
             dispatch(createNewBlock({blockType: blockType, blockName: blockName}));
-
+            setShowCreateBlockPopup(false);
         }
-
     }
 
     return (
         <StyledMainPage>
+            {showCreateBlockPopup &&
             <StyledCreateBlockPopup>
                 <StyledCreateBlockTitle>Create Block</StyledCreateBlockTitle>
                 <StyledInput $large={true} type="text" placeholder="Block Name"
@@ -103,11 +104,11 @@ function MainPage() {
                           }
                           }/>
                 <PrimaryButton text={"Create Block"} action={addNewBlock}/>
-            </StyledCreateBlockPopup>
+            </StyledCreateBlockPopup>}
             <StyledSideBar>
                 <STATIconSVG style={{width: "50px", height: "50px", margin: "10px"}} onClick={() => navigate("/")}/>
                 <PlusSVG style={{width: "50px", height: "50px", margin: "10px", fill: "#73B5B4"}}
-                         onClick={() => addNewBlock()}/>
+                         onClick={() => setShowCreateBlockPopup(!showCreateBlockPopup)}/>
                 <MenuSVG style={{width: "50px", height: "50px", margin: "10px"}}/>
             </StyledSideBar>
             <StepsSection/>
