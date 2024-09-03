@@ -3,7 +3,7 @@ import {createAsyncThunk, createSelector, createSlice, PayloadAction} from "@red
 import {RootState} from "../store";
 import {BlockModel, CreateBlockResponse} from "../types/responseType";
 import {createPipeline} from "../service/pipelineService";
-import {createBlock, getFullBlock} from "../service/blockService";
+import {addBlockToPipeline, createBlock, getFullBlock} from "../service/blockService";
 import {createNodesFromBlocks} from "../util/util";
 
 
@@ -63,7 +63,10 @@ export const createNewBlock = createAsyncThunk<CreateBlockResponse, { blockType:
     async ({ blockType, blockName }, thunkAPI) => {
         try {
             const response = await createBlock({ blockType, blockName });
+            const state = thunkAPI.getState() as RootState;
+            const pipeline = state.pipeline.pipeline;
             thunkAPI.dispatch(fetchFullBlock(response.block_id));
+            thunkAPI.dispatch(putBlockToPipeline({ blockId: response.block_id, pipelineId: pipeline.id }));
             return response;
         } catch (error) {
             return thunkAPI.rejectWithValue('Failed to create block');
@@ -83,12 +86,23 @@ export const fetchFullBlock = createAsyncThunk<BlockModel, string, { rejectValue
     }
 );
 
+export const putBlockToPipeline = createAsyncThunk<PipelineModel, { blockId: string, pipelineId: string }, { rejectValue: string }>(
+    'pipeline/putBlockToPipeline',
+    async ({ blockId, pipelineId }, thunkAPI) => {
+        try {
+            return await addBlockToPipeline({blockId, pipelineId});
+        } catch (error) {
+            return thunkAPI.rejectWithValue('Failed to fetch full block');
+        }
+    }
+);
+
 
 export const pipelineSlice = createSlice({
     name: 'pipeline',
     initialState,
     reducers: {
-        setStepHistoryVisible: (state: { pipeline: { steps: any; }; }, action: PayloadAction<{ stepId: string }>) => {
+        setBlockHistoryVisible: (state: { pipeline: { steps: any; }; }, action: PayloadAction<{ stepId: string }>) => {
             state.pipeline.steps = state.pipeline.steps.map((step: { id: string, historyVisible: any; }) => {
                 if (step.id === action.payload.stepId) {
                     step.historyVisible = action.payload;
@@ -96,7 +110,7 @@ export const pipelineSlice = createSlice({
                 return step;
             });
         },
-        setStepHistoryExpanded: (state: { pipeline: { steps: any; }; }, action: PayloadAction<{ stepId: string }>) => {
+        setBlockHistoryExpanded: (state: { pipeline: { steps: any; }; }, action: PayloadAction<{ stepId: string }>) => {
             state.pipeline.steps = state.pipeline.steps.map((step: { id: string, historyExpanded: any; }) => {
                 if (step.id === action.payload.stepId) {
                     step.historyExpanded = action.payload;
@@ -104,7 +118,7 @@ export const pipelineSlice = createSlice({
                 return step;
             });
         },
-        setStepControlsVisible: (state: { pipeline: { steps: any; }; }, action: PayloadAction<{ stepId: string }>) => {
+        setBlockControlsVisible: (state: { pipeline: { steps: any; }; }, action: PayloadAction<{ stepId: string }>) => {
             state.pipeline.steps = state.pipeline.steps.map((step: { id: string, controlsVisible: any; }) => {
                 if (step.id === action.payload.stepId) {
                     step.controlsVisible = action.payload;
@@ -112,7 +126,7 @@ export const pipelineSlice = createSlice({
                 return step;
             });
         },
-        setStepControlsExpanded: (state: { pipeline: { steps: any; }; }, action: PayloadAction<{ stepId: string }>) => {
+        setBlockControlsExpanded: (state: { pipeline: { steps: any; }; }, action: PayloadAction<{ stepId: string }>) => {
             state.pipeline.steps = state.pipeline.steps.map((step: { id: string, controlsExpanded: any; }) => {
                 if (step.id === action.payload.stepId) {
                     step.controlsExpanded = action.payload;
@@ -120,23 +134,11 @@ export const pipelineSlice = createSlice({
                 return step;
             });
         },
-        addStep: (state: { pipeline: { steps: any; }; }, action: PayloadAction<{ step: IPipelineState }>) => {
-            state.pipeline.steps = state.pipeline.steps.map((step: { active: boolean; }) => {
-                if (step.active) {
-                    step.active = false;
-                }
-                return step;
-            });
-            state.pipeline.steps.push(action.payload.step);
-        },
-        changeActiveStep: (state: { pipeline: { steps: any; }; }, action: PayloadAction<{ stepId: string }>) => {
-            state.pipeline.steps = state.pipeline.steps.map((step: { id: string; active: boolean; }) => {
-                step.active = step.id === action.payload.stepId;
-                return step;
-            });
-        },
-        setActiveStepId(state, action: PayloadAction<string>) {
+        setActiveBlockId(state, action: PayloadAction<string>) {
             state.activeBlockId = action.payload;
+        },
+        removeBlock(state, action: PayloadAction<string>) {
+            state.blocks = state.blocks.filter(block => block.id !== action.payload);
         }
     },
     extraReducers: builder => {
@@ -152,32 +154,24 @@ export const pipelineSlice = createSlice({
         builder.addCase(fetchFullBlock.fulfilled, (state, action) => {
             state.blocks.push(action.payload);
         });
+        builder.addCase(putBlockToPipeline.fulfilled, (state, action) => {
+            state.pipelineModel = action.payload;
+        });
     }
 })
 
 export const {
-    setStepHistoryVisible,
-    setStepHistoryExpanded,
-    setStepControlsVisible,
-    setStepControlsExpanded,
-    addStep,
-    changeActiveStep,
-    setActiveStepId
+    setBlockHistoryVisible,
+    setBlockHistoryExpanded,
+    setBlockControlsVisible,
+    setBlockControlsExpanded,
+    setActiveBlockId,
+    removeBlock
 } = pipelineSlice.actions;
 
 export default pipelineSlice.reducer;
 
 export const getPipeline = (state: RootState) => state.pipeline.pipeline;
-
-export const getLastPipelineStep = createSelector(
-    getPipeline,
-    (pipeline) => pipeline.steps[pipeline.steps.length - 1]
-);
-
-export const getActivePipelineStep = createSelector(
-    getPipeline,
-    (pipeline) => pipeline.steps.find(step => step.active)
-);
 
 export const getBlocks = (state: RootState) => state.pipeline.blocks;
 

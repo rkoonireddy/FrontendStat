@@ -6,7 +6,7 @@ import {useNavigate} from "react-router-dom";
 import {StepsSection} from "../sections/StepsSection";
 import {VizSection} from "../sections/VizSection";
 import {useDispatch} from "react-redux";
-import {addStep, createNewBlock, createNewPipeline, getActiveBlock, getPipelineModel} from "../../redux/pipelineSlice";
+import {createNewBlock, createNewPipeline, getActiveBlock, getPipelineModel} from "../../redux/pipelineSlice";
 import {AppDispatch} from "../../store";
 import {useAppSelector} from "../../hooks";
 import {useEffect, useState} from "react";

@@ -7,7 +7,7 @@ import {PipelineHistorySection} from "./PipelineHistorySection";
 import {LineChart} from "../charts/LineChart";
 import CSVViewer from "../charts/CSVViewer";
 import {useAppSelector} from "../../hooks";
-import {getActivePipelineStep, getPipeline} from "../../redux/pipelineSlice";
+import {getActiveBlock, getPipeline} from "../../redux/pipelineSlice";
 
 
 const StyledVizSectionContainer = styled.div`
@@ -49,21 +49,22 @@ const StyledShowHideControls = styled.div<{ $marginTop?: string }>`
 
 
 export function VizSection() {
-    const activeStep = useAppSelector(getActivePipelineStep);
+    const activeBlock = useAppSelector(getActiveBlock);
 
-    const [historyVisible, setHistoryVisible] = useState<boolean>(false);
-    const [historyExpanded, setHistoryExpanded] = useState<boolean>(false);
-    const [controlsVisible, setControlsVisible] = useState<boolean>(false);
-    const [controlsExpanded, setControlsExpanded] = useState<boolean>(false);
+    const [historyVisible, setHistoryVisible] = useState<boolean>(true);
+    const [historyExpanded, setHistoryExpanded] = useState<boolean>(true);
+    const [controlsVisible, setControlsVisible] = useState<boolean>(true);
+    const [controlsExpanded, setControlsExpanded] = useState<boolean>(true);
 
     useEffect(() => {
-        if (activeStep !== undefined) {
-            setHistoryVisible(activeStep.historyVisible);
-            setHistoryExpanded(activeStep.historyExpanded);
-            setControlsVisible(activeStep.controlsVisible);
-            setControlsExpanded(activeStep.controlsExpanded);
+        if (activeBlock !== undefined) {
+            // TODO: when block model contains these values set them
+            // setHistoryVisible(activeBlock.historyVisible);
+            // setHistoryExpanded(activeBlock.historyExpanded);
+            // setControlsVisible(activeBlock.controlsVisible);
+            // setControlsExpanded(activeBlock.controlsExpanded);
         }
-    }, [activeStep]);
+    }, [activeBlock]);
 
     return (
         <StyledVizSectionContainer id={"viz-section"}>
@@ -85,7 +86,7 @@ export function VizSection() {
             )}
 
             <StyledChartContainer $controlsVisible={controlsVisible}>
-                {activeStep && activeStep.type === "CSV" ? <CSVViewer/> :
+                {activeBlock && activeBlock.type === "CSV" ? <CSVViewer/> :
                     <LineChart/>}
             </StyledChartContainer>
 

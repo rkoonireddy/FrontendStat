@@ -1,4 +1,5 @@
 import {BlockModel, BlockTypeModel, CreateBlockResponse} from "../types/responseType";
+import {Pipeline, PipelineModel} from "../types/dataType";
 
 const baseurl = process.env.REACT_APP_API_BASEURL;
 
@@ -76,4 +77,21 @@ export async function getBlockTypes(): Promise<BlockTypeModel[]> {
         r.processor.map((p: BlockTypeModel) => blockTypes.push(p));
         return blockTypes;
     }
+}
+
+
+export async function addBlockToPipeline({blockId, pipelineId}: {blockId: string, pipelineId: string}): Promise<PipelineModel> {
+    const response = await fetch(baseurl + `pipeline/block/`,
+        {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({"block_id": blockId, "pipeline_id": pipelineId})
+        });
+    if (!response.ok) {
+        const err = await response.text();
+        throw new Error(err);
+    }
+    return response.json();
 }
