@@ -1,4 +1,4 @@
-import {Pipeline, PipelineModel} from "../types/dataType";
+import {PipelineModel} from "../types/dataType";
 import {createAsyncThunk, createSelector, createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {RootState} from "../store";
 import {BlockModel, CreateBlockResponse} from "../types/responseType";
@@ -8,41 +8,20 @@ import {createNodesFromBlocks} from "../util/util";
 
 
 interface IPipelineState {
-    pipeline: Pipeline,
-    pipelineModel: null | PipelineModel
+    pipelineModel: PipelineModel
     blocks: BlockModel[]
     activeBlockId: string | null
 }
 
+const initialPipelineModel: PipelineModel = {
+    block_dict: {},
+    edge_dict: {},
+    id: '',
+    type: ''
+}
+
 const initialState: IPipelineState = {
-    pipeline: {
-        id: "pipeline1",
-        steps: [
-            {
-                id: "step1",
-                name: "Raw Data",
-                type: "CSV",
-                historyVisible: false,
-                historyExpanded: false,
-                controlsVisible: false,
-                controlsExpanded: false,
-                controls: ["Filter"],
-                active: true
-            },
-            {
-                id: "step2",
-                name: "Visualization",
-                type: "Line Chart",
-                historyVisible: true,
-                historyExpanded: false,
-                controlsVisible: true,
-                controlsExpanded: true,
-                controls: ["Slider, Know"],
-                active: false
-            }
-        ]
-    },
-    pipelineModel: null,
+    pipelineModel: initialPipelineModel,
     blocks: [],
     activeBlockId: null
 }
@@ -64,7 +43,7 @@ export const createNewBlock = createAsyncThunk<CreateBlockResponse, { blockType:
         try {
             const response = await createBlock({ blockType, blockName });
             const state = thunkAPI.getState() as RootState;
-            const pipeline = state.pipeline.pipeline;
+            const pipeline = state.pipeline.pipelineModel;
             thunkAPI.dispatch(fetchFullBlock(response.block_id));
             thunkAPI.dispatch(putBlockToPipeline({ blockId: response.block_id, pipelineId: pipeline.id }));
             return response;
@@ -102,38 +81,38 @@ export const pipelineSlice = createSlice({
     name: 'pipeline',
     initialState,
     reducers: {
-        setBlockHistoryVisible: (state: { pipeline: { steps: any; }; }, action: PayloadAction<{ stepId: string }>) => {
-            state.pipeline.steps = state.pipeline.steps.map((step: { id: string, historyVisible: any; }) => {
-                if (step.id === action.payload.stepId) {
-                    step.historyVisible = action.payload;
-                }
-                return step;
-            });
-        },
-        setBlockHistoryExpanded: (state: { pipeline: { steps: any; }; }, action: PayloadAction<{ stepId: string }>) => {
-            state.pipeline.steps = state.pipeline.steps.map((step: { id: string, historyExpanded: any; }) => {
-                if (step.id === action.payload.stepId) {
-                    step.historyExpanded = action.payload;
-                }
-                return step;
-            });
-        },
-        setBlockControlsVisible: (state: { pipeline: { steps: any; }; }, action: PayloadAction<{ stepId: string }>) => {
-            state.pipeline.steps = state.pipeline.steps.map((step: { id: string, controlsVisible: any; }) => {
-                if (step.id === action.payload.stepId) {
-                    step.controlsVisible = action.payload;
-                }
-                return step;
-            });
-        },
-        setBlockControlsExpanded: (state: { pipeline: { steps: any; }; }, action: PayloadAction<{ stepId: string }>) => {
-            state.pipeline.steps = state.pipeline.steps.map((step: { id: string, controlsExpanded: any; }) => {
-                if (step.id === action.payload.stepId) {
-                    step.controlsExpanded = action.payload;
-                }
-                return step;
-            });
-        },
+        // setBlockHistoryVisible: (state: { pipeline: { steps: any; }; }, action: PayloadAction<{ stepId: string }>) => {
+        //     state.pipeline.steps = state.pipeline.steps.map((step: { id: string, historyVisible: any; }) => {
+        //         if (step.id === action.payload.stepId) {
+        //             step.historyVisible = action.payload;
+        //         }
+        //         return step;
+        //     });
+        // },
+        // setBlockHistoryExpanded: (state: { pipeline: { steps: any; }; }, action: PayloadAction<{ stepId: string }>) => {
+        //     state.pipeline.steps = state.pipeline.steps.map((step: { id: string, historyExpanded: any; }) => {
+        //         if (step.id === action.payload.stepId) {
+        //             step.historyExpanded = action.payload;
+        //         }
+        //         return step;
+        //     });
+        // },
+        // setBlockControlsVisible: (state: { pipeline: { steps: any; }; }, action: PayloadAction<{ stepId: string }>) => {
+        //     state.pipeline.steps = state.pipeline.steps.map((step: { id: string, controlsVisible: any; }) => {
+        //         if (step.id === action.payload.stepId) {
+        //             step.controlsVisible = action.payload;
+        //         }
+        //         return step;
+        //     });
+        // },
+        // setBlockControlsExpanded: (state: { pipeline: { steps: any; }; }, action: PayloadAction<{ stepId: string }>) => {
+        //     state.pipeline.steps = state.pipeline.steps.map((step: { id: string, controlsExpanded: any; }) => {
+        //         if (step.id === action.payload.stepId) {
+        //             step.controlsExpanded = action.payload;
+        //         }
+        //         return step;
+        //     });
+        // },
         setActiveBlockId(state, action: PayloadAction<string>) {
             state.activeBlockId = action.payload;
         },
@@ -152,7 +131,11 @@ export const pipelineSlice = createSlice({
             state.activeBlockId = action.payload.block_id;
         });
         builder.addCase(fetchFullBlock.fulfilled, (state, action) => {
-            state.blocks.push(action.payload);
+            if (state.blocks.find(block => block.id === action.payload.id)) {
+                state.blocks = state.blocks.map(block => block.id === action.payload.id ? action.payload : block);
+            } else {
+                state.blocks.push(action.payload);
+            }
         });
         builder.addCase(putBlockToPipeline.fulfilled, (state, action) => {
             state.pipelineModel = action.payload;
@@ -161,17 +144,17 @@ export const pipelineSlice = createSlice({
 })
 
 export const {
-    setBlockHistoryVisible,
-    setBlockHistoryExpanded,
-    setBlockControlsVisible,
-    setBlockControlsExpanded,
+    // setBlockHistoryVisible,
+    // setBlockHistoryExpanded,
+    // setBlockControlsVisible,
+    // setBlockControlsExpanded,
     setActiveBlockId,
     removeBlock
 } = pipelineSlice.actions;
 
 export default pipelineSlice.reducer;
 
-export const getPipeline = (state: RootState) => state.pipeline.pipeline;
+export const getPipeline = (state: RootState) => state.pipeline.pipelineModel;
 
 export const getBlocks = (state: RootState) => state.pipeline.blocks;
 

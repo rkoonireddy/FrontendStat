@@ -28,6 +28,7 @@ const StyledChartContainer = styled.div<{ $controlsVisible: boolean }>`
   width: calc(100% - 20px);
   height: calc(${props => props.$controlsVisible ? '65%' : '100%'} - 30px);
   border-radius: 15px;
+  flex-grow: 1;
 `;
 
 const StyledShowHideControls = styled.div<{ $marginTop?: string }>`
@@ -52,7 +53,7 @@ export function VizSection() {
     const activeBlock = useAppSelector(getActiveBlock);
 
     const [historyVisible, setHistoryVisible] = useState<boolean>(true);
-    const [historyExpanded, setHistoryExpanded] = useState<boolean>(true);
+    const [historyExpanded, setHistoryExpanded] = useState<boolean>(false);
     const [controlsVisible, setControlsVisible] = useState<boolean>(true);
     const [controlsExpanded, setControlsExpanded] = useState<boolean>(true);
 
@@ -63,6 +64,10 @@ export function VizSection() {
             // setHistoryExpanded(activeBlock.historyExpanded);
             // setControlsVisible(activeBlock.controlsVisible);
             // setControlsExpanded(activeBlock.controlsExpanded);
+            if (activeBlock.type === "CSVStringLoader") {
+                setHistoryVisible(false);
+                setHistoryExpanded(false);
+            }
         }
     }, [activeBlock]);
 
@@ -86,7 +91,7 @@ export function VizSection() {
             )}
 
             <StyledChartContainer $controlsVisible={controlsVisible}>
-                {activeBlock && activeBlock.type === "CSV" ? <CSVViewer/> :
+                {activeBlock && activeBlock.type === "CSVStringLoader" ? <CSVViewer/> :
                     <LineChart/>}
             </StyledChartContainer>
 

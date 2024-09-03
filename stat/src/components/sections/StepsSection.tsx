@@ -34,7 +34,7 @@ function Flow() {
     const dispatch = useDispatch();
     const pipeline = useAppSelector(getPipeline);
     // const initialNodes = createNodes(pipeline);
-    const initialEdges = createEdges(pipeline);
+    // const initialEdges = createEdges(pipeline);
     const blocks = useAppSelector(getBlocks);
     const initialNodes = useAppSelector(getAllNodes);
 

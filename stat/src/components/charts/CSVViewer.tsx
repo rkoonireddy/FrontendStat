@@ -1,9 +1,19 @@
-import {getData, setFilteredData} from "../../redux/dataSlice";
+import {
+    getData,
+    getFilteredDataAsCSVString,
+    getFilteredDataChanged,
+    setFilteredData,
+    setFilteredDataChanged
+} from "../../redux/dataSlice";
 import {useSelector, useDispatch} from "react-redux";
 import styled from "styled-components";
 import {useState, useEffect} from "react";
 import {FilterControl} from "../controls/FilterControl";
 import {InputSwitch} from "primereact/inputswitch";
+import {useAppDispatch, useAppSelector} from "../../hooks";
+import {updateCSVLoaderBlock} from "../../service/blockService";
+import {fetchFullBlock, getActiveBlockId} from "../../redux/pipelineSlice";
+import {convertToCSV} from "../../util/util";
 
 const StyledCSVTable = styled.table`
   width: 100%;
@@ -38,12 +48,53 @@ const StyledCheckbox = styled.input`
 `;
 
 export default function CSVViewer() {
-    const dispatch = useDispatch();
-    const rawData = useSelector(getData);
-    const data = rawData.slice(0, 25);
+    const dispatch = useAppDispatch();
+    const rawData = useAppSelector(getData);
+    const filteredDataChanged = useAppSelector(getFilteredDataChanged);
+    const filteredDataCSVString = useAppSelector(getFilteredDataAsCSVString)
+    const activeBlockId = useAppSelector(getActiveBlockId);
+    const data = rawData.slice(0, 20);
     const columns = data.length > 0 ? Object.keys(data[0]) : [];
 
     const [selectedColumns, setSelectedColumns] = useState<string[]>(columns);
+
+    // Update the csv loader block with the initial data
+    useEffect(() => {
+        if (activeBlockId) {
+            updateCSVLoaderBlock({
+                blockId: activeBlockId,
+                frequency_hz: 120,
+                csvString: convertToCSV(rawData),
+                header: true
+            }).then(r => {
+                dispatch(fetchFullBlock(activeBlockId));
+            })
+        }
+    }, [])
+
+    // Update the csv loader block with the filtered data
+    useEffect(() => {
+        if (filteredDataChanged && activeBlockId) {
+            updateCSVLoaderBlock({
+                blockId: activeBlockId,
+                frequency_hz: 120,
+                csvString: filteredDataCSVString,
+                header: true
+            }).then(r =>{
+                dispatch(fetchFullBlock(activeBlockId));
+                dispatch(setFilteredDataChanged(false));
+            })
+        }
+    }, [filteredDataChanged]);
+
+    // update filtered data if column selection changes
+    useEffect(() => {
+        const filteredData = rawData.map(row =>
+            Object.fromEntries(Object.entries(row).filter(([key]) => selectedColumns.includes(key)))
+        );
+        dispatch(setFilteredData(filteredData));
+
+    }, [selectedColumns, rawData, dispatch]);
 
     const handleColumnChange = (column: string) => {
         setSelectedColumns(prevSelectedColumns =>
@@ -53,13 +104,6 @@ export default function CSVViewer() {
         );
     };
 
-    useEffect(() => {
-        const filteredData = rawData.map(row =>
-            Object.fromEntries(Object.entries(row).filter(([key]) => selectedColumns.includes(key)))
-        );
-        dispatch(setFilteredData(filteredData));
-    }, [selectedColumns, rawData, dispatch]);
-
     return (
         <div>
             {data.length === 0 ? (
@@ -67,29 +111,29 @@ export default function CSVViewer() {
             ) : (
                 <StyledCSVTable>
                     <thead>
-                        <tr>
-                            {columns.map(col => (
-                                <StyledTableHeader key={col} $isSelected={selectedColumns.includes(col)}>
-                                    <StyledCheckbox
-                                        type="checkbox"
-                                        checked={selectedColumns.includes(col)}
-                                        onChange={() => handleColumnChange(col)}
-                                    />
-                                    {col}
-                                </StyledTableHeader>
-                            ))}
-                        </tr>
+                    <tr>
+                        {columns.map(col => (
+                            <StyledTableHeader key={col} $isSelected={selectedColumns.includes(col)}>
+                                <StyledCheckbox
+                                    type="checkbox"
+                                    checked={selectedColumns.includes(col)}
+                                    onChange={() => handleColumnChange(col)}
+                                />
+                                {col}
+                            </StyledTableHeader>
+                        ))}
+                    </tr>
                     </thead>
                     <tbody>
-                        {data.map((row, rowIndex) => (
-                            <tr key={rowIndex}>
-                                {columns.map(col => (
-                                    <StyledTableCell key={col} $isSelected={selectedColumns.includes(col)}>
-                                        {row[col]}
-                                    </StyledTableCell>
-                                ))}
-                            </tr>
-                        ))}
+                    {data.map((row, rowIndex) => (
+                        <tr key={rowIndex}>
+                            {columns.map(col => (
+                                <StyledTableCell key={col} $isSelected={selectedColumns.includes(col)}>
+                                    {row[col]}
+                                </StyledTableCell>
+                            ))}
+                        </tr>
+                    ))}
                     </tbody>
                 </StyledCSVTable>
             )}

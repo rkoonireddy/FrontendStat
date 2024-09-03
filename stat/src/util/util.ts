@@ -64,3 +64,14 @@ export function createEdges(pipeline: Pipeline): {id: string, source: string, ta
 
     return edges;
 }
+
+export function convertToCSV(data: { [key: string]: string }[]): string {
+    if (data.length === 0) return '';
+
+    const columns = Object.keys(data[0]);
+    const header = columns.join(',');
+    const rows = data.map(row =>
+        columns.map(col => row[col]).join(',')
+    );
+    return [header, ...rows].join('\n');
+}

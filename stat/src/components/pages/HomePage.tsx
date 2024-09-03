@@ -2,10 +2,10 @@ import styled from "styled-components";
 import logoNoBg from "../../assets/logo-no-bg.png";
 import {PrimaryButton} from "../buttons/PrimaryButton";
 import {useNavigate} from "react-router-dom";
-import {useDispatch} from "react-redux";
-import {useRef} from "react";
+import {ChangeEvent, useRef} from "react";
 import {rawDataExists, readData} from "../../redux/dataSlice";
-import {useAppSelector} from "../../hooks";
+import {useAppDispatch, useAppSelector} from "../../hooks";
+import {createNewBlock, createNewPipeline, getActiveBlock, getActiveBlockId} from "../../redux/pipelineSlice";
 
 
 const StyledHomeContainer = styled.div`
@@ -53,18 +53,24 @@ const StyledButtonContainer = styled.div`
 
 export default function HomePage() {
     const navigate = useNavigate();
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
     const fileInputRef = useRef<HTMLInputElement>(null);
     const dataExists = useAppSelector(rawDataExists);
+    const activeBlockId = useAppSelector(getActiveBlock);
 
-    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (file) {
             const formData = new FormData();
             formData.append('csvFile', file);
             dispatch(readData(formData) as any);
-            navigate('/main');
         }
+        // create pipeline
+        dispatch(createNewPipeline());
+        // create first block
+        dispatch(createNewBlock({blockType: 'CSVStringLoader', blockName: 'Data loader'}));
+
+        navigate('/main');
     }
 
     const handleButtonClick = () => {

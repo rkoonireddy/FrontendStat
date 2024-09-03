@@ -27,7 +27,7 @@ export function createBlock({blockType, blockName}: {
         })
 }
 
-export function blockToCSVLoader({blockId, csvString, frequency_hz, header}: {
+export function updateCSVLoaderBlock({blockId, csvString, frequency_hz, header}: {
     blockId: string,
     csvString: string,
     frequency_hz: number,

@@ -27,6 +27,16 @@ type DataCollection = {
     };
 };
 
+export type FilterModel = {
+    filter_type: string;
+    filter_description: string;
+    name: string;
+    dtype: string;
+    required: boolean;
+    label: string;
+    [key: string]: any;
+}
+
 export type BlockModel = {
     id: string;
     name: string;
@@ -41,6 +51,7 @@ export type BlockModel = {
         created_at: string;
         some_other_metadata: string;
     };
+    filters: FilterModel[];
 };
 
 export type SettableField = {
