@@ -181,15 +181,16 @@ export const getActivePipelineStep = createSelector(
 
 export const getBlocks = (state: RootState) => state.pipeline.blocks;
 
-export const getAllNodes = (state: RootState) => {
-    const blocks = getBlocks(state);
-    return createNodesFromBlocks(blocks);
-}
+export const getAllNodes = createSelector(
+    [getBlocks],
+    (blocks) => createNodesFromBlocks(blocks)
+);
 
 export const getActiveBlock = (state: RootState) => {
     const activeBlockId = state.pipeline.activeBlockId;
     return state.pipeline.blocks.find(block => block.id === activeBlockId);
-
 }
+
+export const getActiveBlockId = (state: RootState) => state.pipeline.activeBlockId;
 
 export const getPipelineModel = (state: RootState) => state.pipeline.pipelineModel;

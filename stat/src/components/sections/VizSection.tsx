@@ -75,7 +75,7 @@ export function VizSection() {
                             <DownSVG style={{width: "25px", height: "25px", color: "#ffffff"}}/>
                         </StyledShowHideControls>
                     }
-                    <PipelineHistorySection visible={historyExpanded}/>
+                    <PipelineHistorySection show={historyExpanded}/>
                     {historyExpanded &&
                         <StyledShowHideControls onClick={() => setHistoryVisible(false)}>
                             <UpSVG style={{width: "25px", height: "25px", color: "#ffffff"}}/>
@@ -96,7 +96,7 @@ export function VizSection() {
                             <DownSVG style={{width: "25px", height: "25px", color: "#ffffff"}}/>
                         </StyledShowHideControls>
                     }
-                    <ControlSection visible={controlsExpanded}/>
+                    <ControlSection show={controlsExpanded}/>
                     {!controlsExpanded &&
                         <StyledShowHideControls onClick={() => setControlsVisible(true)}>
                             <UpSVG style={{width: "25px", height: "25px", color: "#ffffff"}}/>

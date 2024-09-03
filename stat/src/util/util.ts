@@ -20,32 +20,31 @@ export function getMinMax(data: DataPoint[][]): {x: {min: number, max: number}, 
 }
 
 export function createNodes(pipeline: Pipeline) {
-    let x = -100;
+    // let x = -100;
     let y = -100;
     return pipeline.steps.map(step => {
-        x += 100;
+        // x += 100;
         y += 100;
         return {
             id: step.id,
-            data: { label: step.name },
-            position: { x: x, y: y },
-            ...(x === 0 && { type: "input" })
+            data: { label: step.name, type: step.type },
+            position: { x: 225, y: y },
+            ...(y === 0 && { type: "input" })
         };
     });
 }
 
 // blocks to nodes
 export function createNodesFromBlocks(blocks: BlockModel[]) {
-    let x = -100;
     let y = -100;
     return blocks.map((block: any) => {
-        x += 100;
         y += 100;
         return {
             id: block.id,
-            data: { label: block.name },
-            position: { x: x, y: y },
-            ...(x === 0 && { type: "input" })
+            type: "customNode",
+            data: { id: block.id, label: block.name, type: block.type },
+            position: { x: 225, y: y },
+            ...(y === 0 && { type: "customStartNode" })
         };
     });
 }

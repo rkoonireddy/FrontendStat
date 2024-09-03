@@ -15,6 +15,10 @@ import {changeActiveStep, getAllNodes, getBlocks, getPipeline} from "../../redux
 import {createEdges, createNodes, createNodesFromBlocks} from "../../util/util";
 import {NodeType} from "../../types/dataType";
 import {useDispatch} from "react-redux";
+import CustomNode from "../nodes/CustomNode";
+import CustomStartNode from "../nodes/CustomStartNode";
+
+const NodeTypes = { customNode: CustomNode, customStartNode: CustomStartNode };
 
 
 const StyledStepsContainer = styled.div`
@@ -61,14 +65,9 @@ function Flow() {
     const onNodesChange = useCallback(
         (changes: NodeChange<{
             id: string;
-            data: { label: string; };
+            data: {id: string, label: string; type: string; };
             position: { x: number; y: number; };
             type: string;
-        } | {
-            id: string;
-            data: { label: string; };
-            position: { x: number; y: number; };
-            type?: undefined;
         }>[]) => setNodes((nds) => applyNodeChanges(changes, nds)),
         [],
     );
@@ -97,6 +96,7 @@ function Flow() {
             edges={edges}
             onEdgesChange={onEdgesChange}
             onNodeClick={selectStep}
+            nodeTypes={NodeTypes}
             fitView
         >
             <Background/>

@@ -26,16 +26,16 @@ const StyledHistoryItemContainer = styled.div<{ $historyVisible: boolean }>`
 `;
 
 
-export function PipelineHistorySection({visible}: { visible: boolean }) {
+export function PipelineHistorySection({show}: { show: boolean }) {
 
     return (
-        <StyledPipelineHistorySection $historyVisible={visible}>
-            <StyledHistoryItemContainer $historyVisible={visible}/>
-            <StyledHistoryItemContainer $historyVisible={visible}/>
-            <StyledHistoryItemContainer $historyVisible={visible}/>
-            <StyledHistoryItemContainer $historyVisible={visible}/>
-            <StyledHistoryItemContainer $historyVisible={visible}/>
-            <StyledHistoryItemContainer $historyVisible={visible}/>
+        <StyledPipelineHistorySection $historyVisible={show}>
+            <StyledHistoryItemContainer $historyVisible={show}/>
+            <StyledHistoryItemContainer $historyVisible={show}/>
+            <StyledHistoryItemContainer $historyVisible={show}/>
+            <StyledHistoryItemContainer $historyVisible={show}/>
+            <StyledHistoryItemContainer $historyVisible={show}/>
+            <StyledHistoryItemContainer $historyVisible={show}/>
         </StyledPipelineHistorySection>
     )
 }
