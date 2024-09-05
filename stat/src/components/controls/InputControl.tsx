@@ -1,7 +1,8 @@
 import styled from "styled-components";
-import {StyledControl, StyledControlTitle} from "../sections/ControlSection";
+import {StyledControl} from "../sections/ControlSection";
 import {useState} from "react";
 import {PrimaryButton} from "../buttons/PrimaryButton";
+import {ControlTitle} from "./ControlTitle";
 
 const StyledInputContainer = styled.div`
   width: 100%;
@@ -12,7 +13,7 @@ const StyledInputContainer = styled.div`
   align-items: center;
 `;
 
-export const StyledInput = styled.input<{ $largeText?: boolean, $width?: string, $margin?: string}>`
+export const StyledInput = styled.input<{ $largeText?: boolean, $width?: string, $margin?: string }>`
   border-radius: 5px;
   font-size: ${props => props.$largeText ? '1.5rem' : '1.25rem'};
   border: 1px solid #727272;
@@ -37,18 +38,19 @@ export function InputControl({title, unit, columnSpan = 1, rowSpan = 1}: {
 }) {
     const [value, setValue] = useState("");
 
+
     function action() {
         console.log(value);
     }
 
     return (
         <StyledControl $columnSpan={columnSpan} $rowSpan={rowSpan}>
-            <StyledControlTitle margin={'0'}>{title}</StyledControlTitle>
+            <ControlTitle title={title} margin={'0'}/>
             <StyledInputContainer>
-            <StyledInput id={"input text"}
-                         value={value}
-                         onChange={(e) => setValue(e.target.value)}/>
-            <StyledUnit>{unit}</StyledUnit>
+                <StyledInput id={"input text"}
+                             value={value}
+                             onChange={(e) => setValue(e.target.value)}/>
+                <StyledUnit>{unit}</StyledUnit>
             </StyledInputContainer>
             <PrimaryButton text={"Confirm"} action={action} size={130}/>
         </StyledControl>

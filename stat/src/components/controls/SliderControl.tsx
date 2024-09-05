@@ -1,7 +1,8 @@
 import styled from "styled-components";
 import {useState} from "react";
 import {Slider} from "primereact/slider";
-import {StyledControl, StyledControlTitle} from "../sections/ControlSection";
+import {StyledControl} from "../sections/ControlSection";
+import {ControlTitle} from "./ControlTitle";
 
 const StyledSliderContainer = styled.div`
   position: relative;
@@ -37,7 +38,7 @@ export function VerticalSliderControl({title, min, max, step, start, columnSpan 
 
     return (
         <StyledControl $columnSpan={columnSpan} $rowSpan={rowSpan}>
-            <StyledControlTitle>{title}</StyledControlTitle>
+            <ControlTitle title={title} />
             <StyledSliderContainer>
                 <StyledSliderValue>{value}</StyledSliderValue>
                 <Slider min={min}

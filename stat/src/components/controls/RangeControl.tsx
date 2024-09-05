@@ -1,7 +1,8 @@
 import styled from "styled-components";
 import {useState} from "react";
 import {Slider} from "primereact/slider";
-import {StyledControl, StyledControlTitle} from "../sections/ControlSection";
+import {StyledControl} from "../sections/ControlSection";
+import {ControlTitle} from "./ControlTitle";
 
 const StyledRangeContainer = styled.div`
   position: relative;
@@ -37,7 +38,7 @@ export function RangeControl({title, range, columnSpan = 2, rowSpan = 1}: {
 
     return (
         <StyledControl $columnSpan={columnSpan} $rowSpan={rowSpan}>
-            <StyledControlTitle margin={'0'}>{title}</StyledControlTitle>
+            <ControlTitle title={title} margin={'0'}/>
             <StyledRangeContainer>
                 <StyledRangeValue $left={true}>{value[0]}</StyledRangeValue>
                 <Slider value={value}

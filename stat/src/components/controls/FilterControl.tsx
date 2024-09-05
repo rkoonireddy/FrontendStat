@@ -1,6 +1,7 @@
 import {useState} from "react";
 import {InputSwitch} from "primereact/inputswitch";
-import {StyledControl, StyledControlTitle} from "../sections/ControlSection";
+import {StyledControl} from "../sections/ControlSection";
+import {ControlTitle} from "./ControlTitle";
 
 export function FilterControl({title, onLabel, offLabel, value, columnSpan = 1, rowSpan = 1}: {
     title: string,
@@ -20,7 +21,7 @@ export function FilterControl({title, onLabel, offLabel, value, columnSpan = 1, 
 
     return (
         <StyledControl $columnSpan={columnSpan} $rowSpan={rowSpan}>
-            <StyledControlTitle>{title}</StyledControlTitle>
+            <ControlTitle title={title} />
             <InputSwitch id={"input switch"}
                          checked={filterValue}
                          name={label}

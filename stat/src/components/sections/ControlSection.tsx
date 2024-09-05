@@ -7,7 +7,8 @@ import {DropdownControl} from "../controls/DropdownControl";
 import {RangeControl} from "../controls/RangeControl";
 import {getActiveBlock} from "../../redux/pipelineSlice";
 import {useAppSelector} from "../../hooks";
-import {useEffect} from "react";
+import {useEffect, useState} from "react";
+import {MultiSelectControl} from "../controls/MultiSelectControl";
 
 
 const StyledControlContainer = styled.div<{ $show: boolean, $columnNumber?: number, $rowNumber?: number }>`
@@ -33,60 +34,43 @@ export const StyledControl = styled.div<{ $columnSpan: number, $rowSpan: number 
   min-height: 175px;
 `;
 
-export const StyledControlTitle = styled.div<{ margin?: string }>`
-  font-size: 1.25rem;
-  display: flex;
-  justify-content: center;
-  color: #ffffff;
-  margin-bottom: ${props => props.margin ? props.margin : 'auto'};;
-`;
-
-
 export function ControlSection({show}: { show: boolean }) {
     const activeBlock = useAppSelector(getActiveBlock);
-    const filterComponents: JSX.Element[] = [];
+    const [filterComponents, setFilterComponents] = useState<JSX.Element[]>([]);
 
     useEffect(() => {
-        if (activeBlock && Array.isArray(activeBlock.filters)) {
-            activeBlock.filters.map((filter) => {
-                switch (filter.type) {
-                    case "BooleanFilter":
-                        filterComponents.push(<FilterControl title={filter.name} onLabel={"On"} offLabel={"Off"}
-                                                             value={true}/>);
+        setFilterComponents([]);
+        if (activeBlock && activeBlock.filters && Object.keys(activeBlock.filters).length > 0) {
+            const components: JSX.Element[] = [];
+            Object.entries(activeBlock.filters).forEach(([key, filter]) => {
+                switch (filter.filter_type) {
+                    case "boolean":
+                        components.push(<FilterControl title={filter.name} onLabel={"On"} offLabel={"Off"} value={true} />);
                         break;
-                    case "InputFilter":
-                        filterComponents.push(<InputControl title={filter.name} unit={"Hz"}/>);
+                    case "input":
+                        components.push(<InputControl title={filter.name} unit={"Hz"} />);
                         break;
-                    case "SingleSelectFilter":
-                        filterComponents.push(<DropdownControl title={filter.name}
-                                                               options={filter.options.map((option: any) => {
-                                                                   return {label: option, value: option}
-                                                               })}/>);
+                    case "singleselect":
+                        components.push(<DropdownControl title={filter.name} options={filter.options.map((option: any) => {
+                            return { label: option, value: option };
+                        })} />);
                         break;
-                    case "MultiSelectFilter":
-                        filterComponents.push(<DropdownControl title={filter.name}
-                                                               options={filter.options.map((option: any) => {
-                                                                   return {label: option, value: option}
-                                                               })}/>);
+                    case "multiselect":
+                        components.push(<MultiSelectControl title={filter.name} options={filter.options.map((option: any) => {
+                            return { label: option, value: option };
+                        })} />);
                         break;
-                    case "SliderInteger":
-                        filterComponents.push(<VerticalSliderControl title={filter.name} min={filter.min} max={filter.max}
-                                                                    step={filter.step} start={filter.start}/>);
+                    case "slider":
+                        components.push(<VerticalSliderControl title={filter.name} min={filter.min} max={filter.max} step={filter.step} start={filter.start} />);
                         break;
-                    case "SliderFloat":
-                        filterComponents.push(<KnobControl title={filter.name} min={filter.min} max={filter.max}
-                                                          step={filter.step} start={filter.start}/>);
-                        break;
-                    case "RangeInteger":
-                        filterComponents.push(<RangeControl title={filter.name} range={[filter.min, filter.max]}/>);
-                        break;
-                    case "RangeFloat":
-                        filterComponents.push(<RangeControl title={filter.name} range={[filter.min, filter.max]}/>);
+                    case "range":
+                        components.push(<RangeControl title={filter.name} range={[filter.min, filter.max]} />);
                         break;
                     default:
                         break;
                 }
-            })
+            });
+            setFilterComponents(components);
         }
     }, [activeBlock]);
 

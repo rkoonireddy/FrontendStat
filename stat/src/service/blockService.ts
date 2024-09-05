@@ -71,11 +71,11 @@ export async function getBlockTypes(): Promise<BlockTypeModel[]> {
         const err = await response.text();
         throw new Error(err);
     } else {
-        const blockTypes: BlockTypeModel[] = [];
+        // const blockTypes: BlockTypeModel[] = [];
         const r = await response.json();
-        r.loader.map((l: BlockTypeModel) => blockTypes.push(l));
-        r.processor.map((p: BlockTypeModel) => blockTypes.push(p));
-        return blockTypes;
+        // r.loader.map((l: BlockTypeModel) => blockTypes.push(l));
+        // r.processor.map((p: BlockTypeModel) => blockTypes.push(p));
+        return r.processor;
     }
 }
 

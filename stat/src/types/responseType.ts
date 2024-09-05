@@ -51,7 +51,7 @@ export type BlockModel = {
         created_at: string;
         some_other_metadata: string;
     };
-    filters: FilterModel[];
+    filters: {[key: string]: FilterModel};
 };
 
 export type SettableField = {

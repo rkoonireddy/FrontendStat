@@ -2,8 +2,9 @@ import {useState} from "react";
 import {Knob} from "primereact/knob";
 import {MinusButton} from "../buttons/MinusButton";
 import {PlusButton} from "../buttons/PlusButton";
-import {StyledControl, StyledControlTitle} from "../sections/ControlSection";
+import {StyledControl} from "../sections/ControlSection";
 import styled from "styled-components";
+import {ControlTitle} from "./ControlTitle";
 
 
 const StyledButtonControls = styled.div`
@@ -43,7 +44,7 @@ export function KnobControl({title, min, max, step, start, columnSpan = 1, rowSp
 
     return (
         <StyledControl $columnSpan={columnSpan} $rowSpan={rowSpan}>
-            <StyledControlTitle>{title}</StyledControlTitle>
+            <ControlTitle title={title} />
             <Knob value={value}
                   onChange={(e) => setValue(e.value)}
                   min={min}

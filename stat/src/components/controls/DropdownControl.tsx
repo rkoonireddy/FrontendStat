@@ -1,6 +1,7 @@
 import {useState} from "react";
-import {StyledControl, StyledControlTitle} from "../sections/ControlSection";
+import {StyledControl} from "../sections/ControlSection";
 import {Dropdown} from "primereact/dropdown";
+import {ControlTitle} from "./ControlTitle";
 
 
 export function DropdownControl({title, options, placeHolder = "Select...", columnSpan = 1, rowSpan = 1}: {
@@ -16,7 +17,7 @@ export function DropdownControl({title, options, placeHolder = "Select...", colu
 
     return (
         <StyledControl $columnSpan={columnSpan} $rowSpan={rowSpan}>
-            <StyledControlTitle margin={'0'}>{title}</StyledControlTitle>
+            <ControlTitle title={title} margin={'0'}/>
             <Dropdown id={"dropdown"}
                       value={selectedOption}
                       options={options}
