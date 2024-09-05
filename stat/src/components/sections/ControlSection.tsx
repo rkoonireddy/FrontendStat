@@ -45,26 +45,26 @@ export function ControlSection({show}: { show: boolean }) {
             Object.entries(activeBlock.filters).forEach(([key, filter]) => {
                 switch (filter.filter_type) {
                     case "boolean":
-                        components.push(<FilterControl title={filter.name} onLabel={"On"} offLabel={"Off"} value={true} />);
+                        components.push(<FilterControl key={filter.name} title={filter.name} onLabel={"On"} offLabel={"Off"} value={true} />);
                         break;
                     case "input":
-                        components.push(<InputControl title={filter.name} unit={"Hz"} />);
+                        components.push(<InputControl key={filter.name} title={filter.name} unit={"Hz"} />);
                         break;
                     case "singleselect":
-                        components.push(<DropdownControl title={filter.name} options={filter.options.map((option: any) => {
+                        components.push(<DropdownControl key={filter.name} title={filter.name} options={filter.options.map((option: any) => {
                             return { label: option, value: option };
                         })} />);
                         break;
                     case "multiselect":
-                        components.push(<MultiSelectControl title={filter.name} options={filter.options.map((option: any) => {
+                        components.push(<MultiSelectControl key={filter.name} title={filter.name} options={filter.options.map((option: any) => {
                             return { label: option, value: option };
                         })} />);
                         break;
                     case "slider":
-                        components.push(<VerticalSliderControl title={filter.name} min={filter.min} max={filter.max} step={filter.step} start={filter.start} />);
+                        components.push(<VerticalSliderControl key={filter.name} title={filter.name} min={filter.min} max={filter.max} step={filter.step} start={filter.start} />);
                         break;
                     case "range":
-                        components.push(<RangeControl title={filter.name} range={[filter.min, filter.max]} />);
+                        components.push(<RangeControl key={filter.name} title={filter.name} range={[filter.min, filter.max]} />);
                         break;
                     default:
                         break;

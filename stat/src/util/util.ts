@@ -1,4 +1,4 @@
-import {DataPoint, Pipeline} from "../types/dataType";
+import {DataPoint, Pipeline, PipelineModel} from "../types/dataType";
 import {BlockModel, CreateBlockResponse} from "../types/responseType";
 
 export function getMinMax(data: DataPoint[][]): {x: {min: number, max: number}, y: {min: number, max: number}} {
@@ -34,7 +34,7 @@ export function createNodes(pipeline: Pipeline) {
     });
 }
 
-// blocks to nodes
+// blocks to customReactFlow
 export function createNodesFromBlocks(blocks: BlockModel[]) {
     let y = -100;
     return blocks.map((block: any) => {
@@ -49,19 +49,18 @@ export function createNodesFromBlocks(blocks: BlockModel[]) {
     });
 }
 
-
-export function createEdges(pipeline: Pipeline): {id: string, source: string, target: string}[] {
-    let edges : {id: string, source: string, target: string}[] = [];
-    pipeline.steps.forEach((step, index) => {
-        if(index !== 0){
+export function createEdges(pipeline: PipelineModel): {id: string, type: string, source: string, target: string}[] {
+    let edges : {id: string, type: string, source: string, target: string}[] = [];
+    Object.entries(pipeline.edge_dict).forEach(([source, targets]) => {
+        targets.forEach(target => {
             edges.push({
-                id: `${pipeline.steps[index - 1].id}-${step.id}`,
-                source: pipeline.steps[index - 1].id,
-                target: step.id
+                id: `${source}-${target}`,
+                type: 'custom-edge',
+                source: source,
+                target: target
             });
-        }
+        });
     });
-
     return edges;
 }
 

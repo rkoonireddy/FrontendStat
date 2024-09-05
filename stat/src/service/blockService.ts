@@ -16,13 +16,13 @@ export function createBlock({blockType, blockName}: {
             },
             body: JSON.stringify({"block_type": blockType, "name": blockName})
         })
-        .then(response => {
+        .then(async response => {
             if (!response.ok) {
                 return response.text().then(err => {
                     throw new Error(err);
                 });
             } else {
-                return response.json();
+                return await response.json();
             }
         })
 }
@@ -41,26 +41,26 @@ export function updateCSVLoaderBlock({blockId, csvString, frequency_hz, header}:
             },
             body: JSON.stringify({"csv_string": csvString, "freq_hz": frequency_hz, "header": header})
         })
-        .then(response => {
+        .then(async response => {
             if (!response.ok) {
                 return response.text().then(err => {
                     throw new Error(err);
                 });
             } else {
-                return response.json();
+                return await response.json();
             }
         });
 }
 
 export function getFullBlock({blockId}: { blockId: string }): Promise<BlockModel> {
     return fetch(baseurl + `block_full/${blockId}`)
-        .then(response => {
+        .then(async response => {
             if (!response.ok) {
                 return response.text().then(err => {
                     throw new Error(err);
                 });
             } else {
-                return response.json();
+                return await response.json();
             }
         });
 }
@@ -87,11 +87,12 @@ export async function addBlockToPipeline({blockId, pipelineId}: {blockId: string
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({"block_id": blockId, "pipeline_id": pipelineId})
+            body: JSON.stringify({"pipeline_id": pipelineId, "block_id": blockId})
         });
     if (!response.ok) {
         const err = await response.text();
         throw new Error(err);
     }
-    return response.json();
+    const res = await response.json();
+    return res.pipeline;
 }

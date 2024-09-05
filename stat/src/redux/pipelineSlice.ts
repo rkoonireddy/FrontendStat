@@ -4,7 +4,8 @@ import {RootState} from "../store";
 import {BlockModel, CreateBlockResponse} from "../types/responseType";
 import {createPipeline} from "../service/pipelineService";
 import {addBlockToPipeline, createBlock, getFullBlock} from "../service/blockService";
-import {createNodesFromBlocks} from "../util/util";
+import {createEdges, createNodesFromBlocks} from "../util/util";
+import {addEdgeToPipeline} from "../service/edgeService";
 
 
 interface IPipelineState {
@@ -72,6 +73,17 @@ export const putBlockToPipeline = createAsyncThunk<PipelineModel, { blockId: str
             return await addBlockToPipeline({blockId, pipelineId});
         } catch (error) {
             return thunkAPI.rejectWithValue('Failed to fetch full block');
+        }
+    }
+);
+
+export const connectTwoBlocks = createAsyncThunk<PipelineModel, { fromBlockId: string, toBlockId: string, pipelineId: string }, { rejectValue: string }>(
+    'pipeline/connectTwoBlocks',
+    async ({ fromBlockId, toBlockId, pipelineId }, thunkAPI) => {
+        try {
+            return await addEdgeToPipeline({fromBlockId, toBlockId, pipelineId});
+        } catch (error) {
+            return thunkAPI.rejectWithValue('Failed to connect two blocks');
         }
     }
 );
@@ -149,6 +161,9 @@ export const pipelineSlice = createSlice({
         builder.addCase(putBlockToPipeline.fulfilled, (state, action) => {
             state.pipelineModel = action.payload;
         });
+        builder.addCase(connectTwoBlocks.fulfilled, (state, action) => {
+            state.pipelineModel = action.payload;
+        });
     }
 })
 
@@ -172,6 +187,11 @@ export const getBlocks = (state: RootState) => state.pipeline.blocks;
 export const getAllNodes = createSelector(
     [getBlocks],
     (blocks) => createNodesFromBlocks(blocks)
+);
+
+export const getAllEdges = createSelector(
+    [getPipeline],
+    (pipeline) => createEdges(pipeline)
 );
 
 export const getActiveBlock = (state: RootState) => {

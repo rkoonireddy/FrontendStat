@@ -89,14 +89,14 @@ function FileUpload({onClose}: { onClose: (arg0: boolean) => void }) {
         setFrequency(parseInt(event.target.value));
     }
 
-    const handleUpload = () => {
+    const handleUpload = async () => {
         if (file && frequency) {
             const formData = new FormData();
             formData.append('csvFile', file);
             dispatch(resetData());
             dispatch(resetPipelineData());
             dispatch(readData(formData) as any);
-            dispatch(createNewPipeline());
+            await dispatch(createNewPipeline());
             dispatch(setFileFrequency(frequency));
             dispatch(createNewBlock({blockType: 'CSVStringLoader', blockName: 'Data loader'}));
             navigate('/main');

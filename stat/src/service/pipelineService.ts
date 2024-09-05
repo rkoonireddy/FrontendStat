@@ -7,13 +7,13 @@ export function createPipeline(): Promise<PipelineModel> {
         {
             method: "POST"
         })
-        .then(response => {
+        .then(async response => {
             if (!response.ok) {
                 return response.text().then(err => {
                     throw new Error(err);
                 });
             } else {
-                return response.json();
+                return await response.json();
             }
         });
 }

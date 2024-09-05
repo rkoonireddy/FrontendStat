@@ -27,8 +27,9 @@ export interface NodeType {
 }
 
 export interface PipelineModel {
-    block_dict: { [key: string]: string[] },
-    edge_dict: { [key: string]: string },
     id: string,
+    block_dict: { [key: string]: string[] },
+    edge_dict: { [key: string]: string[] },
+    // edge_data_dict: { [key: string]: string },
     type: string
 }
