@@ -9,17 +9,16 @@ const persistConfig = {
   storage,
 };
 
-const persistedDataReducer = persistReducer(persistConfig, dataReducer);
-const persistedPipelineReducer = persistReducer(persistConfig, pipelineReducer);
-
 const rootReducer = combineReducers({
-  data: persistedDataReducer,
-  pipeline: persistedPipelineReducer,
+  data: dataReducer,
+  pipeline: pipelineReducer,
 });
+
+const persistedReducer = persistReducer(persistConfig, rootReducer)
 
 // Configure the store with the persisted reducer
 export const store = configureStore({
-  reducer:  rootReducer,
+  reducer:  persistedReducer,
   middleware: (getDefaultMiddleware) => getDefaultMiddleware({
     serializableCheck: {
       ignoredActions: ["persist/PERSIST"],

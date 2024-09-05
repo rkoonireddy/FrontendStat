@@ -6,9 +6,15 @@ import {useNavigate} from "react-router-dom";
 import {StepsSection} from "../sections/StepsSection";
 import {VizSection} from "../sections/VizSection";
 import {useDispatch} from "react-redux";
-import {createNewBlock, createNewPipeline, getActiveBlock, getPipelineModel} from "../../redux/pipelineSlice";
+import {
+    createNewBlock,
+    createNewPipeline,
+    getActiveBlock,
+    getPipelineExists,
+    getPipelineModel
+} from "../../redux/pipelineSlice";
 import {AppDispatch} from "../../store";
-import {useAppSelector} from "../../hooks";
+import {useAppDispatch, useAppSelector} from "../../hooks";
 import {useEffect, useState} from "react";
 import {StyledInput} from "../controls/InputControl";
 import {Dropdown} from "primereact/dropdown";
@@ -47,7 +53,7 @@ const StyledCreateBlockTitle = styled.div`
 
 function MainPage() {
     const navigate = useNavigate();
-    const dispatch = useDispatch<AppDispatch>();
+    const dispatch = useAppDispatch();
     const [showCreateBlockPopup, setShowCreateBlockPopup] = useState(false);
     const pipeline = useAppSelector(getPipelineModel);
     const activeBlock = useAppSelector(getActiveBlock);
@@ -56,7 +62,6 @@ function MainPage() {
     const [blockName, setBlockName] = useState<string>()
 
     useEffect(() => {
-        dispatch(createNewPipeline());
         getBlockTypes().then((types) => {
             const bTypes = types.map((type) => ({label: type.name, value: type.name}));
             setBlockTypes(bTypes);
@@ -73,20 +78,20 @@ function MainPage() {
     return (
         <StyledMainPage>
             {showCreateBlockPopup &&
-            <Popup showPopup={setShowCreateBlockPopup}>
-                <StyledCreateBlockTitle>Create Block</StyledCreateBlockTitle>
-                <StyledInput $large={true} type="text" placeholder="Block Name"
-                             onChange={(e) => setBlockName(e.target.value)}/>
-                <Dropdown id={"typeDropdown"} placeholder="Block Type"
-                          value={blockType} options={blockTypes}
-                          style={{width: "200px"}}
-                          onChange={(e) => {
-                              console.log(e.target.value)
-                              setBlockType(e.target.value)
-                          }
-                          }/>
-                <PrimaryButton text={"Create Block"} action={addNewBlock}/>
-            </Popup>}
+                <Popup showPopup={setShowCreateBlockPopup}>
+                    <StyledCreateBlockTitle>Create Block</StyledCreateBlockTitle>
+                    <StyledInput $large={true} type="text" placeholder="Block Name"
+                                 onChange={(e) => setBlockName(e.target.value)}/>
+                    <Dropdown id={"typeDropdown"} placeholder="Block Type"
+                              value={blockType} options={blockTypes}
+                              style={{width: "200px"}}
+                              onChange={(e) => {
+                                  console.log(e.target.value)
+                                  setBlockType(e.target.value)
+                              }
+                              }/>
+                    <PrimaryButton text={"Create Block"} action={addNewBlock}/>
+                </Popup>}
             <StyledSideBar>
                 <STATIconSVG style={{width: "50px", height: "50px", margin: "10px"}} onClick={() => navigate("/")}/>
                 <PlusSVG style={{width: "50px", height: "50px", margin: "10px", fill: "#73B5B4"}}

@@ -43,6 +43,7 @@ export const createNewBlock = createAsyncThunk<CreateBlockResponse, { blockType:
     'pipeline/newBlock',
     async ({ blockType, blockName }, thunkAPI) => {
         try {
+            console.log("creating block", blockType, blockName);
             const response = await createBlock({ blockType, blockName });
             const state = thunkAPI.getState() as RootState;
             const pipeline = state.pipeline.pipelineModel;
@@ -176,3 +177,5 @@ export const getActiveBlock = (state: RootState) => {
 export const getActiveBlockId = (state: RootState) => state.pipeline.activeBlockId;
 
 export const getPipelineModel = (state: RootState) => state.pipeline.pipelineModel;
+
+export const getPipelineExists = (state: RootState) => state.pipeline.pipelineModel.id !== '';

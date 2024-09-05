@@ -7,7 +7,7 @@ import {
 } from "../../redux/dataSlice";
 import {useSelector, useDispatch} from "react-redux";
 import styled from "styled-components";
-import {useState, useEffect} from "react";
+import {useState, useEffect, useRef} from "react";
 import {FilterControl} from "../controls/FilterControl";
 import {InputSwitch} from "primereact/inputswitch";
 import {useAppDispatch, useAppSelector} from "../../hooks";
@@ -61,26 +61,30 @@ export default function CSVViewer() {
     // Update the csv loader block with the filtered data
     useEffect(() => {
         if (filteredDataChanged && activeBlockId) {
+            console.log(filteredDataChanged)
+            dispatch(setFilteredDataChanged(false));
+            console.log("updating block");
             updateCSVLoaderBlock({
                 blockId: activeBlockId,
                 frequency_hz: 120,
                 csvString: filteredDataCSVString,
                 header: true
-            }).then(r =>{
+            }).then(r => {
                 dispatch(fetchFullBlock(activeBlockId));
-                dispatch(setFilteredDataChanged(false));
-            })
+            });
         }
-    }, [filteredDataChanged]);
+    }, [filteredDataChanged, activeBlockId, filteredDataCSVString]);
 
     // update filtered data if column selection changes
     useEffect(() => {
-        const filteredData = rawData.map(row =>
-            Object.fromEntries(Object.entries(row).filter(([key]) => selectedColumns.includes(key)))
-        );
-        dispatch(setFilteredData(filteredData));
+        if (rawData.length > 0) {
+            const filteredData = rawData.map(row =>
+                Object.fromEntries(Object.entries(row).filter(([key]) => selectedColumns.includes(key)))
+            );
+            dispatch(setFilteredData(filteredData));
+        }
 
-    }, [selectedColumns, rawData, dispatch]);
+    }, [selectedColumns, rawData]);
 
     const handleColumnChange = (column: string) => {
         setSelectedColumns(prevSelectedColumns =>

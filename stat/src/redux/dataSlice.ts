@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSelector, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import {createAsyncThunk, createSelector, createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {parseCSV} from "../service/dataService";
 import {RootState} from "../store";
 import {convertToCSV} from "../util/util";
@@ -18,33 +18,43 @@ const initialState: IDataState = {
 
 export const readData = createAsyncThunk("data/readData",
     async (rawData: FormData, thunkAPI) => {
-    try {
-        const csvData = await parseCSV({formData: rawData});
-        return csvData;
-    } catch (error) {
-        return thunkAPI.rejectWithValue(error);
-    }
+        try {
+            console.log("reading data");
+            const csvData = await parseCSV({formData: rawData});
+            return csvData;
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error);
+        }
 
-});
+    });
 
 
 export const dataSlice = createSlice({
     name: 'data',
     initialState,
     reducers: {
-        setRawData: (state: { rawData: { [key: string]: string; }[]; }, action: { payload: { [key: string]: string; }[]; }) => {
+        setRawData: (state: { rawData: { [key: string]: string; }[]; }, action: {
+            payload: { [key: string]: string; }[];
+        }) => {
+            console.log("setting raw data");
             state.rawData = action.payload;
         },
-        setFilteredData: (state: { filteredData: { [key: string]: string; }[], filteredDataChanged: boolean; }, action: { payload: { [key: string]: string; }[]; }) => {
+        setFilteredData: (state: {
+            filteredData: { [key: string]: string; }[],
+            filteredDataChanged: boolean;
+        }, action: { payload: { [key: string]: string; }[]; }) => {
+            console.log("setting filtered data");
             state.filteredData = action.payload;
             state.filteredDataChanged = true;
         },
         setFilteredDataChanged: (state: { filteredDataChanged: boolean; }, action: { payload: boolean; }) => {
+            console.log("setting filtered data changed to", action.payload);
             state.filteredDataChanged = action.payload;
         }
     },
     extraReducers: builder => {
         builder.addCase(readData.fulfilled, (state, action) => {
+            console.log("read data fulfilled");
             state.rawData = action.payload;
             state.filteredData = action.payload;
             state.filteredDataChanged = true;
@@ -55,7 +65,10 @@ export const dataSlice = createSlice({
     }
 })
 
-export const { setRawData, setFilteredData, setFilteredDataChanged } = dataSlice.actions;
+export const {
+    setRawData,
+    setFilteredData,
+    setFilteredDataChanged} = dataSlice.actions;
 
 export default dataSlice.reducer;
 
