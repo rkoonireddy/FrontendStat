@@ -2,10 +2,16 @@ import styled from "styled-components";
 import logoNoBg from "../../assets/logo-no-bg.png";
 import {PrimaryButton} from "../buttons/PrimaryButton";
 import {useNavigate} from "react-router-dom";
-import {ChangeEvent, useRef} from "react";
+import {ChangeEvent, useRef, useState} from "react";
 import {rawDataExists, readData} from "../../redux/dataSlice";
 import {useAppDispatch, useAppSelector} from "../../hooks";
-import {createNewBlock, createNewPipeline, getActiveBlock, getActiveBlockId} from "../../redux/pipelineSlice";
+import {
+    createNewBlock,
+    createNewPipeline,
+    getActiveBlock,
+    getActiveBlockId,
+    setFileFrequency
+} from "../../redux/pipelineSlice";
 
 
 const StyledHomeContainer = styled.div`
@@ -50,6 +56,37 @@ const StyledDividor = styled.div`
 const StyledButtonContainer = styled.div`
   display: flex;
 `;
+
+function FileUpload({onClose}: { onClose: () => void }) {
+    const [file, setFile] = useState<File | null>(null);
+    const [frequency, setFrequency] = useState<number>(0);
+    const navigate = useNavigate();
+    const dispatch = useAppDispatch();
+
+    const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            setFile(file);
+        }
+    }
+
+    const handleFrequencyChange = (event: ChangeEvent<HTMLInputElement>) => {
+        setFrequency(parseInt(event.target.value));
+    }
+
+    const handleUpload = () => {
+        if(file && frequency) {
+            const formData = new FormData();
+            formData.append('csvFile', file);
+            dispatch(readData(formData) as any);
+            dispatch(createNewPipeline());
+            dispatch(setFileFrequency(frequency));
+            dispatch(createNewBlock({ blockType: 'CSVStringLoader', blockName: 'Data loader'}));
+            navigate('/main');
+            onClose();
+        }
+    }
+}
 
 export default function HomePage() {
     const navigate = useNavigate();

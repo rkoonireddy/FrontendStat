@@ -46,7 +46,8 @@ export const dataSlice = createSlice({
     extraReducers: builder => {
         builder.addCase(readData.fulfilled, (state, action) => {
             state.rawData = action.payload;
-            state.filteredData = [];
+            state.filteredData = action.payload;
+            state.filteredDataChanged = true;
         });
         builder.addCase(readData.rejected, (state, action) => {
             console.log(action.error.message);

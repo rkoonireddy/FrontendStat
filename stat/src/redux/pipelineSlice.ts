@@ -11,6 +11,7 @@ interface IPipelineState {
     pipelineModel: PipelineModel
     blocks: BlockModel[]
     activeBlockId: string | null
+    frequency: number
 }
 
 const initialPipelineModel: PipelineModel = {
@@ -23,7 +24,8 @@ const initialPipelineModel: PipelineModel = {
 const initialState: IPipelineState = {
     pipelineModel: initialPipelineModel,
     blocks: [],
-    activeBlockId: null
+    activeBlockId: null,
+    frequency: 60
 }
 
 export const createNewPipeline = createAsyncThunk<PipelineModel, void, { rejectValue: string }>(
@@ -37,7 +39,7 @@ export const createNewPipeline = createAsyncThunk<PipelineModel, void, { rejectV
     }
 );
 
-export const createNewBlock = createAsyncThunk<CreateBlockResponse, { blockType: string, blockName: string }, { rejectValue: string }>(
+export const createNewBlock = createAsyncThunk<CreateBlockResponse, { blockType: string; blockName: string; }, { rejectValue: string }>(
     'pipeline/newBlock',
     async ({ blockType, blockName }, thunkAPI) => {
         try {
@@ -52,7 +54,6 @@ export const createNewBlock = createAsyncThunk<CreateBlockResponse, { blockType:
         }
     }
 );
-
 export const fetchFullBlock = createAsyncThunk<BlockModel, string, { rejectValue: string }>(
     'pipeline/fetchFullBlock',
     async (blockId, thunkAPI) => {
@@ -118,6 +119,9 @@ export const pipelineSlice = createSlice({
         },
         removeBlock(state, action: PayloadAction<string>) {
             state.blocks = state.blocks.filter(block => block.id !== action.payload);
+        },
+        setFileFrequency(state, action: PayloadAction<number>) {
+            state.frequency = action.payload;
         }
     },
     extraReducers: builder => {
@@ -149,7 +153,8 @@ export const {
     // setBlockControlsVisible,
     // setBlockControlsExpanded,
     setActiveBlockId,
-    removeBlock
+    removeBlock,
+    setFileFrequency
 } = pipelineSlice.actions;
 
 export default pipelineSlice.reducer;

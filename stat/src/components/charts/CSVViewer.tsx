@@ -58,20 +58,6 @@ export default function CSVViewer() {
 
     const [selectedColumns, setSelectedColumns] = useState<string[]>(columns);
 
-    // Update the csv loader block with the initial data
-    useEffect(() => {
-        if (activeBlockId) {
-            updateCSVLoaderBlock({
-                blockId: activeBlockId,
-                frequency_hz: 120,
-                csvString: convertToCSV(rawData),
-                header: true
-            }).then(r => {
-                dispatch(fetchFullBlock(activeBlockId));
-            })
-        }
-    }, [])
-
     // Update the csv loader block with the filtered data
     useEffect(() => {
         if (filteredDataChanged && activeBlockId) {

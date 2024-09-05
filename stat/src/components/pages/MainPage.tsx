@@ -14,6 +14,7 @@ import {StyledInput} from "../controls/InputControl";
 import {Dropdown} from "primereact/dropdown";
 import {PrimaryButton} from "../buttons/PrimaryButton";
 import {getBlockTypes} from "../../service/blockService";
+import {Popup} from "../pageElements/Popup";
 
 
 const StyledMainPage = styled.div`
@@ -35,25 +36,6 @@ const StyledSideBar = styled.div`
     scale: 1.05;
     cursor: pointer;
   }
-`;
-
-const StyledCreateBlockPopup = styled.div`
-  position: absolute;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 600px;
-  height: 400px;
-  background: linear-gradient(to bottom right, #3D3D3D 0%, #000000 100%);;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  top: 0;
-  margin: auto;
-  z-index: 100;
-  border-radius: 15px;
-  box-shadow: 5px 5px 5px 0 rgba(147, 147, 147, 0.75);
-  padding: 20px;
 `;
 
 const StyledCreateBlockTitle = styled.div`
@@ -91,7 +73,7 @@ function MainPage() {
     return (
         <StyledMainPage>
             {showCreateBlockPopup &&
-            <StyledCreateBlockPopup>
+            <Popup showPopup={setShowCreateBlockPopup}>
                 <StyledCreateBlockTitle>Create Block</StyledCreateBlockTitle>
                 <StyledInput $large={true} type="text" placeholder="Block Name"
                              onChange={(e) => setBlockName(e.target.value)}/>
@@ -104,7 +86,7 @@ function MainPage() {
                           }
                           }/>
                 <PrimaryButton text={"Create Block"} action={addNewBlock}/>
-            </StyledCreateBlockPopup>}
+            </Popup>}
             <StyledSideBar>
                 <STATIconSVG style={{width: "50px", height: "50px", margin: "10px"}} onClick={() => navigate("/")}/>
                 <PlusSVG style={{width: "50px", height: "50px", margin: "10px", fill: "#73B5B4"}}
