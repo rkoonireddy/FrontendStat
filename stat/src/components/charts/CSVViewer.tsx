@@ -61,9 +61,7 @@ export default function CSVViewer() {
     // Update the csv loader block with the filtered data
     useEffect(() => {
         if (filteredDataChanged && activeBlockId) {
-            console.log(filteredDataChanged)
             dispatch(setFilteredDataChanged(false));
-            console.log("updating block");
             updateCSVLoaderBlock({
                 blockId: activeBlockId,
                 frequency_hz: 120,

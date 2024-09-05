@@ -12,18 +12,19 @@ const StyledInputContainer = styled.div`
   align-items: center;
 `;
 
-export const StyledInput = styled.input<{ $large?: boolean}>`
+export const StyledInput = styled.input<{ $largeText?: boolean, $width?: string, $margin?: string}>`
   border-radius: 5px;
-  font-size: 1.5rem;
+  font-size: ${props => props.$largeText ? '1.5rem' : '1.25rem'};
   border: 1px solid #727272;
   background-color: #2B2B2B;
   color: #ffffff;
-  max-width: ${props => props.$large? '200px' : '120px'};
+  ${props => props.$width ? `max-width: ${props.$width}` : 'max-width: 120px'};
+  ${props => props.$margin ? `margin: ${props.$margin};` : ''}
 `;
 
-const StyledUnit = styled.span`
-    font-size: 1rem;
-    color: #ffffff;
+export const StyledUnit = styled.span`
+  font-size: 1.25rem;
+  color: #ffffff;
   margin-left: 5px;
 `;
 

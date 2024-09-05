@@ -31,10 +31,17 @@ const StyledPopup = styled.div<{ $large: boolean}>`
   }
 `;
 
-export function Popup({children, showPopup, large=false}: { children: ReactNode, showPopup: (arg0: boolean) => void, large?: boolean }) {
+const StyledTitle = styled.div`
+  font-size: 2rem;
+  color: white;
+  margin: 15px auto;
+`;
+
+export function Popup({ children, title, showPopup, large=false}: { children: ReactNode, title: string, showPopup: (arg0: boolean) => void, large?: boolean }) {
     return (
         <StyledPopup $large={large}>
             <XSVG onClick={() => showPopup(false)}/>
+            <StyledTitle>{title}</StyledTitle>
             {children}
         </StyledPopup>
     )

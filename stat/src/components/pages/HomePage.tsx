@@ -2,16 +2,16 @@ import styled from "styled-components";
 import logoNoBg from "../../assets/logo-no-bg.png";
 import {PrimaryButton} from "../buttons/PrimaryButton";
 import {useNavigate} from "react-router-dom";
-import {ChangeEvent, useRef, useState} from "react";
-import {rawDataExists, readData} from "../../redux/dataSlice";
+import {ChangeEvent, useState} from "react";
+import {rawDataExists, readData, resetData} from "../../redux/dataSlice";
 import {useAppDispatch, useAppSelector} from "../../hooks";
 import {
     createNewBlock,
-    createNewPipeline,
-    getActiveBlock,
-    getActiveBlockId,
+    createNewPipeline, resetPipelineData,
     setFileFrequency
 } from "../../redux/pipelineSlice";
+import {Popup} from "../pageElements/Popup";
+import {StyledInput, StyledUnit} from "../controls/InputControl";
 
 
 const StyledHomeContainer = styled.div`
@@ -57,7 +57,22 @@ const StyledButtonContainer = styled.div`
   display: flex;
 `;
 
-function FileUpload({onClose}: { onClose: () => void }) {
+const StyledUploadFileTitle = styled.div`
+  font-size: 2rem;
+  color: white;
+  margin: 15px auto;
+`;
+
+const StyledFrequencyInputContainer = styled.div`
+  margin: auto;
+  max-width: 150px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+`;
+
+function FileUpload({onClose}: { onClose: (arg0: boolean) => void }) {
     const [file, setFile] = useState<File | null>(null);
     const [frequency, setFrequency] = useState<number>(0);
     const navigate = useNavigate();
@@ -75,44 +90,37 @@ function FileUpload({onClose}: { onClose: () => void }) {
     }
 
     const handleUpload = () => {
-        if(file && frequency) {
+        if (file && frequency) {
             const formData = new FormData();
             formData.append('csvFile', file);
+            dispatch(resetData());
+            dispatch(resetPipelineData());
             dispatch(readData(formData) as any);
             dispatch(createNewPipeline());
             dispatch(setFileFrequency(frequency));
-            dispatch(createNewBlock({ blockType: 'CSVStringLoader', blockName: 'Data loader'}));
+            dispatch(createNewBlock({blockType: 'CSVStringLoader', blockName: 'Data loader'}));
             navigate('/main');
-            onClose();
         }
     }
+
+    return (
+        <Popup title={"File upload"} showPopup={onClose}>
+            <StyledInput $width={"300px"} $margin={'20px 0 0 0'} type="file" accept=".csv" onChange={handleFileChange}/>
+            <StyledFrequencyInputContainer>
+                <StyledInput $largeText={true} type="number" value={frequency}
+                             onChange={handleFrequencyChange}/>
+                <StyledUnit>HZ</StyledUnit>
+            </StyledFrequencyInputContainer>
+            <PrimaryButton text={"Upload"} action={handleUpload} disabled={!file || !frequency}/>
+        </Popup>
+    )
 }
 
 export default function HomePage() {
     const navigate = useNavigate();
-    const dispatch = useAppDispatch();
-    const fileInputRef = useRef<HTMLInputElement>(null);
     const dataExists = useAppSelector(rawDataExists);
-    const activeBlockId = useAppSelector(getActiveBlock);
+    const [isPopupOpen, setIsPopupOpen] = useState(false);
 
-    const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (file) {
-            const formData = new FormData();
-            formData.append('csvFile', file);
-            dispatch(readData(formData) as any);
-        }
-        // create pipeline
-        dispatch(createNewPipeline());
-        // create first block
-        dispatch(createNewBlock({blockType: 'CSVStringLoader', blockName: 'Data loader'}));
-
-        navigate('/main');
-    }
-
-    const handleButtonClick = () => {
-        fileInputRef.current?.click();
-    };
 
     return (
         <StyledHomeContainer>
@@ -137,18 +145,12 @@ export default function HomePage() {
                         approaches!
                     </p>
                     <StyledButtonContainer>
-                        <PrimaryButton text={"Upload Sample"} action={handleButtonClick}/>
-                        <input
-                            type="file"
-                            ref={fileInputRef}
-                            style={{display: 'none'}}
-                            accept=".csv"
-                            onChange={handleFileChange}
-                        />
+                        <PrimaryButton text={"Upload Sample"} action={() => setIsPopupOpen(true)}/>
                         {dataExists ? <PrimaryButton text={"Resume"} action={() => navigate('/main')}/> : null}
                     </StyledButtonContainer>
                 </StyledContentContainer>
             </StyledHomeContentContainer>
+            {isPopupOpen && <FileUpload onClose={setIsPopupOpen}/>}
         </StyledHomeContainer>
     )
 }

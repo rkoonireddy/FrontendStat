@@ -43,7 +43,6 @@ export const createNewBlock = createAsyncThunk<CreateBlockResponse, { blockType:
     'pipeline/newBlock',
     async ({ blockType, blockName }, thunkAPI) => {
         try {
-            console.log("creating block", blockType, blockName);
             const response = await createBlock({ blockType, blockName });
             const state = thunkAPI.getState() as RootState;
             const pipeline = state.pipeline.pipelineModel;
@@ -59,7 +58,6 @@ export const fetchFullBlock = createAsyncThunk<BlockModel, string, { rejectValue
     'pipeline/fetchFullBlock',
     async (blockId, thunkAPI) => {
         try {
-            console.log("fetching full block", blockId);
             return await getFullBlock({blockId});
         } catch (error) {
             return thunkAPI.rejectWithValue('Failed to fetch full block');
@@ -83,6 +81,12 @@ export const pipelineSlice = createSlice({
     name: 'pipeline',
     initialState,
     reducers: {
+        resetPipelineData: (state) => {
+            state.pipelineModel = initialPipelineModel;
+            state.blocks = [];
+            state.activeBlockId = null;
+            state.frequency = 60;
+        },
         // setBlockHistoryVisible: (state: { pipeline: { steps: any; }; }, action: PayloadAction<{ stepId: string }>) => {
         //     state.pipeline.steps = state.pipeline.steps.map((step: { id: string, historyVisible: any; }) => {
         //         if (step.id === action.payload.stepId) {
@@ -149,6 +153,7 @@ export const pipelineSlice = createSlice({
 })
 
 export const {
+    resetPipelineData,
     // setBlockHistoryVisible,
     // setBlockHistoryExpanded,
     // setBlockControlsVisible,
