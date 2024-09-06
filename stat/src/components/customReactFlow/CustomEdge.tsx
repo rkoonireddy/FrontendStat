@@ -43,7 +43,6 @@ export default function CustomEdge({id, sourceX, sourceY, targetX, targetY}: Edg
     return (
         <>
                 <StyledBaseEdge id={id} path={edgePath}/>
-
                     <EdgeLabelRenderer>
                         <StyledDeleteIconContainer
                             $transform={`translate(-5%, -50%) translate(${labelX}px, ${labelY}px)`} onClick={() => {

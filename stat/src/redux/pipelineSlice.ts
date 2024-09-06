@@ -2,8 +2,8 @@ import {PipelineModel} from "../types/dataType";
 import {createAsyncThunk, createSelector, createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {RootState} from "../store";
 import {BlockModel, CreateBlockResponse} from "../types/responseType";
-import {createPipeline} from "../service/pipelineService";
-import {addBlockToPipeline, createBlock, getFullBlock} from "../service/blockService";
+import {createPipeline, fetchPipeline} from "../service/pipelineService";
+import {addBlockToPipeline, createBlock, deleteBlock, getFullBlock} from "../service/blockService";
 import {createEdges, createNodesFromBlocks} from "../util/util";
 import {addEdgeToPipeline} from "../service/edgeService";
 
@@ -40,15 +40,17 @@ export const createNewPipeline = createAsyncThunk<PipelineModel, void, { rejectV
     }
 );
 
-export const createNewBlock = createAsyncThunk<CreateBlockResponse, { blockType: string; blockName: string; }, { rejectValue: string }>(
+export const createNewBlock = createAsyncThunk<CreateBlockResponse, { blockType: string; blockName: string; }, {
+    rejectValue: string
+}>(
     'pipeline/newBlock',
-    async ({ blockType, blockName }, thunkAPI) => {
+    async ({blockType, blockName}, thunkAPI) => {
         try {
-            const response = await createBlock({ blockType, blockName });
+            const response = await createBlock({blockType, blockName});
             const state = thunkAPI.getState() as RootState;
             const pipeline = state.pipeline.pipelineModel;
             thunkAPI.dispatch(fetchFullBlock(response.block_id));
-            thunkAPI.dispatch(putBlockToPipeline({ blockId: response.block_id, pipelineId: pipeline.id }));
+            thunkAPI.dispatch(putBlockToPipeline({blockId: response.block_id, pipelineId: pipeline.id}));
             return response;
         } catch (error) {
             return thunkAPI.rejectWithValue('Failed to create block');
@@ -66,9 +68,11 @@ export const fetchFullBlock = createAsyncThunk<BlockModel, string, { rejectValue
     }
 );
 
-export const putBlockToPipeline = createAsyncThunk<PipelineModel, { blockId: string, pipelineId: string }, { rejectValue: string }>(
+export const putBlockToPipeline = createAsyncThunk<PipelineModel, { blockId: string, pipelineId: string }, {
+    rejectValue: string
+}>(
     'pipeline/putBlockToPipeline',
-    async ({ blockId, pipelineId }, thunkAPI) => {
+    async ({blockId, pipelineId}, thunkAPI) => {
         try {
             return await addBlockToPipeline({blockId, pipelineId});
         } catch (error) {
@@ -77,13 +81,46 @@ export const putBlockToPipeline = createAsyncThunk<PipelineModel, { blockId: str
     }
 );
 
-export const connectTwoBlocks = createAsyncThunk<PipelineModel, { fromBlockId: string, toBlockId: string, pipelineId: string }, { rejectValue: string }>(
+export const connectTwoBlocks = createAsyncThunk<PipelineModel, {
+    fromBlockId: string,
+    toBlockId: string,
+    pipelineId: string
+}, { rejectValue: string }>(
     'pipeline/connectTwoBlocks',
-    async ({ fromBlockId, toBlockId, pipelineId }, thunkAPI) => {
+    async ({fromBlockId, toBlockId, pipelineId}, thunkAPI) => {
         try {
             return await addEdgeToPipeline({fromBlockId, toBlockId, pipelineId});
         } catch (error) {
             return thunkAPI.rejectWithValue('Failed to connect two blocks');
+        }
+    }
+);
+
+export const updatePipeline = createAsyncThunk<PipelineModel, { pipelineId: string }, { rejectValue: string }>(
+    'pipeline/updatePipeline',
+    async ({pipelineId}, thunkAPI) => {
+        try {
+            const pipeline = await fetchPipeline({pipelineId});
+            const newBlockIds = Object.keys(pipeline.block_dict);
+            const newBlocks = await Promise.all(newBlockIds.map(blockId => thunkAPI.dispatch(fetchFullBlock(blockId)).unwrap()));
+            thunkAPI.dispatch(setBlocks(newBlocks));
+            return pipeline;
+        } catch (error) {
+            return thunkAPI.rejectWithValue('Failed to update pipeline');
+        }
+    }
+);
+
+export const deleteBlockFromPipeline = createAsyncThunk<void, { blockId: string, pipelineId: string }, {
+    rejectValue: string
+}>(
+    'pipeline/deleteBlockFromPipeline',
+    async ({blockId, pipelineId}, thunkAPI) => {
+        try {
+            await deleteBlock({blockId, pipelineId});
+            thunkAPI.dispatch(updatePipeline({pipelineId}));
+        } catch (error) {
+            return thunkAPI.rejectWithValue('Failed to fetch full block');
         }
     }
 );
@@ -98,6 +135,9 @@ export const pipelineSlice = createSlice({
             state.blocks = [];
             state.activeBlockId = null;
             state.frequency = 60;
+        },
+        setBlocks: (state, action: PayloadAction<BlockModel[]>) => {
+            state.blocks = action.payload;
         },
         // setBlockHistoryVisible: (state: { pipeline: { steps: any; }; }, action: PayloadAction<{ stepId: string }>) => {
         //     state.pipeline.steps = state.pipeline.steps.map((step: { id: string, historyVisible: any; }) => {
@@ -148,6 +188,9 @@ export const pipelineSlice = createSlice({
         builder.addCase(createNewPipeline.rejected, (state, action) => {
             console.log(action.error.message);
         });
+        builder.addCase(updatePipeline.fulfilled, (state, action) => {
+            state.pipelineModel = action.payload;
+        });
         builder.addCase(createNewBlock.fulfilled, (state, action) => {
             state.activeBlockId = action.payload.block_id;
         });
@@ -169,6 +212,7 @@ export const pipelineSlice = createSlice({
 
 export const {
     resetPipelineData,
+    setBlocks,
     // setBlockHistoryVisible,
     // setBlockHistoryExpanded,
     // setBlockControlsVisible,

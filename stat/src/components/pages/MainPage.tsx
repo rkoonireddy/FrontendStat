@@ -11,7 +11,7 @@ import {
     createNewPipeline,
     getActiveBlock,
     getPipelineExists,
-    getPipelineModel
+    getPipelineModel, updatePipeline
 } from "../../redux/pipelineSlice";
 import {AppDispatch} from "../../store";
 import {useAppDispatch, useAppSelector} from "../../hooks";
@@ -65,6 +65,9 @@ function MainPage() {
         getBlockTypes().then((types) => {
             const bTypes = types.map((type) => ({label: type.name, value: type.name}));
             setBlockTypes(bTypes);
+            if(pipeline.id !== ""){
+                dispatch(updatePipeline({pipelineId: pipeline.id}));
+            }
         });
     }, []);
 

@@ -2,8 +2,14 @@ import React from 'react';
 import styled from 'styled-components';
 import {Handle, Position} from '@xyflow/react';
 import {CustomNodeProps} from "../../types/nodeTypes";
-import {useAppSelector} from "../../hooks";
-import {getActiveBlockId, removeBlock, setActiveBlockId} from "../../redux/pipelineSlice";
+import {useAppDispatch, useAppSelector} from "../../hooks";
+import {
+    deleteBlockFromPipeline,
+    getActiveBlockId,
+    getPipelineModel,
+    removeBlock,
+    setActiveBlockId
+} from "../../redux/pipelineSlice";
 import {useDispatch} from "react-redux";
 import {ReactComponent as TrashSVG} from "../../assets/trash.svg";
 
@@ -45,12 +51,16 @@ export const StyledDeleteButton = styled.div`
 `;
 
 const CustomNode = ({data}: CustomNodeProps) => {
-    const dispatch = useDispatch();
+    const pipeline = useAppSelector(getPipelineModel);
+    const dispatch = useAppDispatch();
     const activeNodeId = useAppSelector(getActiveBlockId);
     return (
         <StyledNodeContainer $active={data.id === activeNodeId} onClick={() => dispatch(setActiveBlockId(data.id))}>
             <Handle type="target" position={Position.Top}/>
-            <StyledDeleteButton onClick={(e) => {dispatch(removeBlock(data.id)); e.stopPropagation();}}>
+            <StyledDeleteButton onClick={(e) => {
+                dispatch(deleteBlockFromPipeline({pipelineId: pipeline.id, blockId: data.id}));
+                e.stopPropagation();
+            }}>
                 <TrashSVG style={{width: "10px", height: "10px", color: "#ff0000"}}/>
             </StyledDeleteButton>
             <StyledNodeLabel $active={data.id === activeNodeId}>{data.label}</StyledNodeLabel>
