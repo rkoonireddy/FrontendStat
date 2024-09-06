@@ -96,3 +96,16 @@ export async function addBlockToPipeline({blockId, pipelineId}: {blockId: string
     const res = await response.json();
     return res.pipeline;
 }
+
+export async function deleteBlock({blockId, pipelineId}: {blockId: string, pipelineId: string}): Promise<PipelineModel> {
+    const response = await fetch(baseurl + `pipeline/${pipelineId}/block/${blockId}`,
+        {
+            method: "DELETE",
+        });
+    if (!response.ok) {
+        const err = await response.text();
+        throw new Error(err);
+    }
+    const res = await response.json();
+    return res.pipeline;
+}

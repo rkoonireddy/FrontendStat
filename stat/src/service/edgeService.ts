@@ -25,3 +25,17 @@ export function addEdgeToPipeline({fromBlockId, toBlockId, pipelineId}: {
             }
         });
 }
+
+export function deleteEdge({edgeId, pipelineId}: { edgeId: string, pipelineId: string }): Promise<void> {
+    return fetch(baseurl + `pipeline/${pipelineId}/edge/${edgeId}`,
+        {
+            method: "DELETE",
+        })
+        .then(async response => {
+            if (!response.ok) {
+                return response.text().then(err => {
+                    throw new Error(err);
+                });
+            }
+        });
+}

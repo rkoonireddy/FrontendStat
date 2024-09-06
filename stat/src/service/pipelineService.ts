@@ -17,3 +17,18 @@ export function createPipeline(): Promise<PipelineModel> {
             }
         });
 }
+
+
+export function deletePipeline({pipelineId}: {pipelineId: string}): Promise<void> {
+    return fetch(baseurl + "pipeline/" + pipelineId,
+        {
+            method: "DELETE"
+        })
+        .then(async response => {
+            if (!response.ok) {
+                return response.text().then(err => {
+                    throw new Error(err);
+                });
+            }
+        });
+}
