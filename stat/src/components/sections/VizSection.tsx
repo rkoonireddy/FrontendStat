@@ -6,8 +6,12 @@ import {ReactComponent as UpSVG} from "../../assets/caret-up-fill.svg";
 import {PipelineHistorySection} from "./PipelineHistorySection";
 import {LineChart} from "../charts/LineChart";
 import CSVViewer from "../charts/CSVViewer";
-import {useAppSelector} from "../../hooks";
-import {getActiveBlock, getPipeline} from "../../redux/pipelineSlice";
+import {useAppDispatch, useAppSelector} from "../../hooks";
+import {
+    getActiveBlock,
+    setBlockControlsExpanded,
+    setBlockHistoryExpanded
+} from "../../redux/pipelineSlice";
 
 
 const StyledVizSectionContainer = styled.div`
@@ -51,23 +55,19 @@ const StyledShowHideControls = styled.div<{ $marginTop?: string }>`
 
 export function VizSection() {
     const activeBlock = useAppSelector(getActiveBlock);
+    const dispatch = useAppDispatch();
 
-    const [historyVisible, setHistoryVisible] = useState<boolean>(true);
+    const [historyVisible, setHistoryVisible] = useState<boolean>(false);
     const [historyExpanded, setHistoryExpanded] = useState<boolean>(false);
-    const [controlsVisible, setControlsVisible] = useState<boolean>(true);
-    const [controlsExpanded, setControlsExpanded] = useState<boolean>(true);
+    const [controlsVisible, setControlsVisible] = useState<boolean>(false);
+    const [controlsExpanded, setControlsExpanded] = useState<boolean>(false);
 
     useEffect(() => {
         if (activeBlock !== undefined) {
-            // TODO: when block model contains these values set them
-            // setHistoryVisible(activeBlock.historyVisible);
-            // setHistoryExpanded(activeBlock.historyExpanded);
-            // setControlsVisible(activeBlock.controlsVisible);
-            // setControlsExpanded(activeBlock.controlsExpanded);
-            if (activeBlock.type === "CSVStringLoader") {
-                setHistoryVisible(false);
-                setHistoryExpanded(false);
-            }
+            setHistoryVisible(activeBlock.config_params.historyVisible);
+            setHistoryExpanded(activeBlock.config_params.historyExpanded);
+            setControlsVisible(activeBlock.config_params.controlsVisible);
+            setControlsExpanded(activeBlock.config_params.controlsExpanded);
         }
     }, [activeBlock]);
 
@@ -77,13 +77,13 @@ export function VizSection() {
             {historyVisible && (
                 <>
                     {!historyExpanded &&
-                        <StyledShowHideControls $marginTop={"5%"} onClick={() => setHistoryVisible(true)}>
+                        <StyledShowHideControls $marginTop={"5%"} onClick={() => dispatch(setBlockHistoryExpanded(true))}>
                             <DownSVG style={{width: "25px", height: "25px", color: "#ffffff"}}/>
                         </StyledShowHideControls>
                     }
                     <PipelineHistorySection show={historyExpanded}/>
                     {historyExpanded &&
-                        <StyledShowHideControls onClick={() => setHistoryVisible(false)}>
+                        <StyledShowHideControls onClick={() => dispatch(setBlockHistoryExpanded(false))}>
                             <UpSVG style={{width: "25px", height: "25px", color: "#ffffff"}}/>
                         </StyledShowHideControls>
                     }
@@ -98,13 +98,13 @@ export function VizSection() {
             {controlsVisible && (
                 <>
                     {controlsExpanded &&
-                        <StyledShowHideControls onClick={() => setControlsVisible(false)}>
+                        <StyledShowHideControls onClick={() => dispatch(setBlockControlsExpanded(false))}>
                             <DownSVG style={{width: "25px", height: "25px", color: "#ffffff"}}/>
                         </StyledShowHideControls>
                     }
                     <ControlSection show={controlsExpanded}/>
                     {!controlsExpanded &&
-                        <StyledShowHideControls onClick={() => setControlsVisible(true)}>
+                        <StyledShowHideControls onClick={() => dispatch(setBlockControlsExpanded(true))}>
                             <UpSVG style={{width: "25px", height: "25px", color: "#ffffff"}}/>
                         </StyledShowHideControls>
                     }

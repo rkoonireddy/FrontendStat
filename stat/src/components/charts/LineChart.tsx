@@ -1,16 +1,23 @@
 import {DataPoint} from "../../types/dataType";
-import {getMinMax} from "../../util/util";
+import {convertToDataPoints, getMinMax} from "../../util/util";
 import {useEffect, useRef, useState} from "react";
 import {axisBottom, axisLeft, curveCardinal, line, scaleLinear, select} from "d3";
-import {getData} from "../../service/dataService";
+import {useAppDispatch, useAppSelector} from "../../hooks";
+import {getActiveBlock} from "../../redux/pipelineSlice";
 
 export function LineChart() {
-
+    const dispatch = useAppDispatch();
+    const activeBlock = useAppSelector(getActiveBlock);
     const [chartData, setChartData] = useState<DataPoint[][]>([]);
 
-    // useEffect(() => {
-    //     getData().then(data => setChartData(data));
-    // }, []);
+    useEffect(() => {
+        if (activeBlock !== undefined) {
+            if (activeBlock?.output?.Dataframe?.data !== undefined) {
+                const data = convertToDataPoints(activeBlock.output.Dataframe.data);
+                setChartData(data);
+            }
+        }
+    }, [activeBlock]);
 
     const minMax = getMinMax(chartData);
 
@@ -25,8 +32,8 @@ export function LineChart() {
 
         const resizeObserver = new ResizeObserver((entries) => {
             if (!entries || entries.length === 0) return;
-            const { width, height } = entries[0].contentRect;
-            setDimensions({ width, height });
+            const {width, height} = entries[0].contentRect;
+            setDimensions({width, height});
         });
 
         resizeObserver.observe(svgElement);
@@ -43,7 +50,7 @@ export function LineChart() {
         if (!svgRef.current || dimensions.width === 0 || dimensions.height === 0) return;
         const svg = select(svgRef.current);
 
-        const margin = { top: 20, right: 30, bottom: 40, left: 30 };
+        const margin = {top: 20, right: 30, bottom: 40, left: 30};
         const width = dimensions.width - margin.left - margin.right;
         const height = dimensions.height - margin.top - margin.bottom;
 
@@ -95,9 +102,13 @@ export function LineChart() {
     }, [chartData, dimensions]);
 
     return (
+    activeBlock?.output?.Dataframe?.data !== undefined ? (
         <svg ref={svgRef} width="100%" height="100%">
-            <g className="x-axis" />
-            <g className="y-axis" />
+            <g className="x-axis"/>
+            <g className="y-axis"/>
         </svg>
-    );
+    ) : (
+        <div>Please run a block to visualize your data!</div>
+    )
+);
 }

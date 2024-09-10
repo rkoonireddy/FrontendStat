@@ -1,5 +1,5 @@
 import {DataPoint, Pipeline, PipelineModel} from "../types/dataType";
-import {BlockModel, CreateBlockResponse} from "../types/responseType";
+import {BlockModel} from "../types/responseType";
 
 export function getMinMax(data: DataPoint[][]): {x: {min: number, max: number}, y: {min: number, max: number}} {
     let xMin = Infinity, xMax = -Infinity, yMin = Infinity, yMax = -Infinity;
@@ -73,4 +73,10 @@ export function convertToCSV(data: { [key: string]: string }[]): string {
         columns.map(col => row[col]).join(',')
     );
     return [header, ...rows].join('\n');
+}
+
+export function convertToDataPoints(data: any[]): DataPoint[][] {
+    const xValues = data[0].data.data;
+    const yValues = data[1].data.data;
+    return [xValues.map((x: number, i: number) => ({x: x, y: yValues[i]}))];
 }

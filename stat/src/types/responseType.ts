@@ -41,6 +41,12 @@ export type BlockModel = {
     id: string;
     name: string;
     type: string;
+    config_params: {
+        historyVisible: boolean,
+        historyExpanded: boolean,
+        controlsVisible: boolean,
+        controlsExpanded: boolean,
+    },
     input: {
         [key: string]: DataCollection;
     };

@@ -168,38 +168,43 @@ export const pipelineSlice = createSlice({
         setBlocks: (state, action: PayloadAction<BlockModel[]>) => {
             state.blocks = action.payload;
         },
-        // setBlockHistoryVisible: (state: { pipeline: { steps: any; }; }, action: PayloadAction<{ stepId: string }>) => {
-        //     state.pipeline.steps = state.pipeline.steps.map((step: { id: string, historyVisible: any; }) => {
-        //         if (step.id === action.payload.stepId) {
-        //             step.historyVisible = action.payload;
-        //         }
-        //         return step;
-        //     });
-        // },
-        // setBlockHistoryExpanded: (state: { pipeline: { steps: any; }; }, action: PayloadAction<{ stepId: string }>) => {
-        //     state.pipeline.steps = state.pipeline.steps.map((step: { id: string, historyExpanded: any; }) => {
-        //         if (step.id === action.payload.stepId) {
-        //             step.historyExpanded = action.payload;
-        //         }
-        //         return step;
-        //     });
-        // },
-        // setBlockControlsVisible: (state: { pipeline: { steps: any; }; }, action: PayloadAction<{ stepId: string }>) => {
-        //     state.pipeline.steps = state.pipeline.steps.map((step: { id: string, controlsVisible: any; }) => {
-        //         if (step.id === action.payload.stepId) {
-        //             step.controlsVisible = action.payload;
-        //         }
-        //         return step;
-        //     });
-        // },
-        // setBlockControlsExpanded: (state: { pipeline: { steps: any; }; }, action: PayloadAction<{ stepId: string }>) => {
-        //     state.pipeline.steps = state.pipeline.steps.map((step: { id: string, controlsExpanded: any; }) => {
-        //         if (step.id === action.payload.stepId) {
-        //             step.controlsExpanded = action.payload;
-        //         }
-        //         return step;
-        //     });
-        // },
+        setBlockHistoryVisible: (state, action: PayloadAction<boolean>) => {
+            const blockToUpdate = state.blocks.find(block => block.id === state.activeBlockId);
+            if (blockToUpdate) {
+                blockToUpdate.config_params = {
+                    ...blockToUpdate.config_params,
+                    historyVisible: action.payload
+                };
+            }
+        },
+        setBlockHistoryExpanded: (state, action: PayloadAction<boolean>) => {
+            const blockToUpdate = state.blocks.find(block => block.id === state.activeBlockId);
+            if (blockToUpdate) {
+                blockToUpdate.config_params = {
+                    ...blockToUpdate.config_params,
+                    historyExpanded: action.payload
+                };
+            }
+
+        },
+        setBlockControlsVisible: (state, action: PayloadAction<boolean>) => {
+            const blockToUpdate = state.blocks.find(block => block.id === state.activeBlockId);
+            if (blockToUpdate) {
+                blockToUpdate.config_params = {
+                    ...blockToUpdate.config_params,
+                    controlsVisible: action.payload
+                };
+            }
+        },
+        setBlockControlsExpanded: (state, action: PayloadAction<boolean>) => {
+            const blockToUpdate = state.blocks.find(block => block.id === state.activeBlockId);
+            if (blockToUpdate) {
+                blockToUpdate.config_params = {
+                    ...blockToUpdate.config_params,
+                    controlsExpanded: action.payload
+                };
+            }
+        },
         setActiveBlockId(state, action: PayloadAction<string>) {
             state.activeBlockId = action.payload;
         },
@@ -242,10 +247,10 @@ export const pipelineSlice = createSlice({
 export const {
     resetPipelineData,
     setBlocks,
-    // setBlockHistoryVisible,
-    // setBlockHistoryExpanded,
-    // setBlockControlsVisible,
-    // setBlockControlsExpanded,
+    setBlockHistoryVisible,
+    setBlockHistoryExpanded,
+    setBlockControlsVisible,
+    setBlockControlsExpanded,
     setActiveBlockId,
     removeBlock,
     setFileFrequency
