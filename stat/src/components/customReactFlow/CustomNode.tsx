@@ -68,13 +68,13 @@ const CustomNode = ({data}: CustomNodeProps) => {
     return (
         <StyledNodeContainer $active={data.id === activeNodeId} onClick={() => dispatch(setActiveBlockId(data.id))}>
             <Handle type="target" position={Position.Top}/>
-            <StyledDeleteButton onClick={(e) => {
+            <StyledDeleteButton title={"Delete Block"} onClick={(e) => {
                 dispatch(deleteBlockFromPipeline({pipelineId: pipeline.id, blockId: data.id}));
                 e.stopPropagation();
             }}>
                 <TrashSVG style={{width: "10px", height: "10px", color: "#ff0000"}}/>
             </StyledDeleteButton>
-            <StyledRunButton onClick={(e) => {
+            <StyledRunButton title={"Run Block"} onClick={(e) => {
                 dispatch(executeBlock({blockId: data.id}));
                 e.stopPropagation();
             }}>

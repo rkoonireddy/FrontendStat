@@ -44,6 +44,7 @@ const StyledRunButton = styled.div`
 
   &:hover {
     cursor: pointer;
+    scale: 1.05;
   }
 `;
 
@@ -72,7 +73,6 @@ function Flow() {
 
     useEffect(() => {
         const es = createEdges(pipeline);
-        console.log(es)
         setEdges(es);
     }, [pipeline])
 
@@ -165,7 +165,7 @@ function Flow() {
                 </button>
             </Panel>
             <Panel position={"bottom-right"}>
-                <StyledRunButton onClick={(e) => {
+                <StyledRunButton title={"Run Pipeline"} onClick={(e) => {
                     dispatch(executePipeline({pipelineId: pipeline.id, startingBlockId: activeBlockId ? activeBlockId : pipeline.block_dict[0][0]}));
                     e.stopPropagation();
                 }}>

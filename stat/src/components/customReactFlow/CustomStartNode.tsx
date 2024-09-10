@@ -13,7 +13,7 @@ const CustomStartNode = ({data}: CustomNodeProps) => {
     const activeNodeId = useAppSelector(getActiveBlockId);
     return (
         <StyledNodeContainer $active={data.id === activeNodeId} onClick={() => dispatch(setActiveBlockId(data.id))}>
-            <StyledRunButton onClick={(e) => {
+            <StyledRunButton title={"Run Block"} onClick={(e) => {
                 dispatch(executeBlock({blockId: data.id}));
                 e.stopPropagation();
             }}>

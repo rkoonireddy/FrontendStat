@@ -44,7 +44,7 @@ export default function CustomEdge({id, sourceX, sourceY, targetX, targetY}: Edg
         <>
                 <StyledBaseEdge id={id} path={edgePath}/>
                     <EdgeLabelRenderer>
-                        <StyledDeleteIconContainer
+                        <StyledDeleteIconContainer title={"Delete Edge"}
                             $transform={`translate(-5%, -50%) translate(${labelX}px, ${labelY}px)`} onClick={() => {
                             setEdges((es) => es.filter((e) => e.id !== id));
                         }}>
