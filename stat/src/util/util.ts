@@ -80,3 +80,8 @@ export function convertToDataPoints(data: any[]): DataPoint[][] {
     const yValues = data[1].data.data;
     return [xValues.map((x: number, i: number) => ({x: x, y: yValues[i]}))];
 }
+
+export function getFirstKey(dict: Record<string, any>): string | undefined {
+    const keys = Object.keys(dict);
+    return keys.length > 0 ? keys[0] : undefined;
+}

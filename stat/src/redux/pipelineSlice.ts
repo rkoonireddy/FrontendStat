@@ -13,6 +13,7 @@ interface IPipelineState {
     blocks: BlockModel[]
     activeBlockId: string | null
     frequency: number
+    loading: boolean
 }
 
 const initialPipelineModel: PipelineModel = {
@@ -26,7 +27,8 @@ const initialState: IPipelineState = {
     pipelineModel: initialPipelineModel,
     blocks: [],
     activeBlockId: null,
-    frequency: 60
+    frequency: 60,
+    loading: false
 }
 
 export const createNewPipeline = createAsyncThunk<PipelineModel, void, { rejectValue: string }>(
@@ -213,20 +215,39 @@ export const pipelineSlice = createSlice({
         },
         setFileFrequency(state, action: PayloadAction<number>) {
             state.frequency = action.payload;
+        },
+        setLoading(state, action: PayloadAction<boolean>) {
+            state.loading = action.payload;
         }
     },
     extraReducers: builder => {
+        builder.addCase(createNewPipeline.pending, (state) => {
+            state.loading = true;
+        });
         builder.addCase(createNewPipeline.fulfilled, (state, action) => {
             state.pipelineModel = action.payload;
+            state.loading = false;
         });
         builder.addCase(createNewPipeline.rejected, (state, action) => {
             console.log(action.error.message);
+            state.loading = false;
+        });
+        builder.addCase(updatePipeline.pending, (state) => {
+            state.loading = true;
         });
         builder.addCase(updatePipeline.fulfilled, (state, action) => {
             state.pipelineModel = action.payload;
+            state.loading = false;
+        });
+        builder.addCase(createNewBlock.pending, (state) => {
+            state.loading = true;
         });
         builder.addCase(createNewBlock.fulfilled, (state, action) => {
             state.activeBlockId = action.payload.block_id;
+            state.loading = false;
+        });
+        builder.addCase(fetchFullBlock.pending, (state) => {
+            state.loading = true;
         });
         builder.addCase(fetchFullBlock.fulfilled, (state, action) => {
             if (state.blocks.find(block => block.id === action.payload.id)) {
@@ -234,12 +255,21 @@ export const pipelineSlice = createSlice({
             } else {
                 state.blocks.push(action.payload);
             }
+            state.loading = false;
+        });
+        builder.addCase(putBlockToPipeline.pending, (state) => {
+            state.loading = true;
         });
         builder.addCase(putBlockToPipeline.fulfilled, (state, action) => {
             state.pipelineModel = action.payload;
+            state.loading = false;
+        });
+        builder.addCase(connectTwoBlocks.pending, (state) => {
+            state.loading = true;
         });
         builder.addCase(connectTwoBlocks.fulfilled, (state, action) => {
             state.pipelineModel = action.payload;
+            state.loading = false;
         });
     }
 })
@@ -253,7 +283,8 @@ export const {
     setBlockControlsExpanded,
     setActiveBlockId,
     removeBlock,
-    setFileFrequency
+    setFileFrequency,
+    setLoading
 } = pipelineSlice.actions;
 
 export default pipelineSlice.reducer;
@@ -282,3 +313,5 @@ export const getActiveBlockId = (state: RootState) => state.pipeline.activeBlock
 export const getPipelineModel = (state: RootState) => state.pipeline.pipelineModel;
 
 export const getPipelineExists = (state: RootState) => state.pipeline.pipelineModel.id !== '';
+
+export const getLoading = (state: RootState) => state.pipeline.loading;

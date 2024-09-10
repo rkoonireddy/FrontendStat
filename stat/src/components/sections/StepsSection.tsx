@@ -14,9 +14,9 @@ import {
     getAllEdges,
     getAllNodes,
     getBlocks,
-    getPipeline
+    getPipeline, setLoading
 } from "../../redux/pipelineSlice";
-import {createEdges, createNodesFromBlocks} from "../../util/util";
+import {createEdges, createNodesFromBlocks, getFirstKey} from "../../util/util";
 import CustomNode from "../customReactFlow/CustomNode";
 import CustomStartNode from "../customReactFlow/CustomStartNode";
 import CustomEdge from "../customReactFlow/CustomEdge";
@@ -52,7 +52,6 @@ function Flow() {
     const {fitView} = useReactFlow();
     const dispatch = useAppDispatch();
     const pipeline = useAppSelector(getPipeline);
-    const activeBlockId = useAppSelector(getActiveBlockId);
     const blocks = useAppSelector(getBlocks);
     const initialNodes = useAppSelector(getAllNodes);
     const initialEdges = useAppSelector(getAllEdges);
@@ -166,7 +165,8 @@ function Flow() {
             </Panel>
             <Panel position={"bottom-right"}>
                 <StyledRunButton title={"Run Pipeline"} onClick={(e) => {
-                    dispatch(executePipeline({pipelineId: pipeline.id, startingBlockId: activeBlockId ? activeBlockId : pipeline.block_dict[0][0]}));
+                    dispatch(setLoading(true));
+                    dispatch(executePipeline({pipelineId: pipeline.id, startingBlockId: getFirstKey(pipeline.block_dict) as string}));
                     e.stopPropagation();
                 }}>
                     <RunSVG style={{width: "50px", height: "50px", color: "#00ff00"}}/>

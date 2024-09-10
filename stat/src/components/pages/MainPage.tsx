@@ -9,7 +9,7 @@ import {useDispatch} from "react-redux";
 import {
     createNewBlock,
     createNewPipeline,
-    getActiveBlock,
+    getActiveBlock, getLoading,
     getPipelineExists,
     getPipelineModel, updatePipeline
 } from "../../redux/pipelineSlice";
@@ -21,6 +21,7 @@ import {Dropdown} from "primereact/dropdown";
 import {PrimaryButton} from "../buttons/PrimaryButton";
 import {getBlockTypes} from "../../service/blockService";
 import {Popup} from "../pageElements/Popup";
+import {Loading} from "../pageElements/Loading";
 
 
 const StyledMainPage = styled.div`
@@ -52,6 +53,7 @@ const StyledCreateBlockTitle = styled.div`
 
 
 function MainPage() {
+    const loading = useAppSelector(getLoading);
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
     const [showCreateBlockPopup, setShowCreateBlockPopup] = useState(false);
@@ -80,6 +82,7 @@ function MainPage() {
 
     return (
         <StyledMainPage>
+            {loading && <Loading />}
             {showCreateBlockPopup &&
                 <Popup title={"Create Block"} showPopup={setShowCreateBlockPopup}>
                     <StyledInput $largeText={true} $width={"200px"} type="text" placeholder="Block Name"
