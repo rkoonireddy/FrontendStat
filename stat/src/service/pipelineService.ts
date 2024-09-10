@@ -18,7 +18,7 @@ export function createPipeline(): Promise<PipelineModel> {
         });
 }
 
-export function fetchPipeline({pipelineId}: {pipelineId: string}): Promise<PipelineModel> {
+export function fetchPipeline({pipelineId}: { pipelineId: string }): Promise<PipelineModel> {
     return fetch(baseurl + "pipeline/" + pipelineId)
         .then(async response => {
             if (!response.ok) {
@@ -31,8 +31,27 @@ export function fetchPipeline({pipelineId}: {pipelineId: string}): Promise<Pipel
         });
 }
 
+export async function runPipeline({pipelineId, startingBlockId}: {
+    pipelineId: string,
+    startingBlockId: string
+}): Promise<string> {
+    const response = await fetch(baseurl + "pipeline/" + pipelineId + "/run",
+        {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({"block_start_id": startingBlockId})
+        })
+    if (!response.ok) {
+        const err = await response.text();
+        throw new Error(err);
+    }
+    return await response.text();
+}
 
-export function deletePipeline({pipelineId}: {pipelineId: string}): Promise<void> {
+
+export function deletePipeline({pipelineId}: { pipelineId: string }): Promise<void> {
     return fetch(baseurl + "pipeline/" + pipelineId,
         {
             method: "DELETE"

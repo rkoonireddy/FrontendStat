@@ -8,11 +8,19 @@ import {
 import '@xyflow/react/dist/style.css';
 import React, {useCallback, useEffect, useState} from "react";
 import {useAppDispatch, useAppSelector} from "../../hooks";
-import {connectTwoBlocks, getAllEdges, getAllNodes, getBlocks, getPipeline} from "../../redux/pipelineSlice";
+import {
+    connectTwoBlocks,
+    executePipeline, getActiveBlockId,
+    getAllEdges,
+    getAllNodes,
+    getBlocks,
+    getPipeline
+} from "../../redux/pipelineSlice";
 import {createEdges, createNodesFromBlocks} from "../../util/util";
 import CustomNode from "../customReactFlow/CustomNode";
 import CustomStartNode from "../customReactFlow/CustomStartNode";
 import CustomEdge from "../customReactFlow/CustomEdge";
+import {ReactComponent as RunSVG} from "../../assets/run.svg";
 
 const NodeTypes = {customNode: CustomNode, customStartNode: CustomStartNode};
 const edgeTypes = {
@@ -27,10 +35,23 @@ const StyledStepsContainer = styled.div`
   background-color: #ffffff08;
 `;
 
+const StyledRunButton = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: fit-content;
+  height: fit-content;
+
+  &:hover {
+    cursor: pointer;
+  }
+`;
+
 function Flow() {
     const {fitView} = useReactFlow();
     const dispatch = useAppDispatch();
     const pipeline = useAppSelector(getPipeline);
+    const activeBlockId = useAppSelector(getActiveBlockId);
     const blocks = useAppSelector(getBlocks);
     const initialNodes = useAppSelector(getAllNodes);
     const initialEdges = useAppSelector(getAllEdges);
@@ -44,7 +65,9 @@ function Flow() {
     useEffect(() => {
         const ns = createNodesFromBlocks(blocks);
         setNodes(ns);
-        alignNodes();
+        if (nodes.length > 1) {
+            alignNodes();
+        }
     }, [blocks])
 
     useEffect(() => {
@@ -137,9 +160,17 @@ function Flow() {
             <Background/>
             <Controls/>
             <Panel position="top-right">
-            <button onClick={alignNodes} >
-                Align Nodes
-            </button>
+                <button onClick={alignNodes}>
+                    Align Nodes
+                </button>
+            </Panel>
+            <Panel position={"bottom-right"}>
+                <StyledRunButton onClick={(e) => {
+                    dispatch(executePipeline({pipelineId: pipeline.id, startingBlockId: activeBlockId ? activeBlockId : pipeline.block_dict[0][0]}));
+                    e.stopPropagation();
+                }}>
+                    <RunSVG style={{width: "50px", height: "50px", color: "#00ff00"}}/>
+                </StyledRunButton>
             </Panel>
         </ReactFlow>
 

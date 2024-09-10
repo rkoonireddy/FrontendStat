@@ -2,8 +2,8 @@ import {PipelineModel} from "../types/dataType";
 import {createAsyncThunk, createSelector, createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {RootState} from "../store";
 import {BlockModel, CreateBlockResponse} from "../types/responseType";
-import {createPipeline, fetchPipeline} from "../service/pipelineService";
-import {addBlockToPipeline, createBlock, deleteBlock, getFullBlock} from "../service/blockService";
+import {createPipeline, fetchPipeline, runPipeline} from "../service/pipelineService";
+import {addBlockToPipeline, createBlock, deleteBlock, getFullBlock, runBlock} from "../service/blockService";
 import {createEdges, createNodesFromBlocks} from "../util/util";
 import {addEdgeToPipeline} from "../service/edgeService";
 
@@ -110,6 +110,35 @@ export const updatePipeline = createAsyncThunk<PipelineModel, { pipelineId: stri
         }
     }
 );
+
+export const executeBlock = createAsyncThunk<string, { blockId: string }, { rejectValue: string }>(
+    'pipeline/runBlock',
+    async ({blockId}, thunkAPI) => {
+        try {
+            const response = await runBlock({blockId});
+            thunkAPI.dispatch(fetchFullBlock(blockId));
+            return response;
+        } catch (error) {
+            return thunkAPI.rejectWithValue('Failed to run block');
+        }
+    }
+);
+
+export const executePipeline = createAsyncThunk<string, { pipelineId: string, startingBlockId: string }, {
+    rejectValue: string
+}>(
+    'pipeline/runPipeline',
+    async ({pipelineId, startingBlockId}, thunkAPI) => {
+        try {
+            const response = await runPipeline({pipelineId: pipelineId, startingBlockId: startingBlockId});
+            thunkAPI.dispatch(updatePipeline({pipelineId}));
+            return response;
+        } catch (error) {
+            return thunkAPI.rejectWithValue('Failed to run pipeline');
+        }
+    }
+);
+
 
 export const deleteBlockFromPipeline = createAsyncThunk<void, { blockId: string, pipelineId: string }, {
     rejectValue: string

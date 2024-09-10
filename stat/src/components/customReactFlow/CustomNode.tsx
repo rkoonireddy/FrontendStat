@@ -4,14 +4,13 @@ import {Handle, Position} from '@xyflow/react';
 import {CustomNodeProps} from "../../types/nodeTypes";
 import {useAppDispatch, useAppSelector} from "../../hooks";
 import {
-    deleteBlockFromPipeline,
+    deleteBlockFromPipeline, executeBlock,
     getActiveBlockId,
     getPipelineModel,
-    removeBlock,
     setActiveBlockId
 } from "../../redux/pipelineSlice";
-import {useDispatch} from "react-redux";
 import {ReactComponent as TrashSVG} from "../../assets/trash.svg";
+import {ReactComponent as RunSVG} from "../../assets/run.svg";
 
 export const StyledNodeContainer = styled.div<{ $active?: boolean }>`
   padding: 10px;
@@ -50,6 +49,18 @@ export const StyledDeleteButton = styled.div`
   }
 `;
 
+export const StyledRunButton = styled.div`
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  opacity: 0.25;
+
+  &:hover {
+    cursor: pointer;
+    opacity: 0.8;
+  }
+`;
+
 const CustomNode = ({data}: CustomNodeProps) => {
     const pipeline = useAppSelector(getPipelineModel);
     const dispatch = useAppDispatch();
@@ -63,6 +74,12 @@ const CustomNode = ({data}: CustomNodeProps) => {
             }}>
                 <TrashSVG style={{width: "10px", height: "10px", color: "#ff0000"}}/>
             </StyledDeleteButton>
+            <StyledRunButton onClick={(e) => {
+                dispatch(executeBlock({blockId: data.id}));
+                e.stopPropagation();
+            }}>
+                <RunSVG style={{width: "15px", height: "15px", color: "#00ff00"}}/>
+            </StyledRunButton>
             <StyledNodeLabel $active={data.id === activeNodeId}>{data.label}</StyledNodeLabel>
             <StyledNodeType>{data.type}</StyledNodeType>
             <Handle type="source" position={Position.Bottom}/>
