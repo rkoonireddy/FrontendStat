@@ -73,6 +73,7 @@ function Flow() {
     useEffect(() => {
         const es = createEdges(pipeline);
         setEdges(es);
+        console.log("Edges", es);
     }, [pipeline])
 
     useEffect(() => {
@@ -127,11 +128,19 @@ function Flow() {
     const onConnect = useCallback(
         (connection: any) => {
             const edge = {...connection, type: 'custom-edge'};
-            console.log(edge)
-            dispatch(connectTwoBlocks({fromBlockId: edge.source, toBlockId: edge.target, pipelineId: pipeline.id}));
-            setEdges((eds) => addEdge(edge, eds));
+            console.log(edge);
+
+            // Check if the edge already exists to avoid duplicates
+            setEdges((eds) => {
+                const edgeExists = eds.some(e => e.source === edge.source && e.target === edge.target);
+                if (!edgeExists) {
+                    dispatch(connectTwoBlocks({fromBlockId: edge.source, toBlockId: edge.target, pipelineId: pipeline.id}));
+                    return addEdge(edge, eds);
+                }
+                return eds;
+            });
         },
-        [setEdges],
+        [setEdges, dispatch, pipeline.id]
     );
 
     const onNodeDragStart = () => {
