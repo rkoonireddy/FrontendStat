@@ -6,12 +6,12 @@ import {ReactComponent as UpSVG} from "../../assets/caret-up-fill.svg";
 import {PipelineHistorySection} from "./PipelineHistorySection";
 import {LineChart} from "../charts/LineChart";
 import CSVViewer from "../charts/CSVViewer";
-import {useAppDispatch, useAppSelector} from "../../hooks";
+import {useAppDispatch} from "../../hooks";
 import {
-    getActiveBlock,
     setBlockControlsExpanded,
     setBlockHistoryExpanded
 } from "../../redux/pipelineSlice";
+import {BlockModel} from "../../types/responseType";
 
 
 const StyledVizSectionContainer = styled.div`
@@ -53,8 +53,7 @@ const StyledShowHideControls = styled.div<{ $marginTop?: string }>`
 `;
 
 
-export function VizSection() {
-    const activeBlock = useAppSelector(getActiveBlock);
+export function VizSection({block}: { block: BlockModel}) {
     const dispatch = useAppDispatch();
 
     const [historyVisible, setHistoryVisible] = useState<boolean>(false);
@@ -63,13 +62,11 @@ export function VizSection() {
     const [controlsExpanded, setControlsExpanded] = useState<boolean>(false);
 
     useEffect(() => {
-        if (activeBlock !== undefined) {
-            setHistoryVisible(activeBlock.config_params.historyVisible);
-            setHistoryExpanded(activeBlock.config_params.historyExpanded);
-            setControlsVisible(activeBlock.config_params.controlsVisible);
-            setControlsExpanded(activeBlock.config_params.controlsExpanded);
-        }
-    }, [activeBlock]);
+            setHistoryVisible(block.config_params.historyVisible);
+            setHistoryExpanded(block.config_params.historyExpanded);
+            setControlsVisible(block.config_params.controlsVisible);
+            setControlsExpanded(block.config_params.controlsExpanded);
+    }, [block]);
 
     return (
         <StyledVizSectionContainer id={"viz-section"}>
@@ -91,8 +88,8 @@ export function VizSection() {
             )}
 
             <StyledChartContainer $controlsVisible={controlsVisible}>
-                {activeBlock && activeBlock.type === "CSVStringLoader" ? <CSVViewer/> :
-                    <LineChart/>}
+                {block.type === "CSVStringLoader" ? <CSVViewer blockId={block.id}/> :
+                    <LineChart block={block}/>}
             </StyledChartContainer>
 
             {controlsVisible && (

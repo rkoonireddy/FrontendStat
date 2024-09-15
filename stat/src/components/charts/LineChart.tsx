@@ -3,22 +3,22 @@ import {convertToDataPoints, getMinMax} from "../../util/util";
 import {useEffect, useRef, useState} from "react";
 import {axisBottom, axisLeft, curveCardinal, line, scaleLinear, select} from "d3";
 import {useAppDispatch, useAppSelector} from "../../hooks";
-import {getActiveBlock, getPipeline} from "../../redux/pipelineSlice";
+import {getPipeline} from "../../redux/pipelineSlice";
+import {BlockModel} from "../../types/responseType";
 
-export function LineChart() {
+export function LineChart({block}: {block: BlockModel}) {
     const dispatch = useAppDispatch();
-    const activeBlock = useAppSelector(getActiveBlock);
     const pipeline = useAppSelector(getPipeline);
     const [chartData, setChartData] = useState<DataPoint[][]>([]);
 
     useEffect(() => {
-        if (activeBlock?.output?.Dataframe?.data !== undefined) {
-            const data = convertToDataPoints(activeBlock.output.Dataframe.data);
+        if (block?.output?.Dataframe?.data !== undefined) {
+            const data = convertToDataPoints(block.output.Dataframe.data);
             setChartData(data);
         } else {
             setChartData([]);
         }
-    }, [activeBlock, pipeline]);
+    }, [block, pipeline]);
 
     //refs
     const [dimensions, setDimensions] = useState({width: 0, height: 0});
@@ -41,7 +41,7 @@ export function LineChart() {
                 resizeObserver.unobserve(svgElement);
             }
         };
-    }, [activeBlock]);
+    }, [block]);
 
     //draws chart
     useEffect(() => {
@@ -102,7 +102,7 @@ export function LineChart() {
     }, [chartData, dimensions]);
 
     return (
-        activeBlock?.output?.Dataframe?.data !== undefined ? (
+        block?.output?.Dataframe?.data !== undefined ? (
             <svg ref={svgRef} width="100%" height="100%">
                 <g className="x-axis"/>
                 <g className="y-axis"/>

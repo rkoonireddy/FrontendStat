@@ -5,15 +5,11 @@ import {ReactComponent as PlusSVG} from "../../assets/plus-square.svg";
 import {useNavigate} from "react-router-dom";
 import {StepsSection} from "../sections/StepsSection";
 import {VizSection} from "../sections/VizSection";
-import {useDispatch} from "react-redux";
 import {
     createNewBlock,
-    createNewPipeline,
     getActiveBlock, getLoading,
-    getPipelineExists,
     getPipelineModel, updatePipeline
 } from "../../redux/pipelineSlice";
-import {AppDispatch} from "../../store";
 import {useAppDispatch, useAppSelector} from "../../hooks";
 import {useEffect, useState} from "react";
 import {StyledInput} from "../controls/InputControl";
@@ -104,7 +100,7 @@ function MainPage() {
                 <MenuSVG style={{width: "50px", height: "50px", margin: "10px"}}/>
             </StyledSideBar>
             <StepsSection/>
-            <VizSection/>
+            {activeBlock && <VizSection block={activeBlock}/>}
         </StyledMainPage>
     );
 }

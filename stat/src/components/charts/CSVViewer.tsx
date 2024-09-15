@@ -5,22 +5,20 @@ import {
     setFilteredData,
     setFilteredDataChanged
 } from "../../redux/dataSlice";
-import {useSelector, useDispatch} from "react-redux";
 import styled from "styled-components";
 import {useState, useEffect, useRef} from "react";
-import {FilterControl} from "../controls/FilterControl";
-import {InputSwitch} from "primereact/inputswitch";
 import {useAppDispatch, useAppSelector} from "../../hooks";
 import {updateCSVLoaderBlock} from "../../service/blockService";
-import {fetchFullBlock, getActiveBlockId} from "../../redux/pipelineSlice";
-import {convertToCSV} from "../../util/util";
+import {fetchFullBlock} from "../../redux/pipelineSlice";
 
-const StyledCSVTable = styled.table`
+const StyledCSVTable = styled.table<{ small?: boolean }>`
   width: 100%;
   border-collapse: collapse;
   border-spacing: 0;
   margin-top: 20px;
   border: 1px solid #ddd;
+  font-size: ${props => props.small ? '0.6rem' : '1rem'};
+  max-height: 100%;
 `;
 
 const StyledTableHeader = styled.th<{ $isSelected: boolean }>`
@@ -47,12 +45,12 @@ const StyledCheckbox = styled.input`
   color: white
 `;
 
-export default function CSVViewer() {
+export default function CSVViewer({blockId, small}: { blockId: string, small?: boolean }) {
     const dispatch = useAppDispatch();
     const rawData = useAppSelector(getData);
     const filteredDataChanged = useAppSelector(getFilteredDataChanged);
     const filteredDataCSVString = useAppSelector(getFilteredDataAsCSVString)
-    const activeBlockId = useAppSelector(getActiveBlockId);
+    // const activeBlockId = useAppSelector(getActiveBlockId);
     const data = rawData.slice(0, 20);
     const columns = data.length > 0 ? Object.keys(data[0]) : [];
 
@@ -60,18 +58,18 @@ export default function CSVViewer() {
 
     // Update the csv loader block with the filtered data
     useEffect(() => {
-        if (filteredDataChanged && activeBlockId) {
+        if (filteredDataChanged && blockId) {
             dispatch(setFilteredDataChanged(false));
             updateCSVLoaderBlock({
-                blockId: activeBlockId,
+                blockId: blockId,
                 frequency_hz: 120,
                 csvString: filteredDataCSVString,
                 header: true
             }).then(r => {
-                dispatch(fetchFullBlock(activeBlockId));
+                dispatch(fetchFullBlock(blockId));
             });
         }
-    }, [filteredDataChanged, activeBlockId, filteredDataCSVString]);
+    }, [filteredDataChanged, blockId, filteredDataCSVString]);
 
     // update filtered data if column selection changes
     useEffect(() => {
@@ -97,7 +95,7 @@ export default function CSVViewer() {
             {data.length === 0 ? (
                 <div>No data available</div>
             ) : (
-                <StyledCSVTable>
+                <StyledCSVTable small={small}>
                     <thead>
                     <tr>
                         {columns.map(col => (

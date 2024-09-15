@@ -1,10 +1,14 @@
 import styled from "styled-components";
+import {getBlocks, setActiveBlockId} from "../../redux/pipelineSlice";
+import {useAppDispatch, useAppSelector} from "../../hooks";
+import {LineChart} from "../charts/LineChart";
+import React from "react";
+import CSVViewer from "../charts/CSVViewer";
 
 const StyledPipelineHistorySection = styled.div<{ $historyVisible: boolean }>`
   display:flex;
   justify-content: left;
   margin: 0 10px;
-  background-color: #ffffff08;
   padding: 5px;
   width: calc(100% - 20px);
   height: ${props => props.$historyVisible ? 'calc(35% - 30px)' : '5%'};
@@ -21,21 +25,35 @@ const StyledHistoryItemContainer = styled.div<{ $historyVisible: boolean }>`
   display: flex;
   min-width: ${props => props.$historyVisible ? 'calc(23% - 10px)' : 'calc(13% - 10px)'};
   height: calc(100% - 10px);
-  background-color: blue;
   margin: 5px;
+  padding: 5px;
+  background-color: #ffffff08;
+  overflow-y: clip;
+  
+  &:hover {
+    cursor: pointer;
+    opacity: 1;
+    border: 1px solid #ffffff;
+  }
 `;
 
 
 export function PipelineHistorySection({show}: { show: boolean }) {
 
+    const blocks = useAppSelector(getBlocks);
+    const dispatch = useAppDispatch();
+
     return (
         <StyledPipelineHistorySection $historyVisible={show}>
-            <StyledHistoryItemContainer $historyVisible={show}/>
-            <StyledHistoryItemContainer $historyVisible={show}/>
-            <StyledHistoryItemContainer $historyVisible={show}/>
-            <StyledHistoryItemContainer $historyVisible={show}/>
-            <StyledHistoryItemContainer $historyVisible={show}/>
-            <StyledHistoryItemContainer $historyVisible={show}/>
+            {blocks.map((block) => {
+                return (
+                <StyledHistoryItemContainer $historyVisible={show} onClick={() => dispatch(setActiveBlockId(block.id))}>
+                    {block.type === "CSVStringLoader" ? <CSVViewer blockId={block.id} small={true}/> :
+                    <LineChart block={block} /> }
+                </StyledHistoryItemContainer>
+                )
+            })}
+
         </StyledPipelineHistorySection>
     )
 }
