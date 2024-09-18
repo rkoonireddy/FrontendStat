@@ -66,7 +66,7 @@ function Flow() {
         const ns = createNodesFromBlocks(blocks);
         setNodes(ns);
         if (nodes.length > 1) {
-            alignNodes();
+            // alignNodes();
         }
     }, [blocks])
 
@@ -82,48 +82,60 @@ function Flow() {
         }
     }, [nodes, edges, fitView, isDragging]);
 
-    const topologicalSort = (nodes: any[], edges: any[]) => {
-        const inDegree = new Map();
-        const adjList = new Map();
+const topologicalSort = (nodes: any[], edges: any[]) => {
+    const inDegree = new Map();
+    const adjList = new Map();
+    const noEdgeNodes = new Set(nodes.map(node => node.id));
 
-        nodes.forEach(node => {
-            inDegree.set(node.id, 0);
-            adjList.set(node.id, []);
+    // Initialize in-degree and adjacency list
+    nodes.forEach(node => {
+        inDegree.set(node.id, 0);
+        adjList.set(node.id, []);
+    });
+
+    // Populate in-degree and adjacency list
+    edges.forEach(edge => {
+        inDegree.set(edge.target, inDegree.get(edge.target) + 1);
+        adjList.get(edge.source).push(edge.target);
+        noEdgeNodes.delete(edge.source);
+        noEdgeNodes.delete(edge.target);
+    });
+
+    // Queue for nodes with zero in-degree
+    const queue: any[] = [];
+    inDegree.forEach((degree, node) => {
+        if (degree === 0) queue.push(node);
+    });
+
+    // Perform topological sort
+    const sortedNodes = [];
+    while (queue.length > 0) {
+        const node = queue.shift();
+        sortedNodes.push(node);
+
+        adjList.get(node).forEach((neighbor: any) => {
+            inDegree.set(neighbor, inDegree.get(neighbor) - 1);
+            if (inDegree.get(neighbor) === 0) queue.push(neighbor);
         });
+    }
 
-        edges.forEach(edge => {
-            inDegree.set(edge.target, inDegree.get(edge.target) + 1);
-            adjList.get(edge.source).push(edge.target);
-        });
+    return { sortedNodes, noEdgeNodes: Array.from(noEdgeNodes) };
+};
 
-        const queue: any[] = [];
-        inDegree.forEach((degree, node) => {
-            if (degree === 0) queue.push(node);
-        });
-
-        const sortedNodes = [];
-        while (queue.length > 0) {
-            const node = queue.shift();
-            sortedNodes.push(node);
-
-            adjList.get(node).forEach((neighbor: any) => {
-                inDegree.set(neighbor, inDegree.get(neighbor) - 1);
-                if (inDegree.get(neighbor) === 0) queue.push(neighbor);
-            });
-        }
-
-        return sortedNodes;
-    };
-
-    const alignNodes = useCallback(async () => {
-        const sortedNodeIds = topologicalSort(nodes, edges);
-        await setNodes((nds) =>
-            nds.map((node) => ({
+const alignNodes = useCallback(async () => {
+    const { sortedNodes, noEdgeNodes } = topologicalSort(nodes, edges);
+    await setNodes((nds) =>
+        nds.map((node) => {
+            const yPos = sortedNodes.includes(node.id)
+                ? sortedNodes.indexOf(node.id) * 150
+                : (sortedNodes.length + noEdgeNodes.indexOf(node.id)) * 150;
+            return {
                 ...node,
-                position: {x: 0, y: sortedNodeIds.indexOf(node.id) * 150},
-            }))
-        );
-    }, [nodes, edges, setNodes, fitView]);
+                position: { x: 0, y: yPos },
+            };
+        })
+    );
+}, [nodes, edges, setNodes, fitView]);
 
     const onConnect = useCallback(
         (connection: any) => {

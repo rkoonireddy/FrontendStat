@@ -315,3 +315,11 @@ export const getPipelineModel = (state: RootState) => state.pipeline.pipelineMod
 export const getPipelineExists = (state: RootState) => state.pipeline.pipelineModel.id !== '';
 
 export const getLoading = (state: RootState) => state.pipeline.loading;
+
+// selector which returns true if a block is runnable. A block is runnable if it is part of the pipeline (there is an edge pointing to it in the pipeline): params: blockId
+export const isBlockRunnable = createSelector(
+    [(state: RootState, blockId: string) => blockId, getPipelineModel],
+    (blockId, pipeline) => {
+        return Object.values(pipeline.edge_dict).some(targets => targets.includes(blockId));
+    }
+);

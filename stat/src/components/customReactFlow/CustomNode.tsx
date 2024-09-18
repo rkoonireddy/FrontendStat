@@ -6,7 +6,7 @@ import {useAppDispatch, useAppSelector} from "../../hooks";
 import {
     deleteBlockFromPipeline, executeBlock,
     getActiveBlockId,
-    getPipelineModel,
+    getPipelineModel, isBlockRunnable,
     setActiveBlockId
 } from "../../redux/pipelineSlice";
 import {ReactComponent as TrashSVG} from "../../assets/trash.svg";
@@ -65,7 +65,9 @@ const CustomNode = ({data}: CustomNodeProps) => {
     const pipeline = useAppSelector(getPipelineModel);
     const dispatch = useAppDispatch();
     const activeNodeId = useAppSelector(getActiveBlockId);
+    const blockRunnable = useAppSelector(state => isBlockRunnable(state, data.id));
     return (
+
         <StyledNodeContainer $active={data.id === activeNodeId} onClick={() => dispatch(setActiveBlockId(data.id))}>
             <Handle type="target" position={Position.Top}/>
             <StyledDeleteButton title={"Delete Block"} onClick={(e) => {
@@ -78,7 +80,9 @@ const CustomNode = ({data}: CustomNodeProps) => {
                 dispatch(executeBlock({blockId: data.id}));
                 e.stopPropagation();
             }}>
-                <RunSVG style={{width: "15px", height: "15px", color: "#00ff00"}}/>
+                {blockRunnable &&
+                    <RunSVG style={{width: "15px", height: "15px", color: "#00ff00"}}/>
+                }
             </StyledRunButton>
             <StyledNodeLabel $active={data.id === activeNodeId}>{data.label}</StyledNodeLabel>
             <StyledNodeType>{data.type}</StyledNodeType>
