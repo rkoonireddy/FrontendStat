@@ -73,7 +73,6 @@ function Flow() {
     useEffect(() => {
         const es = createEdges(pipeline);
         setEdges(es);
-        console.log("Edges", es);
     }, [pipeline])
 
     useEffect(() => {

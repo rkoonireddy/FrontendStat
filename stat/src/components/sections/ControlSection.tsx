@@ -9,15 +9,22 @@ import {getActiveBlock} from "../../redux/pipelineSlice";
 import {useAppSelector} from "../../hooks";
 import {useEffect, useState} from "react";
 import {MultiSelectControl} from "../controls/MultiSelectControl";
+import {PrimaryButton} from "../buttons/PrimaryButton";
 
+const StyledControls = styled.div<{ $show: boolean }>`
+  display: ${props => (props.$show ? "flex" : "none")};
+  flex-direction: column;
+  height: fit-content;
+  max-height: 35%;
+`;
 
-const StyledControlContainer = styled.div<{ $show: boolean, $columnNumber?: number, $rowNumber?: number }>`
-  display: ${props => (props.$show ? "grid" : "none")};
+const StyledControlContainer = styled.div<{ $columnNumber?: number, $rowNumber?: number }>`
+  display: grid;
   grid-template-columns: repeat(${props => props.$columnNumber ?? 4}, minmax(150px, 1fr));
   grid-template-rows: repeat(${props => props.$rowNumber ?? 2}, minmax(150px, 1fr));
   gap: 1fr;
   height: fit-content;
-  max-height: 35%;
+  margin-bottom: 10px;
 `;
 
 export const StyledControl = styled.div<{ $columnSpan: number, $rowSpan: number }>`
@@ -45,26 +52,32 @@ export function ControlSection({show}: { show: boolean }) {
             Object.entries(activeBlock.filters).forEach(([key, filter]) => {
                 switch (filter.filter_type) {
                     case "boolean":
-                        components.push(<FilterControl key={filter.name} title={filter.name} onLabel={"On"} offLabel={"Off"} value={true} />);
+                        components.push(<FilterControl key={filter.name} title={filter.name} onLabel={"On"}
+                                                       offLabel={"Off"} value={true}/>);
                         break;
                     case "input":
-                        components.push(<InputControl key={filter.name} title={filter.name} unit={"Hz"} />);
+                        components.push(<InputControl key={filter.name} title={filter.name} unit={"Hz"}/>);
                         break;
                     case "singleselect":
-                        components.push(<DropdownControl key={filter.name} title={filter.name} options={filter.options.map((option: any) => {
-                            return { label: option, value: option };
-                        })} />);
+                        components.push(<DropdownControl key={filter.name} title={filter.name}
+                                                         options={filter.options.map((option: any) => {
+                                                             return {label: option, value: option};
+                                                         })}/>);
                         break;
                     case "multiselect":
-                        components.push(<MultiSelectControl key={filter.name} title={filter.name} options={filter.options.map((option: any) => {
-                            return { label: option, value: option };
-                        })} />);
+                        components.push(<MultiSelectControl key={filter.name} title={filter.name}
+                                                            options={filter.options.map((option: any) => {
+                                                                return {label: option, value: option};
+                                                            })}/>);
                         break;
                     case "slider":
-                        components.push(<VerticalSliderControl key={filter.name} title={filter.name} min={filter.min} max={filter.max} step={filter.step} start={filter.start} />);
+                        components.push(<VerticalSliderControl key={filter.name} title={filter.name} min={filter.min}
+                                                               max={filter.max} step={filter.step}
+                                                               start={filter.start}/>);
                         break;
                     case "range":
-                        components.push(<RangeControl key={filter.name} title={filter.name} range={[filter.min, filter.max]} />);
+                        components.push(<RangeControl key={filter.name} title={filter.name}
+                                                      range={[filter.min, filter.max]}/>);
                         break;
                     default:
                         break;
@@ -76,21 +89,11 @@ export function ControlSection({show}: { show: boolean }) {
 
 
     return (
-        <StyledControlContainer id={"control-section"} $show={show} $rowNumber={1}>
-            {/*{activeBlock && activeBlock.type === "CSVStringLoader" ?*/}
-            {/*    <InputControl title={"Frequency"} unit={"Hz"}/> :*/}
-            {/*    <>*/}
-            {/*        <VerticalSliderControl title={"Slider 1"} min={10} max={20} step={1} start={6} rowSpan={2}/>*/}
-            {/*        <FilterControl title={"Filter 1"} onLabel={"On"} offLabel={"Off"} value={true}/>*/}
-            {/*        <KnobControl title={"Control 1"} min={0} max={100} step={5} start={20}/>*/}
-            {/*        <InputControl title={"Input 1"} unit={"Hz"}/>*/}
-            {/*        <DropdownControl title={"Dropdown 1"} options={[*/}
-            {/*            {label: "Option 1", value: "OPT1"},*/}
-            {/*            {label: "Option 2", value: "OPT2"},*/}
-            {/*            {label: "Option 3", value: "OPT3"}]}/>*/}
-            {/*        <RangeControl title={"Range 1"} range={[0, 100]}/>*/}
-            {/*    </>}*/}
-            {filterComponents}
-        </StyledControlContainer>
+        <StyledControls $show={show}>
+            <StyledControlContainer id={"control-section"} $rowNumber={1}>
+                {filterComponents}
+            </StyledControlContainer>
+            <PrimaryButton size={150} text={"Apply"} action={() => console.log("Apply button clicked")}/>
+        </StyledControls>
     )
 }

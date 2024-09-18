@@ -11,13 +11,13 @@ import {useAppDispatch, useAppSelector} from "../../hooks";
 import {updateCSVLoaderBlock} from "../../service/blockService";
 import {fetchFullBlock} from "../../redux/pipelineSlice";
 
-const StyledCSVTable = styled.table<{ small?: boolean }>`
+const StyledCSVTable = styled.table<{ $small?: boolean }>`
   width: 100%;
   border-collapse: collapse;
   border-spacing: 0;
   margin-top: 20px;
   border: 1px solid #ddd;
-  font-size: ${props => props.small ? '0.6rem' : '1rem'};
+  font-size: ${props => props.$small ? '0.6rem' : '1rem'};
   max-height: 100%;
 `;
 
@@ -95,7 +95,7 @@ export default function CSVViewer({blockId, small}: { blockId: string, small?: b
             {data.length === 0 ? (
                 <div>No data available</div>
             ) : (
-                <StyledCSVTable small={small}>
+                <StyledCSVTable $small={small}>
                     <thead>
                     <tr>
                         {columns.map(col => (
