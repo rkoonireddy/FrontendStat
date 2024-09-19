@@ -93,13 +93,20 @@ function FileUpload({onClose}: { onClose: (arg0: boolean) => void }) {
         if (file && frequency) {
             const formData = new FormData();
             formData.append('csvFile', file);
+            console.log("resetData");
             dispatch(resetData());
+            console.log("resetPipelineData");
             dispatch(resetPipelineData());
+            console.log("readData");
+            console.log(formData);
             dispatch(readData(formData) as any);
-            await dispatch(createNewPipeline());
-            dispatch(setFileFrequency(frequency));
-            dispatch(createNewBlock({blockType: 'CSVStringLoader', blockName: 'Data loader'}));
-            navigate('/main');
+            // console.log("createNewPipeline");
+            // await dispatch(createNewPipeline());
+            // console.log("setFileFrequency");
+            // dispatch(setFileFrequency(frequency));
+            // console.log("createNewBlock");
+            // dispatch(createNewBlock({blockType: 'CSVStringLoader', blockName: 'Data loader'}));
+            // navigate('/main');
         }
     }
 
