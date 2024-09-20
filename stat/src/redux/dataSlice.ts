@@ -21,7 +21,6 @@ export const readData = createAsyncThunk("data/readData",
         try {
             return await parseCSV({formData: rawData});
         } catch (error) {
-            console.log("FAILED READ DATA")
             return thunkAPI.rejectWithValue(error);
         }
 

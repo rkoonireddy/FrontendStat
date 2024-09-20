@@ -44,9 +44,9 @@ export function getData(): Promise<DataPoint[][]> {
 export function parseCSV({ formData }: { formData: FormData }): Promise<Array<{ [key: string]: string }>> {
     return new Promise((resolve, reject) => {
         const file = formData.get('csvFile') as File;
-        console.log(file);
 
-        if (file && file.type === 'text/csv') {
+        // text/csv for MacOs, application/vnd.ms-excel for Windows
+        if (file && (file.type === 'text/csv' || file.type === 'application/vnd.ms-excel')) {
             const reader = new FileReader();
             reader.onload = (e: ProgressEvent<FileReader>) => {
                 const text = e.target?.result as string | null;
