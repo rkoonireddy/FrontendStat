@@ -4,14 +4,15 @@ import {Dropdown} from "primereact/dropdown";
 import {ControlTitle} from "./ControlTitle";
 
 
-export function DropdownControl({title, options, placeHolder = "Select...", columnSpan = 1, rowSpan = 1}: {
+export function DropdownControl({title, options, placeHolder = "Select...", columnSpan = 1, rowSpan = 1, defaultValue = null}: {
     title: string,
     options: {label: string, value: string}[],
     placeHolder?: string,
     columnSpan?: number,
-    rowSpan?: number
+    rowSpan?: number,
+    defaultValue?: string | null
 }) {
-    const [selectedOption, setSelectedOption] = useState<string | null>(null);
+    const [selectedOption, setSelectedOption] = useState<string | null>(defaultValue);
 
     const width = 150 * columnSpan;
 

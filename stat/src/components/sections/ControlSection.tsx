@@ -62,13 +62,15 @@ export function ControlSection({show}: { show: boolean }) {
                         components.push(<DropdownControl key={filter.name} title={filter.name}
                                                          options={filter.options.map((option: any) => {
                                                              return {label: option, value: option};
-                                                         })}/>);
+                                                         })}
+                                                         defaultValue={filter.default}/>);
                         break;
                     case "multiselect":
                         components.push(<MultiSelectControl key={filter.name} title={filter.name}
                                                             options={filter.options.map((option: any) => {
                                                                 return {label: option, value: option};
-                                                            })}/>);
+                                                            })}
+                                                            defaultValues={filter.default}/>);
                         break;
                     case "slider":
                         components.push(<VerticalSliderControl key={filter.name} title={filter.name} min={filter.min}

@@ -13,7 +13,12 @@ interface IPipelineState {
     blocks: BlockModel[]
     activeBlockId: string | null
     frequency: number
-    loading: boolean
+    loading: boolean,
+    controls: {
+        [blockId: string]: {
+            [controlName: string]: any
+        }
+    }
 }
 
 const initialPipelineModel: PipelineModel = {
@@ -28,7 +33,8 @@ const initialState: IPipelineState = {
     blocks: [],
     activeBlockId: null,
     frequency: 60,
-    loading: false
+    loading: false,
+    controls: {}
 }
 
 export const createNewPipeline = createAsyncThunk<PipelineModel, void, { rejectValue: string }>(
@@ -218,6 +224,19 @@ export const pipelineSlice = createSlice({
         },
         setLoading(state, action: PayloadAction<boolean>) {
             state.loading = action.payload;
+        },
+        addControl(state, action: PayloadAction<{ blockId: string, filters: [string, any][] }>) {
+            if (!state.controls[action.payload.blockId]) {
+                state.controls[action.payload.blockId] = {};
+            }
+            action.payload.filters.forEach(([key, value]) => {
+                state.controls[action.payload.blockId][key] = value;
+            });
+        },
+        updateControl(state, action: PayloadAction<{ blockId: string, controlName: string, value: any }>) {
+            if (state.controls[action.payload.blockId]) {
+                state.controls[action.payload.blockId][action.payload.controlName] = action.payload.value;
+            }
         }
     },
     extraReducers: builder => {
@@ -284,7 +303,9 @@ export const {
     setActiveBlockId,
     removeBlock,
     setFileFrequency,
-    setLoading
+    setLoading,
+    addControl,
+    updateControl
 } = pipelineSlice.actions;
 
 export default pipelineSlice.reducer;
