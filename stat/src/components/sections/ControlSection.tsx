@@ -5,8 +5,8 @@ import {KnobControl} from "../controls/KnobControl";
 import {InputControl} from "../controls/InputControl";
 import {DropdownControl} from "../controls/DropdownControl";
 import {RangeControl} from "../controls/RangeControl";
-import {getActiveBlock} from "../../redux/pipelineSlice";
-import {useAppSelector} from "../../hooks";
+import {addControl, getActiveBlock} from "../../redux/pipelineSlice";
+import {useAppDispatch, useAppSelector} from "../../hooks";
 import {useEffect, useState} from "react";
 import {MultiSelectControl} from "../controls/MultiSelectControl";
 import {PrimaryButton} from "../buttons/PrimaryButton";
@@ -44,12 +44,15 @@ export const StyledControl = styled.div<{ $columnSpan: number, $rowSpan: number 
 export function ControlSection({show}: { show: boolean }) {
     const activeBlock = useAppSelector(getActiveBlock);
     const [filterComponents, setFilterComponents] = useState<JSX.Element[]>([]);
+    const dispatch = useAppDispatch();
 
     useEffect(() => {
         setFilterComponents([]);
         if (activeBlock && activeBlock.filters && Object.keys(activeBlock.filters).length > 0) {
             const components: JSX.Element[] = [];
+            let blockControls: { [key: string]: string } = {};
             Object.entries(activeBlock.filters).forEach(([key, filter]) => {
+                blockControls[key] = filter.default;
                 switch (filter.filter_type) {
                     case "boolean":
                         components.push(<FilterControl key={filter.name} title={filter.name} onLabel={"On"}
@@ -86,6 +89,7 @@ export function ControlSection({show}: { show: boolean }) {
                 }
             });
             setFilterComponents(components);
+            dispatch(addControl({blockId: activeBlock.id, filters: blockControls}));
         }
     }, [activeBlock]);
 

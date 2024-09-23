@@ -225,11 +225,11 @@ export const pipelineSlice = createSlice({
         setLoading(state, action: PayloadAction<boolean>) {
             state.loading = action.payload;
         },
-        addControl(state, action: PayloadAction<{ blockId: string, filters: [string, any][] }>) {
+        addControl(state, action: PayloadAction<{ blockId: string, filters: { [key: string]: string } }>) {
             if (!state.controls[action.payload.blockId]) {
                 state.controls[action.payload.blockId] = {};
             }
-            action.payload.filters.forEach(([key, value]) => {
+            Object.entries(action.payload.filters).forEach(([key, value]) => {
                 state.controls[action.payload.blockId][key] = value;
             });
         },
