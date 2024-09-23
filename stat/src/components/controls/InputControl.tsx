@@ -3,6 +3,8 @@ import {StyledControl} from "../sections/ControlSection";
 import {useState} from "react";
 import {PrimaryButton} from "../buttons/PrimaryButton";
 import {ControlTitle} from "./ControlTitle";
+import {useAppDispatch, useAppSelector} from "../../hooks";
+import {getActiveBlock, updateControl} from "../../redux/pipelineSlice";
 
 const StyledInputContainer = styled.div`
   width: 100%;
@@ -36,11 +38,16 @@ export function InputControl({title, unit, columnSpan = 1, rowSpan = 1}: {
     columnSpan?: number,
     rowSpan?: number
 }) {
+    const activeBlock = useAppSelector(getActiveBlock);
+    const dispatch = useAppDispatch();
     const [value, setValue] = useState("");
 
 
     function action() {
         console.log(value);
+        if(activeBlock) {
+            dispatch(updateControl({blockId: activeBlock.id, filter: {key: title, value: value}}));
+        }
     }
 
     return (

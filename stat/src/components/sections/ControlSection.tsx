@@ -5,11 +5,12 @@ import {KnobControl} from "../controls/KnobControl";
 import {InputControl} from "../controls/InputControl";
 import {DropdownControl} from "../controls/DropdownControl";
 import {RangeControl} from "../controls/RangeControl";
-import {addControl, getActiveBlock} from "../../redux/pipelineSlice";
+import {addControl, fetchUpdateBlock, getActiveBlock, getControls, getPipelineModel} from "../../redux/pipelineSlice";
 import {useAppDispatch, useAppSelector} from "../../hooks";
 import {useEffect, useState} from "react";
 import {MultiSelectControl} from "../controls/MultiSelectControl";
 import {PrimaryButton} from "../buttons/PrimaryButton";
+import {updateBlock} from "../../service/blockService";
 
 const StyledControls = styled.div<{ $show: boolean }>`
   display: ${props => (props.$show ? "flex" : "none")};
@@ -42,8 +43,11 @@ export const StyledControl = styled.div<{ $columnSpan: number, $rowSpan: number 
 `;
 
 export function ControlSection({show}: { show: boolean }) {
+    const pipeline = useAppSelector(getPipelineModel);
     const activeBlock = useAppSelector(getActiveBlock);
+    const controls = useAppSelector(getControls);
     const [filterComponents, setFilterComponents] = useState<JSX.Element[]>([]);
+    const [blockFilters, setBlockFilters] = useState<{ [key: string]: string }>({});
     const dispatch = useAppDispatch();
 
     useEffect(() => {
@@ -90,8 +94,20 @@ export function ControlSection({show}: { show: boolean }) {
             });
             setFilterComponents(components);
             dispatch(addControl({blockId: activeBlock.id, filters: blockControls}));
+            setBlockFilters(blockControls);
         }
     }, [activeBlock]);
+
+    function applyFilters() {
+        if (activeBlock) {
+            const updatedFilters: { [key: string]: string } = Object.fromEntries(
+                Object.entries(blockFilters).filter(([key, value]) => value !== null)
+            );
+            dispatch(fetchUpdateBlock({pipelineId: pipeline.id, blockId: activeBlock.id, filters: controls[activeBlock.id]})).then(() => {
+                console.log("Filters applied");
+            })
+        }
+    }
 
 
     return (
@@ -99,7 +115,7 @@ export function ControlSection({show}: { show: boolean }) {
             <StyledControlContainer id={"control-section"} $rowNumber={1}>
                 {filterComponents}
             </StyledControlContainer>
-            <PrimaryButton size={150} text={"Apply"} action={() => console.log("Apply button clicked")}/>
+            <PrimaryButton size={150} text={"Apply"} action={() => applyFilters()}/>
         </StyledControls>
     )
 }

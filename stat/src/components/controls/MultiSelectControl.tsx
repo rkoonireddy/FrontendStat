@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { StyledControl } from "../sections/ControlSection";
 import { MultiSelect } from "primereact/multiselect";
 import { ControlTitle } from "./ControlTitle";
+import {useAppDispatch, useAppSelector} from "../../hooks";
+import {getActiveBlock, updateControl} from "../../redux/pipelineSlice";
 
 export function MultiSelectControl({ title, options, placeHolder = "Select...", columnSpan = 1, rowSpan = 1, defaultValues = null }: {
     title: string,
@@ -11,6 +13,8 @@ export function MultiSelectControl({ title, options, placeHolder = "Select...", 
     rowSpan?: number,
     defaultValues?: string[] | null
 }) {
+    const activeBlock = useAppSelector(getActiveBlock);
+    const dispatch = useAppDispatch();
     const [selectedOptions, setSelectedOptions] = useState<string[]>(defaultValues || []);
 
     const width = 150 * columnSpan;
@@ -18,6 +22,9 @@ export function MultiSelectControl({ title, options, placeHolder = "Select...", 
     useEffect(() => {
         if (defaultValues) {
             setSelectedOptions(defaultValues);
+        }
+        if(activeBlock) {
+            dispatch(updateControl({blockId: activeBlock.id, filter: {key: title, value: selectedOptions}}));
         }
     }, [defaultValues]);
 

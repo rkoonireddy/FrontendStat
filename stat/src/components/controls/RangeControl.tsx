@@ -3,6 +3,8 @@ import {useState} from "react";
 import {Slider} from "primereact/slider";
 import {StyledControl} from "../sections/ControlSection";
 import {ControlTitle} from "./ControlTitle";
+import {useAppDispatch, useAppSelector} from "../../hooks";
+import {getActiveBlock, updateControl} from "../../redux/pipelineSlice";
 
 const StyledRangeContainer = styled.div`
   position: relative;
@@ -32,9 +34,17 @@ export function RangeControl({title, range, columnSpan = 2, rowSpan = 1}: {
     columnSpan?: number,
     rowSpan?: number
 }) {
-
+    const activeBlock = useAppSelector(getActiveBlock);
+    const dispatch = useAppDispatch();
     const [value, setValue] = useState<[number, number]>(range);
     const width = 175 * columnSpan;
+
+    function updateRange(minMaxValue: [number, number]) {
+        if(activeBlock) {
+            dispatch(updateControl({blockId: activeBlock.id, filter: {key: title, value: minMaxValue}}));
+        }
+        setValue(minMaxValue);
+    }
 
     return (
         <StyledControl $columnSpan={columnSpan} $rowSpan={rowSpan}>
@@ -44,7 +54,7 @@ export function RangeControl({title, range, columnSpan = 2, rowSpan = 1}: {
                 <Slider value={value}
                         orientation={"horizontal"}
                         style={{width: width + "px", margin: "auto 10px"}}
-                        onChange={(e) => setValue(e.value as [number, number])}
+                        onChange={(e) => updateRange(e.value as [number, number])}
                         range/>
                 <StyledRangeValue $left={false}>{value[1]}</StyledRangeValue>
             </StyledRangeContainer>

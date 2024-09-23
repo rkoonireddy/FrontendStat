@@ -3,7 +3,14 @@ import {createAsyncThunk, createSelector, createSlice, PayloadAction} from "@red
 import {RootState} from "../store";
 import {BlockModel, CreateBlockResponse} from "../types/responseType";
 import {createPipeline, fetchPipeline, runPipeline} from "../service/pipelineService";
-import {addBlockToPipeline, createBlock, deleteBlock, getFullBlock, runBlock} from "../service/blockService";
+import {
+    addBlockToPipeline,
+    createBlock,
+    deleteBlock,
+    getFullBlock,
+    runBlock,
+    updateBlock
+} from "../service/blockService";
 import {createEdges, createNodesFromBlocks} from "../util/util";
 import {addEdgeToPipeline} from "../service/edgeService";
 
@@ -147,6 +154,19 @@ export const executePipeline = createAsyncThunk<string, { pipelineId: string, st
     }
 );
 
+export const fetchUpdateBlock = createAsyncThunk<string, { pipelineId: string, blockId: string, filters: { [key: string]: string } }, { rejectValue: string }>(
+    'pipeline/updateBlock',
+    async ({pipelineId, blockId, filters}, thunkAPI) => {
+        try {
+            const response = await updateBlock({blockId, filters});
+            thunkAPI.dispatch(updatePipeline({pipelineId}));
+            return response
+        } catch (error) {
+            return thunkAPI.rejectWithValue('Failed to fetch full block');
+        }
+    }
+);
+
 
 export const deleteBlockFromPipeline = createAsyncThunk<void, { blockId: string, pipelineId: string }, {
     rejectValue: string
@@ -225,7 +245,7 @@ export const pipelineSlice = createSlice({
         setLoading(state, action: PayloadAction<boolean>) {
             state.loading = action.payload;
         },
-        addControl(state, action: PayloadAction<{ blockId: string, filters: { [key: string]: string } }>) {
+        addControl(state, action: PayloadAction<{ blockId: string, filters: { [key: string]: any } }>) {
             if (!state.controls[action.payload.blockId]) {
                 state.controls[action.payload.blockId] = {};
             }
@@ -233,9 +253,10 @@ export const pipelineSlice = createSlice({
                 state.controls[action.payload.blockId][key] = value;
             });
         },
-        updateControl(state, action: PayloadAction<{ blockId: string, controlName: string, value: any }>) {
-            if (state.controls[action.payload.blockId]) {
-                state.controls[action.payload.blockId][action.payload.controlName] = action.payload.value;
+        updateControl(state, action: PayloadAction<{ blockId: string, filter: { key: string, value: any } }>) {
+            if (state.controls[action.payload.blockId][action.payload.filter.key]) {
+                console.log(action.payload.filter.value);
+                state.controls[action.payload.blockId][action.payload.filter.key] = action.payload.filter.value;
             }
         }
     },
@@ -344,3 +365,5 @@ export const isBlockRunnable = createSelector(
         return Object.values(pipeline.edge_dict).some(targets => targets.includes(blockId));
     }
 );
+
+export const getControls = (state: RootState) => state.pipeline.controls;

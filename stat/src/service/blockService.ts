@@ -52,6 +52,27 @@ export function updateCSVLoaderBlock({blockId, csvString, frequency_hz, header}:
         });
 }
 
+export function updateBlock({blockId, filters}: {blockId: string, filters: { [key: string]: string }}): Promise<string> {
+    console.log(JSON.stringify(filters));
+    return fetch(baseurl + `block/${blockId}`,
+        {
+            method: "PUT",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(filters)
+        })
+        .then(async response => {
+            if (!response.ok) {
+                return response.text().then(err => {
+                    throw new Error(err);
+                });
+            } else {
+                return await response.json();
+            }
+        });
+}
+
 export function getFullBlock({blockId}: { blockId: string }): Promise<BlockModel> {
     return fetch(baseurl + `block_full/${blockId}`)
         .then(async response => {
