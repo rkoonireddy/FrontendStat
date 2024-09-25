@@ -3,15 +3,18 @@ import logoNoBg from "../../assets/logo-no-bg.png";
 import {PrimaryButton} from "../buttons/PrimaryButton";
 import {useNavigate} from "react-router-dom";
 import {ChangeEvent, useState} from "react";
-import {rawDataExists, readData, resetData} from "../../redux/dataSlice";
+import {getPreviewData, rawDataExists, previewDataExists, readData, setRawData, resetData, resetPreviewData} from "../../redux/dataSlice";
 import {useAppDispatch, useAppSelector} from "../../hooks";
 import {
+    resetPipelineData,
     createNewBlock,
-    createNewPipeline, resetPipelineData,
+    createNewPipeline,
     setFileFrequency
 } from "../../redux/pipelineSlice";
 import {Popup} from "../pageElements/Popup";
+import {PopupPreview} from "../pageElements/PopupPreview";
 import {StyledInput, StyledUnit} from "../controls/InputControl";
+import {PreviewTable} from "../tables/PreviewTable";
 
 
 const StyledHomeContainer = styled.div`
@@ -72,10 +75,9 @@ const StyledFrequencyInputContainer = styled.div`
   justify-content: center;
 `;
 
-function FileUpload({onClose}: { onClose: (arg0: boolean) => void }) {
+function FileUpload({onClose, onUpload}: { onClose: (arg0: boolean) => void, onUpload: (frequency: number) => void}) {
     const [file, setFile] = useState<File | null>(null);
     const [frequency, setFrequency] = useState<number>(0);
-    const navigate = useNavigate();
     const dispatch = useAppDispatch();
 
     const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -93,13 +95,14 @@ function FileUpload({onClose}: { onClose: (arg0: boolean) => void }) {
         if (file && frequency) {
             const formData = new FormData();
             formData.append('csvFile', file);
-            dispatch(resetData());
-            dispatch(resetPipelineData());
-            dispatch(readData(formData) as any);
-            await dispatch(createNewPipeline());
-            dispatch(setFileFrequency(frequency));
-            dispatch(createNewBlock({blockType: 'CSVStringLoader', blockName: 'Data loader'}));
-            navigate('/main');
+            // Do not reset any rawData yet in case user stops the upload
+            try {
+                // This sets the previewData in the redux store
+                await dispatch(readData(formData) as any).unwrap();
+                onUpload(frequency);
+            } catch (error) {
+                console.error("File upload failed:", error);
+            }
         }
     }
 
@@ -111,16 +114,55 @@ function FileUpload({onClose}: { onClose: (arg0: boolean) => void }) {
                              onChange={handleFrequencyChange}/>
                 <StyledUnit>HZ</StyledUnit>
             </StyledFrequencyInputContainer>
-            <PrimaryButton text={"Upload"} action={handleUpload} disabled={!file || !frequency}/>
+            {!file || !frequency || !(file.type === 'text/csv' || file.type === 'application/vnd.ms-excel') ? <p>Select CSV file</p> : <PrimaryButton text={"Upload"} action={handleUpload}/>}
         </Popup>
     )
 }
 
 export default function HomePage() {
     const navigate = useNavigate();
+    const dispatch = useAppDispatch();
     const dataExists = useAppSelector(rawDataExists);
-    const [isPopupOpen, setIsPopupOpen] = useState(false);
+    const previewData = useAppSelector(getPreviewData);
+    const previewDataExistsBool = useAppSelector(previewDataExists);
+    const [frequency, setFrequency] = useState(0);
+    const [isFileUploadOpen, setIsFileUploadOpen] = useState(false);
+    const [isFilePreviewOpen, setIsFilePreviewOpen] = useState(false);
 
+    const handleFileUpload = (frequency: number) => {
+        setFrequency(frequency);
+        setIsFileUploadOpen(false);
+        setIsFilePreviewOpen(true);
+    }
+
+    const handleAccept = async (selectedColumns: string[]) => {
+
+        // First reset rawData and pipelineData
+        dispatch(resetData());
+        dispatch(resetPipelineData());
+
+        // Filter the previewData with the selction from the preview
+        const newRawData = previewData.map(row =>
+            Object.fromEntries(Object.entries(row).filter(([key]) => selectedColumns.includes(key)))
+        );
+        // Update the rawData in the redux store
+        dispatch(setRawData(newRawData));
+
+        // Create pipeline and block
+        await dispatch(createNewPipeline());
+        dispatch(setFileFrequency(frequency));
+        dispatch(createNewBlock({blockType: 'CSVStringLoader', blockName: 'Data loader'}));
+
+        // route to /main
+        navigate('/main');
+    }
+
+    const handleOnClose = () => {
+        // Reset the previewData in the redux store
+        dispatch(resetPreviewData());
+        setIsFileUploadOpen(false);
+        setIsFilePreviewOpen(false);
+    }
 
     return (
         <StyledHomeContainer>
@@ -145,12 +187,17 @@ export default function HomePage() {
                         approaches!
                     </p>
                     <StyledButtonContainer>
-                        <PrimaryButton text={"Upload Sample"} action={() => setIsPopupOpen(true)}/>
+                        <PrimaryButton text={"Upload Sample"} action={() => setIsFileUploadOpen(true)}/>
                         {dataExists ? <PrimaryButton text={"Resume"} action={() => navigate('/main')}/> : null}
                     </StyledButtonContainer>
                 </StyledContentContainer>
             </StyledHomeContentContainer>
-            {isPopupOpen && <FileUpload onClose={setIsPopupOpen}/>}
+            {isFileUploadOpen && <FileUpload onClose={handleOnClose} onUpload={handleFileUpload}/>}
+            {isFilePreviewOpen && previewDataExistsBool &&
+                <PopupPreview title={"File preview"} showPopup={handleOnClose} large={true}>
+                    <PreviewTable onAccept={handleAccept}></PreviewTable>
+                </PopupPreview>
+            }
         </StyledHomeContainer>
     )
 }

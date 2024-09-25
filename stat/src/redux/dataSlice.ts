@@ -5,26 +5,29 @@ import {convertToCSV} from "../util/util";
 
 
 interface IDataState {
+    previewData: { [key: string]: string }[],
     rawData: { [key: string]: string; }[],
     filteredData: { [key: string]: string; }[],
     filteredDataChanged: boolean
 }
 
 const initialState: IDataState = {
+    previewData: [] as Array<{ [key: string]: string }>,
     rawData: [] as Array<{ [key: string]: string }>,
     filteredData: [] as Array<{ [key: string]: string }>,
     filteredDataChanged: false
 }
 
 export const readData = createAsyncThunk("data/readData",
-    async (rawData: FormData, thunkAPI) => {
+    async (previewData: FormData, thunkAPI) => {
         try {
-            return await parseCSV({formData: rawData});
+            return await parseCSV({formData: previewData});
         } catch (error) {
             return thunkAPI.rejectWithValue(error);
         }
 
-    });
+    }
+);
 
 
 export const dataSlice = createSlice({
@@ -32,10 +35,18 @@ export const dataSlice = createSlice({
     initialState,
     reducers: {
         resetData: (state) => {
-            console.log("resetting data");
+            state.previewData = [];
             state.rawData = [];
             state.filteredData = [];
             state.filteredDataChanged = false;
+        },
+        resetPreviewData: (state) => {
+            state.previewData = [];
+        },
+        setPreviewData: (state: { previewData: { [key: string]: string; }[]; }, action: {
+            payload: { [key: string]: string; }[];
+        }) => {
+            state.previewData = action.payload;
         },
         setRawData: (state: { rawData: { [key: string]: string; }[]; }, action: {
             payload: { [key: string]: string; }[];
@@ -55,9 +66,7 @@ export const dataSlice = createSlice({
     },
     extraReducers: builder => {
         builder.addCase(readData.fulfilled, (state, action) => {
-            state.rawData = action.payload;
-            state.filteredData = action.payload;
-            state.filteredDataChanged = true;
+            state.previewData = action.payload;
         });
         builder.addCase(readData.rejected, (state, action) => {
             console.log(action.error.message);
@@ -67,6 +76,8 @@ export const dataSlice = createSlice({
 
 export const {
     resetData,
+    resetPreviewData,
+    setPreviewData,
     setRawData,
     setFilteredData,
     setFilteredDataChanged} = dataSlice.actions;
@@ -74,6 +85,13 @@ export const {
 export default dataSlice.reducer;
 
 export const getData = (state: RootState) => state.data.rawData;
+
+export const getPreviewData = (state: RootState) => state.data.previewData;
+
+export const previewDataExists = createSelector(
+    getPreviewData,
+    (data) => data.length > 0
+);
 
 export const rawDataExists = createSelector(
     getData,
