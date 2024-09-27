@@ -50,3 +50,6 @@ docker build -t stat:0.1.0 .
 
 ## Run docker container
 docker run -p 3000:3000 stat:0.1.0
+
+## Docker Troubleshooting
+If you get an error like "data not defined" when starting the Docker container for the first time and trying to open the application: Try to clear all localStorage from your browser.
