@@ -21,7 +21,7 @@ const StyledCSVTable = styled.table<{ $small?: boolean }>`
   max-height: 100%;
 `;
 
-const StyledTableHeader = styled.th<{ $isSelected: boolean }>`
+export const StyledTableHeader = styled.th<{ $isSelected: boolean }>`
   background-color: ${props => props.$isSelected ? '#3D3D3D' : '#adacac'};
   color: ${props => props.$isSelected ? '#00bfa6' : '#808080'};
   border: 1px solid #00bfa6;
@@ -29,18 +29,18 @@ const StyledTableHeader = styled.th<{ $isSelected: boolean }>`
   text-align: left;
 `;
 
-const StyledTableCell = styled.td<{ $isSelected: boolean }>`
+export const StyledTableCell = styled.td<{ $isSelected: boolean }>`
   border: 1px solid #00bfa6;
   color: ${props => props.$isSelected ? '#ffffff' : '#808080'};
   padding: 8px;
   background-color: ${props => props.$isSelected ? '#3D3D3D' : '#adacac'};
 `;
 
-const StyledFilterContainer = styled.div`
+export const StyledFilterContainer = styled.div`
   margin-bottom: 20px;
 `;
 
-const StyledCheckbox = styled.input`
+export const StyledCheckbox = styled.input`
   margin-right: 10px;
   color: white
 `;

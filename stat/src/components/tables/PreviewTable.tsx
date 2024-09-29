@@ -5,6 +5,13 @@ import styled from "styled-components";
 import {useState} from "react";
 import { PrimaryButton } from "../buttons/PrimaryButton";
 import {useAppSelector} from "../../hooks";
+import {StyledCheckbox, StyledTableCell, StyledTableHeader} from "../charts/CSVViewer";
+
+const StyledPreviewPopupContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+`;
 
 const StyledCSVTable = styled.table`
   width: 100%;
@@ -13,32 +20,8 @@ const StyledCSVTable = styled.table`
   margin-top: 20px;
   margin-bottom: 20px;
   border: 1px solid #ddd;
-  font-size: '1rem';
+  font-size: 1rem;
   max-height: 100%;
-`;
-
-const StyledTableHeader = styled.th<{ $isSelected: boolean }>`
-  background-color: ${props => props.$isSelected ? '#3D3D3D' : '#adacac'};
-  color: ${props => props.$isSelected ? '#00bfa6' : '#808080'};
-  border: 1px solid #00bfa6;
-  padding: 8px;
-  text-align: left;
-`;
-
-const StyledTableCell = styled.td<{ $isSelected: boolean }>`
-  border: 1px solid #00bfa6;
-  color: ${props => props.$isSelected ? '#ffffff' : '#808080'};
-  padding: 8px;
-  background-color: ${props => props.$isSelected ? '#3D3D3D' : '#adacac'};
-`;
-
-const StyledFilterContainer = styled.div`
-  margin-bottom: 20px;
-`;
-
-const StyledCheckbox = styled.input`
-  margin-right: 10px;
-  color: white
 `;
 
 export function PreviewTable({onAccept} : {onAccept: (arg0: string[]) => void}) {
@@ -65,7 +48,7 @@ export function PreviewTable({onAccept} : {onAccept: (arg0: string[]) => void}) 
             {headerData.length === 0 ? (
                 <div>No data available</div>
             ) : (
-                <div>
+                <StyledPreviewPopupContainer>
                     <StyledCSVTable>
                         <thead>
                         <tr>
@@ -94,7 +77,7 @@ export function PreviewTable({onAccept} : {onAccept: (arg0: string[]) => void}) 
                         </tbody>
                     </StyledCSVTable>
                     {selectedColumns.length > 0 ? <PrimaryButton text = "Upload" action = {acceptClicked}></PrimaryButton> : <p>Select at least one column</p>}
-                </div>
+                </StyledPreviewPopupContainer>
             )   
             }
         </div>

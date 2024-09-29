@@ -114,7 +114,7 @@ function FileUpload({onClose, onUpload}: { onClose: (arg0: boolean) => void, onU
                              onChange={handleFrequencyChange}/>
                 <StyledUnit>HZ</StyledUnit>
             </StyledFrequencyInputContainer>
-            {!file || !frequency || !(file.type === 'text/csv' || file.type === 'application/vnd.ms-excel') ? <p>Select CSV file</p> : <PrimaryButton text={"Upload"} action={handleUpload}/>}
+            {!file || !frequency || !(file.type === 'text/csv' || file.type === 'application/vnd.ms-excel') ? <p>Select CSV file</p> : <PrimaryButton text={"Preview"} action={handleUpload}/>}
         </Popup>
     )
 }
