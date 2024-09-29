@@ -77,8 +77,10 @@ export function convertToCSV(data: { [key: string]: string }[]): string {
 
 export function convertToDataPoints(data: any[]): DataPoint[][] {
     const xValues = data[0].data.data;
-    const yValues = data[1].data.data;
-    return [xValues.map((x: number, i: number) => ({x: x, y: yValues[i]}))];
+    const yArray = data.slice(1);
+    return yArray.map((yData: any) => yData.data.data.map((y: number, i: number) => ({x: xValues[i], y: y})));
+    // const yValues = data[1].data.data;
+    // return [xValues.map((x: number, i: number) => ({x: x, y: yValues[i]}))];
 }
 
 export function getFirstKey(dict: Record<string, any>): string | undefined {
