@@ -141,7 +141,7 @@ export default function HomePage() {
         dispatch(resetData());
         dispatch(resetPipelineData());
 
-        // Filter the previewData with the selction from the preview
+        // Filter the previewData with the selection from the preview
         const newRawData = previewData.map(row =>
             Object.fromEntries(Object.entries(row).filter(([key]) => selectedColumns.includes(key)))
         );

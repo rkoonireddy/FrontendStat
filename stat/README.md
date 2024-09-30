@@ -1,12 +1,27 @@
-# Getting Started with Create React App
+# STAT - Frontend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This application is a web application utilizing the Statistical Timeseries Analysis Toolkit (STAT) python library. STAT
+helps researchers and analysts to test out different data preparation pipelines interactively. A link to the library 
+can be found [here](https://github.com/Darnol/mp_backend_draft).
 
-## Available Scripts
+## User Guide
 
-In the project directory, you can run:
+- TODO: George
 
-### `npm start`
+## Developers Guide
+
+This section aims to provide an overview of the project structure, design decisions, run instructions and details about
+extendability.
+
+### Project Structure
+
+
+### Design Decisions
+
+
+### Run Instructions
+
+#### `npm start`
 
 Runs the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
@@ -14,12 +29,12 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 The page will reload if you make edits.\
 You will also see any lint errors in the console.
 
-### `npm test`
+#### `npm test`
 
 Launches the test runner in the interactive watch mode.\
 See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-### `npm run build`
+#### `npm run build`
 
 Builds the app for production to the `build` folder.\
 It correctly bundles React in production mode and optimizes the build for the best performance.
@@ -29,27 +44,14 @@ Your app is ready to be deployed!
 
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-### `npm run eject`
+#### Docker instruction
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+Built docker container
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+`docker build -t stat:0.1.0 .`
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+Run docker container
+`docker run -p 3000:3000 stat:0.1.0`
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-## Built docker container
-docker build -t stat:0.1.0 .
-
-## Run docker container
-docker run -p 3000:3000 stat:0.1.0
-
-## Docker Troubleshooting
-If you get an error like "data not defined" when starting the Docker container for the first time and trying to open the application: Try to clear all localStorage from your browser.
+> [!NOTE]
+> If you get an error like "data not defined" when starting the Docker container for the first time and trying to open the application: Try to clear all localStorage from your browser.
