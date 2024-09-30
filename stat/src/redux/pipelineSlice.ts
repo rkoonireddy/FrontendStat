@@ -333,6 +333,8 @@ export default pipelineSlice.reducer;
 
 export const getPipeline = (state: RootState) => state.pipeline.pipelineModel;
 
+export const getFrequency = (state: RootState) => state.pipeline.frequency;
+
 export const getBlocks = (state: RootState) => state.pipeline.blocks;
 
 export const getAllNodes = createSelector(

@@ -9,7 +9,7 @@ import styled from "styled-components";
 import {useState, useEffect, useRef} from "react";
 import {useAppDispatch, useAppSelector} from "../../hooks";
 import {updateCSVLoaderBlock} from "../../service/blockService";
-import {fetchFullBlock} from "../../redux/pipelineSlice";
+import {fetchFullBlock, getFrequency} from "../../redux/pipelineSlice";
 
 const StyledCSVTable = styled.table<{ $small?: boolean }>`
   width: 100%;
@@ -49,8 +49,8 @@ export default function CSVViewer({blockId, small}: { blockId: string, small?: b
     const dispatch = useAppDispatch();
     const rawData = useAppSelector(getData);
     const filteredDataChanged = useAppSelector(getFilteredDataChanged);
-    const filteredDataCSVString = useAppSelector(getFilteredDataAsCSVString)
-    // const activeBlockId = useAppSelector(getActiveBlockId);
+    const filteredDataCSVString = useAppSelector(getFilteredDataAsCSVString);
+    const dataFrequency = useAppSelector(getFrequency);
     const data = rawData.slice(0, 20);
     const columns = data.length > 0 ? Object.keys(data[0]) : [];
 
@@ -62,7 +62,7 @@ export default function CSVViewer({blockId, small}: { blockId: string, small?: b
             dispatch(setFilteredDataChanged(false));
             updateCSVLoaderBlock({
                 blockId: blockId,
-                frequency_hz: 120,
+                frequency_hz: dataFrequency,
                 csvString: filteredDataCSVString,
                 header: true
             }).then(r => {
