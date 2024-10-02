@@ -1,7 +1,6 @@
 import styled from "styled-components";
 import {VerticalSliderControl} from "../controls/SliderControl";
 import {FilterControl} from "../controls/FilterControl";
-import {KnobControl} from "../controls/KnobControl";
 import {InputControl} from "../controls/InputControl";
 import {DropdownControl} from "../controls/DropdownControl";
 import {RangeControl} from "../controls/RangeControl";
@@ -10,7 +9,6 @@ import {useAppDispatch, useAppSelector} from "../../hooks";
 import {useEffect, useState} from "react";
 import {MultiSelectControl} from "../controls/MultiSelectControl";
 import {PrimaryButton} from "../buttons/PrimaryButton";
-import {updateBlock} from "../../service/blockService";
 
 const StyledControls = styled.div<{ $show: boolean }>`
   display: ${props => (props.$show ? "flex" : "none")};

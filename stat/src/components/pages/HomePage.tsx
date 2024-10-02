@@ -12,7 +12,6 @@ import {
     setFileFrequency
 } from "../../redux/pipelineSlice";
 import {Popup} from "../pageElements/Popup";
-import {PopupPreview} from "../pageElements/PopupPreview";
 import {StyledInput, StyledUnit} from "../controls/InputControl";
 import {PreviewTable} from "../tables/PreviewTable";
 
@@ -75,7 +74,7 @@ const StyledFrequencyInputContainer = styled.div`
   justify-content: center;
 `;
 
-function FileUpload({onClose, onUpload}: { onClose: (arg0: boolean) => void, onUpload: (frequency: number) => void}) {
+function FileUpload({onClose, onUpload}: { onClose: () => void, onUpload: (frequency: number) => void}) {
     const [file, setFile] = useState<File | null>(null);
     const [frequency, setFrequency] = useState<number>(0);
     const dispatch = useAppDispatch();
@@ -107,7 +106,7 @@ function FileUpload({onClose, onUpload}: { onClose: (arg0: boolean) => void, onU
     }
 
     return (
-        <Popup title={"File upload"} showPopup={onClose}>
+        <Popup title={"File upload"} onCloseAction={onClose}>
             <StyledInput $width={"300px"} $margin={'20px 0 0 0'} type="file" accept=".csv" onChange={handleFileChange}/>
             <StyledFrequencyInputContainer>
                 <StyledInput $largeText={true} type="number" value={frequency}
@@ -157,7 +156,7 @@ export default function HomePage() {
         navigate('/main');
     }
 
-    const handleOnClose = () => {
+    function handleOnClose() {
         // Reset the previewData in the redux store
         dispatch(resetPreviewData());
         setIsFileUploadOpen(false);
@@ -194,9 +193,9 @@ export default function HomePage() {
             </StyledHomeContentContainer>
             {isFileUploadOpen && <FileUpload onClose={handleOnClose} onUpload={handleFileUpload}/>}
             {isFilePreviewOpen && previewDataExistsBool &&
-                <PopupPreview title={"File preview"} showPopup={handleOnClose} large={true}>
+                <Popup title={"File preview"} onCloseAction={handleOnClose} large={true}>
                     <PreviewTable onAccept={handleAccept}></PreviewTable>
-                </PopupPreview>
+                </Popup>
             }
         </StyledHomeContainer>
     )

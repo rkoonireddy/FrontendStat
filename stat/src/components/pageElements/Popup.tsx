@@ -37,10 +37,10 @@ const StyledTitle = styled.div`
   margin: 15px auto;
 `;
 
-export function Popup({ children, title, showPopup, large=false}: { children: ReactNode, title: string, showPopup: (arg0: boolean) => void, large?: boolean }) {
+export function Popup({ children, title, onCloseAction, large=false}: { children: ReactNode, title: string, onCloseAction: () => void, large?: boolean }) {
     return (
         <StyledPopup $large={large}>
-            <XSVG onClick={() => showPopup(false)}/>
+            <XSVG onClick={onCloseAction}/>
             <StyledTitle>{title}</StyledTitle>
             {children}
         </StyledPopup>

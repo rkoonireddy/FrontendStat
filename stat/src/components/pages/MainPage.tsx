@@ -76,11 +76,15 @@ function MainPage() {
         }
     }
 
+    function closePopup() {
+        setShowCreateBlockPopup(false);
+    }
+
     return (
         <StyledMainPage>
             {loading && <Loading />}
             {showCreateBlockPopup &&
-                <Popup title={"Create Block"} showPopup={setShowCreateBlockPopup}>
+                <Popup title={"Create Block"} onCloseAction={closePopup}>
                     <StyledInput $largeText={true} $width={"200px"} type="text" placeholder="Block Name"
                                  onChange={(e) => setBlockName(e.target.value)}/>
                     <Dropdown id={"typeDropdown"} placeholder="Block Type"
