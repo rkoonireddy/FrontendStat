@@ -19,13 +19,6 @@ export type Pipeline = {
     steps: PipelineStep[],
 }
 
-export interface NodeType {
-    id: string;
-    data: { label: string };
-    position: { x: number; y: number };
-    type?: string;
-}
-
 export interface PipelineModel {
     id: string,
     block_dict: { [key: string]: string[] },

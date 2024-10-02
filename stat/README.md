@@ -97,9 +97,17 @@ extendability.
 - `redux/` - Contains the different Redux slices that are used in the project. Each slice is a separate file and contains the actions, reducers and selectors for a specific part of the application (data & pipeline).
   - `dataSlice` - Contains the actions, reducers and selectors for the data part of the application. This includes the uploaded raw data as well as the filtered data.
   - `pipelineSlice` - Contains the actions, reducers and selectors for the pipeline part of the application. This includes the pipeline, blocks and edges. The API requests to the backend are sent via AsyncThunks to persist the state of the Redux store.
-- `sercice/` - All the API calls made by the application are stored here. Each entity has its own file with the respective CRUD calls.
+- `service/` - All the API calls made by the application are stored here. Each entity has its own file with the respective CRUD calls.
+  - `blockService` - Contains the CRUD calls for the blocks.
+  - `edgeService` - Contains the CRUD calls for the edges.
+  - `pipelineService` - Contains the CRUD calls for the pipeline.
+  - `dataService` - Contains requests related to the uploaded data.
 - `types/` - Contains the types used throughout the project.
-- `util/` - All utility functions used in the project are stored here. This includes functions for data processing, data visualization, etc.
+  - `dataTypes` - Contains the most important types used throughout the project. **PipelineModel** and **DataPoint** are the most important ones.
+  - `nodeTypes` - Contains the custom ReactFlow-Node types.
+  - `responseTypes` - Contains the return types of the backend-API calls.
+- `util/` - A collection of utility functions used throughout the project.
+  - `util` - All utility functions used in the project are stored here. This includes functions for data processing, data visualization, etc.
 
 ### Design Decisions
 
