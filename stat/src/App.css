@@ -1,11 +1,12 @@
 @font-face {
-  font-family: 'Gaoel';
-  src: url("./fonts/gaoel-1/web-font/Gaoel.woff") format('woff'),
-       url("./fonts/gaoel-1/web-font/Gaoel.ttf") format('truetype');
+    font-family: 'Gaoel';
+    src: url("./fonts/gaoel-1/web-font/Gaoel.woff") format('woff'),
+    url("./fonts/gaoel-1/web-font/Gaoel.ttf") format('truetype');
 }
 
 body {
-  font-family: 'Gaoel', sans-serif;
+    font-family: 'Gaoel', sans-serif;
+    margin: 0;
 }
 
 .p-component {
@@ -13,7 +14,7 @@ body {
 }
 
 .p-inputswitch.p-highlight .p-inputswitch-slider {
-    background: #73B5B4!important;
+    background: #73B5B4 !important;
 }
 
 .p-slider .p-slider-range {

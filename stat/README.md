@@ -108,6 +108,11 @@ extendability.
   - `responseTypes` - Contains the return types of the backend-API calls.
 - `util/` - A collection of utility functions used throughout the project.
   - `util` - All utility functions used in the project are stored here. This includes functions for data processing, data visualization, etc.
+- `App.css` - The global styles and font config of the application can be found here.
+- `App.tsx` - The entry point of the application. The routing and the main structure of the application are defined here.
+- `hooks.ts` - Contains the ***useAppDispatch*** and ***useAppSelector*** hooks which are used to access the Redux store.
+- `index.tsx` - The root of the application. The mother of all components.
+- `store.ts` - The Redux store is created here. The store is configured with the different slices and a persistor to keep application data even after a page has been reloaded.
 
 ### Design Decisions
 
@@ -156,3 +161,55 @@ Run docker container
 > If you get an error like "data not defined" when starting the Docker container for the first time and trying to open the application: Try to clear all localStorage from your browser.
 
 ### Extendability
+
+The application is designed to be easily extendable. Adding different visualization types, controls or other elements should be straightforward.
+
+#### Add a new control
+To add a new control follow these steps:
+1. Create a new file in the `controls/` folder and copy the contents of the most similar control. 
+2. Use and modify an existing control from the [PrimeReact](https://primereact.org/installation/) website by expanding the ***Components*** pane on the left or create a new one from scratch.
+3. Edit the required functional parameters.
+4. Make sure to update the ***action*** function by dispatching the ***updateControl*** action from the `pipelineSlice`.
+
+> Tip: Try to use the already existing Styled Components to keep the design consistent.
+
+
+#### Add a new chart
+The charts visualize data in a block. To add a new chart follow these steps:
+1. Select a chart library that fits the requirements of the new chart. D3 is recommended for custom charts.
+2. Create a new file in the `charts/` folder with the name of your chart.
+3. Fetch the block data from the Redux store using the blockId provided as a parameter.
+4. Convert the outputs of the block to the required format of the chart library. 
+    > You can use the ***convertToDataPoints*** function from `util.ts` to convert the output into a list of x and y values, or create your own function to convert the data into the desired format
+5. Make sure the chart supports multiple data points (lines) and can be resized dynamically.
+6. Configure the `VizSection` to display the new chart when the desired condition is met.
+
+> Tip: Use the `LineChart` as a template for the new chart.
+
+#### Add a new custom node or edge
+To add a new custom node or edge similar to the ones found in the `customReactFlow/` folder follow these steps:
+1. Create a new file in the `customReactFlow/` folder with the name of your node or edge.
+2. Copy the contents of the most similar node or edge.
+3. Modify the design or functionality to meet your needs.
+4. Export the new node or edge.
+5. Add it to the **NodeTypes** or **edgeTypes** defined in the `StepsSection` component.
+
+```ts
+// Add custom node example
+const NodeTypes = {
+    customNode: CustomNode, 
+    customStartNode: CustomStartNode
+};
+// Add custom edge example
+const edgeTypes = {
+    'custom-edge': CustomEdge
+}
+// ...
+// Add the custom nodes and edges to the ReactFlow component
+<ReactFlow
+//...
+nodeTypes={NodeTypes}
+edgeTypes={edgeTypes}
+//...
+/>
+```
