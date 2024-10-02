@@ -1,6 +1,8 @@
 import {BaseEdge, getBezierPath, EdgeProps, EdgeLabelRenderer, useReactFlow} from '@xyflow/react';
 import {ReactComponent as TrashSVG} from "../../assets/trash.svg";
 import styled from "styled-components";
+import {useAppDispatch, useAppSelector} from "../../hooks";
+import {deleteEdgeFromPipeline, getPipelineModel} from "../../redux/pipelineSlice";
 
 const StyledBaseEdge = styled(BaseEdge)`
   stroke-width: 2;
@@ -32,7 +34,8 @@ const StyledDeleteIconContainer = styled.div<{ $transform: string }>`
 `;
 
 export default function CustomEdge({id, sourceX, sourceY, targetX, targetY}: EdgeProps) {
-    const {setEdges} = useReactFlow();
+    const pipeline = useAppSelector(getPipelineModel);
+    const dispatch = useAppDispatch();
     const [edgePath, labelX, labelY] = getBezierPath({
         sourceX,
         sourceY,
@@ -45,8 +48,9 @@ export default function CustomEdge({id, sourceX, sourceY, targetX, targetY}: Edg
                 <StyledBaseEdge id={id} path={edgePath}/>
                     <EdgeLabelRenderer>
                         <StyledDeleteIconContainer title={"Delete Edge"}
-                            $transform={`translate(-5%, -50%) translate(${labelX}px, ${labelY}px)`} onClick={() => {
-                            setEdges((es) => es.filter((e) => e.id !== id));
+                            $transform={`translate(-5%, -50%) translate(${labelX}px, ${labelY}px)`} onClick={(e) => {
+                                dispatch(deleteEdgeFromPipeline({pipelineId: pipeline.id, edgeId: id}));
+                                e.stopPropagation();
                         }}>
                             <TrashSVG/>
                         </StyledDeleteIconContainer>

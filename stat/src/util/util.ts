@@ -54,7 +54,7 @@ export function createEdges(pipeline: PipelineModel): {id: string, type: string,
     Object.entries(pipeline.edge_dict).forEach(([source, targets]) => {
         targets.forEach(target => {
             edges.push({
-                id: `${source}-${target}`,
+                id: `${source}_${target}`,
                 type: 'custom-edge',
                 source: source,
                 target: target

@@ -12,7 +12,7 @@ import {
     updateBlock
 } from "../service/blockService";
 import {createEdges, createNodesFromBlocks} from "../util/util";
-import {addEdgeToPipeline} from "../service/edgeService";
+import {addEdgeToPipeline, deleteEdge} from "../service/edgeService";
 
 
 interface IPipelineState {
@@ -175,6 +175,20 @@ export const deleteBlockFromPipeline = createAsyncThunk<void, { blockId: string,
     async ({blockId, pipelineId}, thunkAPI) => {
         try {
             await deleteBlock({blockId, pipelineId});
+            thunkAPI.dispatch(updatePipeline({pipelineId}));
+        } catch (error) {
+            return thunkAPI.rejectWithValue('Failed to fetch full block');
+        }
+    }
+);
+
+export const deleteEdgeFromPipeline = createAsyncThunk<void, { edgeId: string, pipelineId: string }, {
+    rejectValue: string
+}>(
+    'pipeline/deleteEdgeFromPipeline',
+    async ({edgeId, pipelineId}, thunkAPI) => {
+        try {
+            await deleteEdge({edgeId, pipelineId});
             thunkAPI.dispatch(updatePipeline({pipelineId}));
         } catch (error) {
             return thunkAPI.rejectWithValue('Failed to fetch full block');
