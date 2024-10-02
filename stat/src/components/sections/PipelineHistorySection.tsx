@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import {getBlocks, setActiveBlockId} from "../../redux/pipelineSlice";
+import {getActiveBlockId, getBlocks, setActiveBlockId} from "../../redux/pipelineSlice";
 import {useAppDispatch, useAppSelector} from "../../hooks";
 import {LineChart} from "../charts/LineChart";
 import React from "react";
@@ -21,7 +21,7 @@ const StyledPipelineHistorySection = styled.div<{ $historyVisible: boolean }>`
   }
 `;
 
-const StyledHistoryItemContainer = styled.div<{ $historyVisible: boolean }>`
+const StyledHistoryItemContainer = styled.div<{ $historyVisible: boolean, $active: boolean }>`
   display: flex;
   min-width: ${props => props.$historyVisible ? 'calc(23% - 10px)' : 'calc(13% - 10px)'};
   height: calc(100% - 10px);
@@ -29,6 +29,7 @@ const StyledHistoryItemContainer = styled.div<{ $historyVisible: boolean }>`
   padding: 5px;
   background-color: #ffffff08;
   overflow-y: clip;
+  border: ${props => props.$active ? '1px solid #ffffff80' : ''};
   
   &:hover {
     cursor: pointer;
@@ -41,13 +42,14 @@ const StyledHistoryItemContainer = styled.div<{ $historyVisible: boolean }>`
 export function PipelineHistorySection({show}: { show: boolean }) {
 
     const blocks = useAppSelector(getBlocks);
+    const activeBlockId = useAppSelector(getActiveBlockId);
     const dispatch = useAppDispatch();
 
     return (
         <StyledPipelineHistorySection $historyVisible={show}>
             {blocks.map((block) => {
                 return (
-                <StyledHistoryItemContainer key={block.id} $historyVisible={show} onClick={() => dispatch(setActiveBlockId(block.id))}>
+                <StyledHistoryItemContainer key={block.id} $historyVisible={show} $active={block.id === activeBlockId} onClick={() => dispatch(setActiveBlockId(block.id))}>
                     {block.type === "CSVStringLoader" ? <CSVViewer blockId={block.id} small={true}/> :
                     <LineChart block={block} /> }
                 </StyledHistoryItemContainer>
