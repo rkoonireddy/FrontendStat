@@ -111,6 +111,13 @@ extendability.
 
 ### Design Decisions
 
+- **TypeScript** - TypeScript was chosen as the language for the project due to its static typing, which helps to catch errors early in the development process. This is especially important in a project with a lot of data processing and visualization, as it helps to prevent errors in the data pipeline.
+- **ReactFlow** - As the STAT python library uses the concept of a Directed Acyclic Graph (DAG) to represents the pipeline, a React library which supports this needed to be chosen. After looking at multiple options, the choice fell on ReactFlow due to its simplicity, extensive out-of-the-box functionality and high customizability. Here is a link to the [ReactFlow documentation](https://reactflow.dev/).
+- **Redux** - Already at the beginning of the project, it was evident that the application would need a global state management solution. Redux was chosen due to its popularity, extensive documentation and the fact that it is widely used in the React community. Another supporting factor is that Redux has been used by the developers in different projects before. Here is a link to the [Redux documentation](https://redux.js.org/).
+- **PrimeReact** - The application uses PrimeReact components for the controls. There are many other libraries that could have been used, but as the controls are heavily customized, the first option that provides the basic functionality which we could build on was chosen. Here is a link to the [PrimeReact documentation](https://primereact.org/).
+- **D3** - D3 is used to create the charts in the application. D3 is a powerful library that provides a lot of functionality to create different types of charts. The choice fell on D3 as it is widely used in the data visualization community and provides a lot of flexibility and customizability. Here is a link to the [D3 documentation](https://d3js.org/).
+- **styled-components** - To improve the maintainability and readability of the code, styled-components were used to style the components. This allows for the separation of concerns and the creation of reusable and configurable components. Here is a link to the [styled-components documentation](https://styled-components.com/).
+- **React-DOM** - The navigation from page-to-page is done using React-DOM. This was chosen as it is a simple and widely used solution to navigate between different pages in a React application. Here is a link to the [React-DOM documentation](https://reactrouter.com/).
 
 ### Run Instructions
 
