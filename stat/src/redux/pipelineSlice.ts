@@ -268,9 +268,11 @@ export const pipelineSlice = createSlice({
             });
         },
         updateControl(state, action: PayloadAction<{ blockId: string, filter: { key: string, value: any } }>) {
-            if (state.controls[action.payload.blockId][action.payload.filter.key]) {
-                console.log(action.payload.filter.value);
+            // If the blockId contains the control action.payload.filter.key, update the value, otherwise do nothing
+            if (action.payload.blockId in state.controls && action.payload.filter.key in state.controls[action.payload.blockId]) {
                 state.controls[action.payload.blockId][action.payload.filter.key] = action.payload.filter.value;
+            } else {
+                console.log("updateControl: blockId or filter key not found in state.controls");
             }
         }
     },

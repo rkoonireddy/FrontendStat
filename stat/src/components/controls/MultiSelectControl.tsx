@@ -20,13 +20,25 @@ export function MultiSelectControl({ title, options, placeHolder = "Select...", 
     const width = 150 * columnSpan;
 
     useEffect(() => {
+        // Set any default values if configured by the filter
         if (defaultValues) {
             setSelectedOptions(defaultValues);
         }
+        // Only update the controls in the redux store if our block is the currently active block
         if(activeBlock) {
             dispatch(updateControl({blockId: activeBlock.id, filter: {key: title, value: selectedOptions}}));
         }
     }, [defaultValues]);
+
+    function updateOptions(value: string[]) {
+        // If our block is the active block, update the control in the redux store
+        if(activeBlock) {
+            dispatch(updateControl({blockId: activeBlock.id, filter: {key: title, value: value}}));
+        }
+
+        // set the currently selected values
+        setSelectedOptions(value);
+    }
 
     return (
         <StyledControl $columnSpan={columnSpan} $rowSpan={rowSpan}>
@@ -36,7 +48,8 @@ export function MultiSelectControl({ title, options, placeHolder = "Select...", 
                          options={options}
                          placeholder={placeHolder}
                          style={{ width: width + "px" }}
-                         onChange={(e) => setSelectedOptions(e.value)} />
+                         onChange={(e) => updateOptions(e.value)} />
+
         </StyledControl>
     );
 }

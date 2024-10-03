@@ -68,7 +68,7 @@ export function ControlSection({show}: { show: boolean }) {
                                                          options={filter.options.map((option: any) => {
                                                              return {label: option, value: option};
                                                          })}
-                                                         defaultValue={filter.default}/>);
+                                                         defaultValue={filter.default}/>);                           
                         break;
                     case "multiselect":
                         components.push(<MultiSelectControl key={filter.name} title={filter.name}
@@ -98,9 +98,6 @@ export function ControlSection({show}: { show: boolean }) {
 
     function applyFilters() {
         if (activeBlock) {
-            const updatedFilters: { [key: string]: string } = Object.fromEntries(
-                Object.entries(blockFilters).filter(([key, value]) => value !== null)
-            );
             dispatch(fetchUpdateBlock({pipelineId: pipeline.id, blockId: activeBlock.id, filters: controls[activeBlock.id]})).then(() => {
                 console.log("Filters applied");
             })

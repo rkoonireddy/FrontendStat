@@ -53,7 +53,6 @@ export function updateCSVLoaderBlock({blockId, csvString, frequency_hz, header}:
 }
 
 export function updateBlock({blockId, filters}: {blockId: string, filters: { [key: string]: string }}): Promise<string> {
-    console.log(JSON.stringify(filters));
     return fetch(baseurl + `block/${blockId}`,
         {
             method: "PUT",
