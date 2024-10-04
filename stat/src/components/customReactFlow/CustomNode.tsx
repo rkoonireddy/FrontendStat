@@ -76,14 +76,14 @@ const CustomNode = ({data}: CustomNodeProps) => {
             }}>
                 <TrashSVG style={{width: "10px", height: "10px", color: "#ff0000"}}/>
             </StyledDeleteButton>
-            <StyledRunButton title={"Run Block"} onClick={(e) => {
+            {/* <StyledRunButton title={"Run Block"} onClick={(e) => {
                 dispatch(executeBlock({blockId: data.id}));
                 e.stopPropagation();
             }}>
                 {blockRunnable &&
                     <RunSVG style={{width: "15px", height: "15px", color: "#00ff00"}}/>
                 }
-            </StyledRunButton>
+            </StyledRunButton> */}
             <StyledNodeLabel $active={data.id === activeNodeId}>{data.label}</StyledNodeLabel>
             <StyledNodeType>{data.type}</StyledNodeType>
             <Handle type="source" position={Position.Bottom}/>

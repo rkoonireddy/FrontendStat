@@ -13,12 +13,12 @@ const CustomStartNode = ({data}: CustomNodeProps) => {
     const activeNodeId = useAppSelector(getActiveBlockId);
     return (
         <StyledNodeContainer $active={data.id === activeNodeId} onClick={() => dispatch(setActiveBlockId(data.id))}>
-            <StyledRunButton title={"Run Block"} onClick={(e) => {
+            {/* <StyledRunButton title={"Run Block"} onClick={(e) => {
                 dispatch(executeBlock({blockId: data.id}));
                 e.stopPropagation();
             }}>
                 <RunSVG style={{width: "15px", height: "15px", color: "#00ff00"}}/>
-            </StyledRunButton>
+            </StyledRunButton> */}
             <StyledNodeLabel $active={data.id === activeNodeId}>{data.label}</StyledNodeLabel>
             <StyledNodeType>{data.type}</StyledNodeType>
             <Handle type="source" position={Position.Bottom}/>
