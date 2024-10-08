@@ -152,8 +152,7 @@ function Flow() {
                             return addEdge(edge, eds);
                         })
                         .catch((err) => {
-                            //Propagate the error to a different visual component
-                            console.log(err);
+                            //Err carries the error message, but it is already retrieved from pipielineSlice
                             return eds;
                         })
                 }
