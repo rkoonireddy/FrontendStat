@@ -18,6 +18,7 @@ export function addEdgeToPipeline({fromBlockId, toBlockId, pipelineId}: {
         .then(async response => {
             if (!response.ok) {
                 return response.text().then(err => {
+                    //If needed, backend error message can be extracted here from "detail" key
                     throw new Error(err);
                 });
             } else {

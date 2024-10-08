@@ -72,6 +72,7 @@ export const createNewBlock = createAsyncThunk<CreateBlockResponse, { blockType:
         }
     }
 );
+
 export const fetchFullBlock = createAsyncThunk<BlockModel, string, { rejectValue: string }>(
     'pipeline/fetchFullBlock',
     async (blockId, thunkAPI) => {
@@ -96,7 +97,7 @@ export const putBlockToPipeline = createAsyncThunk<PipelineModel, { blockId: str
     }
 );
 
-export const connectTwoBlocks = createAsyncThunk<PipelineModel, {
+export const connectTwoBlocks = createAsyncThunk <PipelineModel, {
     fromBlockId: string,
     toBlockId: string,
     pipelineId: string
@@ -106,7 +107,7 @@ export const connectTwoBlocks = createAsyncThunk<PipelineModel, {
         try {
             return await addEdgeToPipeline({fromBlockId, toBlockId, pipelineId});
         } catch (error) {
-            return thunkAPI.rejectWithValue('Failed to connect two blocks');
+            return thunkAPI.rejectWithValue(`Failed to connect two blocks: ${String(error)}`);
         }
     }
 );
@@ -325,6 +326,9 @@ export const pipelineSlice = createSlice({
         });
         builder.addCase(connectTwoBlocks.fulfilled, (state, action) => {
             state.pipelineModel = action.payload;
+            state.loading = false;
+        });
+        builder.addCase(connectTwoBlocks.rejected, (state) => {
             state.loading = false;
         });
     }
