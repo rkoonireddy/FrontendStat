@@ -82,6 +82,7 @@ extendability.
       - `Popup` - This a generic component is used to display a popup with a title and any content. The expected parameters are:
         - **title** - The title of the popup.
         - **children** - The content which should be displayed in the popup.
+      - `ErrorPopup` - Specialized instance of Pop-up, displays error messages registered in pipeline.
     - `pages/` - The pages to which one can navigate to are stored here. 
       - `HomePage` is the main entry point of the application. A welcome message is displayed stating the functionality of the application as well as a button with which the user can upload a CSV file to start the data exploration. If the user visited and interacted with the application before, the resume button enables the user to continue where she/he left off. 
       - `MainPage` is where the uploaded data can be processed, configured and visualized using blocks, controls and other visual elements.
