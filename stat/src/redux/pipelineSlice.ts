@@ -112,7 +112,7 @@ export const connectTwoBlocks = createAsyncThunk <PipelineModel, {
         try {
             return await addEdgeToPipeline({fromBlockId, toBlockId, pipelineId});
         } catch (error) {
-            return thunkAPI.rejectWithValue(`Failed to connect two blocks: ${String(error)}`);
+            return thunkAPI.rejectWithValue(`Failed to connect two blocks \n ${String(error)}`);
         }
     }
 );

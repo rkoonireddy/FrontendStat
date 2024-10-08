@@ -40,16 +40,24 @@ const StyledTitle = styled.div`
   margin: 15px auto;
 `;
 
+const StyledMessage = styled.div`
+    font-size: 0.9rem;
+    color: white;
+    margin: 15px auto;
+    font-family: consolas, monospace;
+    white-space: pre-line;
+    `;
+
 export function ErrorPopup() {
     const dispatch = useDispatch();
     const errorStatus = useSelector((state: RootState) => state.pipeline.errorStatus);
-    const errorMessage = useSelector((state: RootState) => state.pipeline.errorMessage);;
+    const errorMessage = useSelector((state: RootState) => state.pipeline.errorMessage);
     if (!errorStatus) return null;
     return (
         <StyledPopup $large={false}>
             <XSVG onClick={() => dispatch(clearError())}/>
             <StyledTitle>Error</StyledTitle>
-            <div>{errorMessage}</div>
+            <StyledMessage>{errorMessage}</StyledMessage>
         </StyledPopup>
     )
 }
