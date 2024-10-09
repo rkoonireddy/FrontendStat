@@ -145,8 +145,16 @@ function Flow() {
             setEdges((eds) => {
                 const edgeExists = eds.some(e => e.source === edge.source && e.target === edge.target);
                 if (!edgeExists) {
-                    dispatch(connectTwoBlocks({fromBlockId: edge.source, toBlockId: edge.target, pipelineId: pipeline.id}));
-                    return addEdge(edge, eds);
+                    dispatch(
+                        connectTwoBlocks({fromBlockId: edge.source, toBlockId: edge.target, pipelineId: pipeline.id}))
+                        .unwrap()
+                        .then(() => {
+                            return addEdge(edge, eds);
+                        })
+                        .catch((err) => {
+                            //Err carries the error message, but it is already retrieved from pipielineSlice
+                            return eds;
+                        })
                 }
                 return eds;
             });

@@ -18,6 +18,7 @@ import {PrimaryButton} from "../buttons/PrimaryButton";
 import {getBlockTypes} from "../../service/blockService";
 import {Popup} from "../pageElements/Popup";
 import {Loading} from "../pageElements/Loading";
+import {ErrorPopup} from "../pageElements/ErrorPopup";
 
 
 const StyledMainPage = styled.div`
@@ -83,6 +84,7 @@ function MainPage() {
     return (
         <StyledMainPage>
             {loading && <Loading />}
+            {<ErrorPopup/>}
             {showCreateBlockPopup &&
                 <Popup title={"Create Block"} onCloseAction={closePopup}>
                     <StyledInput $largeText={true} $width={"200px"} type="text" placeholder="Block Name"

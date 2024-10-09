@@ -13,6 +13,7 @@ import {
 } from "../service/blockService";
 import {createEdges, createNodesFromBlocks} from "../util/util";
 import {addEdgeToPipeline, deleteEdge} from "../service/edgeService";
+import { stat } from "fs";
 
 
 interface IPipelineState {
@@ -21,6 +22,8 @@ interface IPipelineState {
     activeBlockId: string | null
     frequency: number
     loading: boolean,
+    errorStatus: boolean,
+    errorMessage: string | null,
     controls: {
         [blockId: string]: {
             [controlName: string]: any
@@ -41,6 +44,8 @@ const initialState: IPipelineState = {
     activeBlockId: null,
     frequency: 60,
     loading: false,
+    errorStatus: false,
+    errorMessage: null,
     controls: {}
 }
 
@@ -72,6 +77,7 @@ export const createNewBlock = createAsyncThunk<CreateBlockResponse, { blockType:
         }
     }
 );
+
 export const fetchFullBlock = createAsyncThunk<BlockModel, string, { rejectValue: string }>(
     'pipeline/fetchFullBlock',
     async (blockId, thunkAPI) => {
@@ -96,7 +102,7 @@ export const putBlockToPipeline = createAsyncThunk<PipelineModel, { blockId: str
     }
 );
 
-export const connectTwoBlocks = createAsyncThunk<PipelineModel, {
+export const connectTwoBlocks = createAsyncThunk <PipelineModel, {
     fromBlockId: string,
     toBlockId: string,
     pipelineId: string
@@ -106,7 +112,7 @@ export const connectTwoBlocks = createAsyncThunk<PipelineModel, {
         try {
             return await addEdgeToPipeline({fromBlockId, toBlockId, pipelineId});
         } catch (error) {
-            return thunkAPI.rejectWithValue('Failed to connect two blocks');
+            return thunkAPI.rejectWithValue(`Failed to connect two blocks \n ${String(error)}`);
         }
     }
 );
@@ -274,6 +280,10 @@ export const pipelineSlice = createSlice({
             } else {
                 console.log("updateControl: blockId or filter key not found in state.controls");
             }
+        },
+        clearError(state) {
+            state.errorStatus = false;
+            state.errorMessage = null;
         }
     },
     extraReducers: builder => {
@@ -327,6 +337,11 @@ export const pipelineSlice = createSlice({
             state.pipelineModel = action.payload;
             state.loading = false;
         });
+        builder.addCase(connectTwoBlocks.rejected, (state, action) => {
+            state.loading = false;
+            state.errorStatus = true;
+            state.errorMessage = String(action.payload);
+        });
     }
 })
 
@@ -342,7 +357,8 @@ export const {
     setFileFrequency,
     setLoading,
     addControl,
-    updateControl
+    updateControl,
+    clearError
 } = pipelineSlice.actions;
 
 export default pipelineSlice.reducer;
