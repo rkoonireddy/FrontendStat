@@ -127,7 +127,7 @@ export const updatePipeline = createAsyncThunk<PipelineModel, { pipelineId: stri
             thunkAPI.dispatch(setBlocks(newBlocks));
             return pipeline;
         } catch (error) {
-            return thunkAPI.rejectWithValue('Failed to update pipeline');
+            return thunkAPI.rejectWithValue(`Failed to update pipeline \n ${String(error)}`);
         }
     }
 );
@@ -140,7 +140,7 @@ export const executeBlock = createAsyncThunk<string, { blockId: string }, { reje
             thunkAPI.dispatch(fetchFullBlock(blockId));
             return response;
         } catch (error) {
-            return thunkAPI.rejectWithValue('Failed to run block');
+            return thunkAPI.rejectWithValue(`Failed to run block \n ${String(error)}`);
         }
     }
 );
@@ -155,7 +155,7 @@ export const executePipeline = createAsyncThunk<string, { pipelineId: string, st
             thunkAPI.dispatch(updatePipeline({pipelineId}));
             return response;
         } catch (error) {
-            return thunkAPI.rejectWithValue('Failed to run pipeline');
+            return thunkAPI.rejectWithValue(`Failed to run pipeline \n ${String(error)}`);
         }
     }
 );
@@ -168,7 +168,7 @@ export const fetchUpdateBlock = createAsyncThunk<string, { pipelineId: string, b
             thunkAPI.dispatch(updatePipeline({pipelineId}));
             return response
         } catch (error) {
-            return thunkAPI.rejectWithValue('Failed to fetch full block');
+            return thunkAPI.rejectWithValue(`Failed to fetch full block \n ${String(error)}`);
         }
     }
 );
@@ -183,7 +183,7 @@ export const deleteBlockFromPipeline = createAsyncThunk<void, { blockId: string,
             await deleteBlock({blockId, pipelineId});
             thunkAPI.dispatch(updatePipeline({pipelineId}));
         } catch (error) {
-            return thunkAPI.rejectWithValue('Failed to fetch full block');
+            return thunkAPI.rejectWithValue(`Failed to delete block from pipeline \n ${String(error)}`);
         }
     }
 );
@@ -197,7 +197,7 @@ export const deleteEdgeFromPipeline = createAsyncThunk<void, { edgeId: string, p
             await deleteEdge({edgeId, pipelineId});
             thunkAPI.dispatch(updatePipeline({pipelineId}));
         } catch (error) {
-            return thunkAPI.rejectWithValue('Failed to fetch full block');
+            return thunkAPI.rejectWithValue(`Failed to delete edge from pipeline \n ${String(error)}`);
         }
     }
 );
@@ -297,6 +297,8 @@ export const pipelineSlice = createSlice({
         builder.addCase(createNewPipeline.rejected, (state, action) => {
             console.log(action.error.message);
             state.loading = false;
+            state.errorStatus = true;
+            state.errorMessage = String(action.payload);
         });
         builder.addCase(updatePipeline.pending, (state) => {
             state.loading = true;
@@ -305,12 +307,27 @@ export const pipelineSlice = createSlice({
             state.pipelineModel = action.payload;
             state.loading = false;
         });
+        builder.addCase(updatePipeline.rejected, (state, action) => {
+            state.loading = false;
+            state.errorStatus = true;
+            state.errorMessage = String(action.payload);
+        });
+        builder.addCase(executePipeline.rejected, (state, action) => {
+            state.loading = false;
+            state.errorStatus = true;
+            state.errorMessage = String(action.payload);
+        });
         builder.addCase(createNewBlock.pending, (state) => {
             state.loading = true;
         });
         builder.addCase(createNewBlock.fulfilled, (state, action) => {
             state.activeBlockId = action.payload.block_id;
             state.loading = false;
+        });
+        builder.addCase(createNewBlock.rejected, (state, action) => {
+            state.loading = false;
+            state.errorStatus = true;
+            state.errorMessage = String(action.payload);
         });
         builder.addCase(fetchFullBlock.pending, (state) => {
             state.loading = true;
@@ -323,12 +340,22 @@ export const pipelineSlice = createSlice({
             }
             state.loading = false;
         });
+        builder.addCase(fetchFullBlock.rejected, (state, action) => {
+            state.loading = false;
+            state.errorStatus = true;
+            state.errorMessage = String(action.payload);
+        });
         builder.addCase(putBlockToPipeline.pending, (state) => {
             state.loading = true;
         });
         builder.addCase(putBlockToPipeline.fulfilled, (state, action) => {
             state.pipelineModel = action.payload;
             state.loading = false;
+        });
+        builder.addCase(putBlockToPipeline.rejected, (state, action) => {
+            state.loading = false;
+            state.errorStatus = true;
+            state.errorMessage = String(action.payload);
         });
         builder.addCase(connectTwoBlocks.pending, (state) => {
             state.loading = true;

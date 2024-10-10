@@ -162,7 +162,7 @@ export function LineChart({ block }: { block: BlockModel }) {
                 <text className="y-axis-label" />
             </svg>
         ) : (
-            <div>Please run a block to visualize your data!</div>
+            <div>Please run the pipeline to visualize your data!</div>
         )
     );
 }

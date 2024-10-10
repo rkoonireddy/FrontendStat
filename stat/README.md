@@ -6,7 +6,7 @@ can be found [here](https://github.com/Darnol/mp_backend_draft).
 
 ## User Guide
 
-- TODO: George
+- Refer to the USERGUIDE.md
 
 ## Developers Guide
 
