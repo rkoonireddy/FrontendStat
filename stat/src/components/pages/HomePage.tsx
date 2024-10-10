@@ -122,19 +122,19 @@ function FileUpload({onClose, onUpload}: { onClose: () => void, onUpload: (frequ
     
                     // Check if any value in the first column (timestamp) is missing
                     const firstColumnValues = cleanedRows.map(row => row.split(",")[0]?.trim());
-                    const hasEmptyTimestamps = firstColumnValues.some(value => value === '');
+                    const emptyTimestampIndex = firstColumnValues.findIndex(value => value === '');
                     
-                    if (hasEmptyTimestamps) {
-                        alert("Detected empty time-stamp values, please ensure that the first column is timestamp and the values are integers and re-upload.");
+                    if (emptyTimestampIndex !== -1) {
+                        alert(`Detected empty time-stamp value at row ${emptyTimestampIndex}, please ensure that the first column is timestamp and the values are integers.`);
                         return; // Stop the upload process if there are empty timestamp values
                     }
     
-                    // Check if any value in the first column is not an integer (strings in the timestamp column)
-                    const hasNonIntegerValues = firstColumnValues.some(value => isNaN(parseInt(value)));
+                    // Check if any value in the first column (timestamp) from the second row onwards is not an integer
+                    const nonIntegerIndex = firstColumnValues.slice(1).findIndex(value => isNaN(parseInt(value)));
                     
-                    if (hasNonIntegerValues) {
-                        alert("Found strings in timestamp (first) column, please ensure that you have only integers and re-upload..");
-                        return; // Stop the upload process if there are strings in the timestamp column
+                    if (nonIntegerIndex !== -1) {
+                        alert(`Found string in timestamp column at row ${nonIntegerIndex + 1}, please ensure that you have only integers starting from the second row.`);
+                        return; // Stop the upload process if there are strings in the timestamp column from the second row
                     }
     
                     // Proceed with the upload if no empty rows or invalid values are found
@@ -151,6 +151,8 @@ function FileUpload({onClose, onUpload}: { onClose: () => void, onUpload: (frequ
             reader.readAsText(file);
         }
     };
+    
+    
     
     
        
