@@ -14,6 +14,7 @@ import {
 import {Popup} from "../pageElements/Popup";
 import {StyledInput, StyledUnit} from "../controls/InputControl";
 import {PreviewTable} from "../tables/PreviewTable";
+import {preProcessCSVData} from "../../util/util";
 
 
 const StyledHomeContainer = styled.div`
@@ -91,7 +92,7 @@ function FileUpload({onClose, onUpload}: { onClose: () => void, onUpload: (frequ
     }
 
     
-    //edited the rows here as well instead of only hanldeAccept function.
+    //edited the rows here as well instead of only handleAccept function.
     const handleUpload = async () => {
         if (file && frequency) {
             const formData = new FormData();
@@ -203,36 +204,8 @@ export default function HomePage() {
         // First reset rawData and pipelineData
         dispatch(resetData());
         dispatch(resetPipelineData());
-    
-        // Filter the previewData with the selection from the preview
-        let newRawData = previewData.map(row =>
-            Object.fromEntries(Object.entries(row).filter(([key]) => selectedColumns.includes(key)))
-        );
-    
-        // Remove rows where the first column is empty
-        newRawData = newRawData.filter(row => {
-            const firstKey = Object.keys(row)[0]; // Get the first key
-            return row[firstKey] !== undefined && row[firstKey] !== ''; // Keep row if first column is not empty
-        });
-    
-        // Clean the newRawData to ensure no empty values at the end of each row
-        const cleanedData = newRawData.map(row => {
-            const cleanedRow = { ...row }; // Create a shallow copy of the row
-            const keys = Object.keys(cleanedRow);
-            let lastNonEmptyKeyIndex = keys.length - 1;
-    
-            // Find the last non-empty key in the row
-            while (lastNonEmptyKeyIndex >= 0 && (cleanedRow[keys[lastNonEmptyKeyIndex]] === null || cleanedRow[keys[lastNonEmptyKeyIndex]] === '')) {
-                lastNonEmptyKeyIndex--; // Move upwards until a non-empty value is found
-            }
-    
-            // If there are empty values after the last non-empty key, set them to empty string
-            for (let i = lastNonEmptyKeyIndex + 1; i < keys.length; i++) {
-                cleanedRow[keys[i]] = ''; // Set the remaining keys to an empty string
-            }
-    
-            return cleanedRow;
-        });
+
+        const cleanedData = preProcessCSVData(previewData, selectedColumns);
     
         // Update the rawData in the redux store
         dispatch(setRawData(cleanedData));

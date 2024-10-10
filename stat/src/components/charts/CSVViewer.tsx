@@ -10,6 +10,7 @@ import { useState, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../hooks";
 import { updateCSVLoaderBlock } from "../../service/blockService";
 import { fetchFullBlock, getFrequency } from "../../redux/pipelineSlice";
+import {formatNumber} from "../../util/util";
 
 const StyledCSVTable = styled.table<{ $small?: boolean }>`
   width: 100%;
@@ -87,17 +88,6 @@ export default function CSVViewer({ blockId, small }: { blockId: string; small?:
                 ? prevSelectedColumns.filter(col => col !== column)
                 : [...prevSelectedColumns, column]
         );
-    };
-
-    // Function to format numbers to avoid scientific notation
-    const formatNumber = (value: any) => {
-        // Check if value is a number or a string representation of a number
-        if (typeof value === 'number' || (typeof value === 'string' && !isNaN(Number(value)))) {
-            // Parse the number and convert to locale string
-            const number = Number(value);
-            return number.toLocaleString('en-US', { maximumFractionDigits: 20 });
-        }
-        return value; // Return the original value if not a number
     };
 
     return (
