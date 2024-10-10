@@ -120,13 +120,24 @@ function FileUpload({onClose, onUpload}: { onClose: () => void, onUpload: (frequ
                     // Remove any rows that are completely empty after cleaning
                     const cleanedRows = rows.filter(row => row.split(",").some(cell => cell.trim() !== ''));
     
-                    // Check for a minimum of 2 rows after cleaning
-                    if (cleanedRows.length < 2) {
-                        alert("The CSV file must contain at least 2 rows of data.");
-                        return; // Stop the upload process if there are fewer than 2 rows
+                    // Check if any value in the first column (timestamp) is missing
+                    const firstColumnValues = cleanedRows.map(row => row.split(",")[0]?.trim());
+                    const hasEmptyTimestamps = firstColumnValues.some(value => value === '');
+                    
+                    if (hasEmptyTimestamps) {
+                        alert("Detected empty time-stamp values, please ensure that the first column is timestamp and the values are integers and re-upload.");
+                        return; // Stop the upload process if there are empty timestamp values
                     }
     
-                    // Proceed with the upload if no empty rows are found
+                    // Check if any value in the first column is not an integer (strings in the timestamp column)
+                    const hasNonIntegerValues = firstColumnValues.some(value => isNaN(parseInt(value)));
+                    
+                    if (hasNonIntegerValues) {
+                        alert("Found strings in timestamp (first) column, please ensure that you have only integers and re-upload..");
+                        return; // Stop the upload process if there are strings in the timestamp column
+                    }
+    
+                    // Proceed with the upload if no empty rows or invalid values are found
                     try {
                         // Optionally set the cleaned data to formData or other logic
                         await dispatch(readData(formData) as any).unwrap();
@@ -140,6 +151,7 @@ function FileUpload({onClose, onUpload}: { onClose: () => void, onUpload: (frequ
             reader.readAsText(file);
         }
     };
+    
     
        
     
@@ -155,8 +167,8 @@ function FileUpload({onClose, onUpload}: { onClose: () => void, onUpload: (frequ
             {!file || !frequency || !(file.type === 'text/csv' || file.type === 'application/vnd.ms-excel') ? (
                 <p style={{ color: 'white' }}>
                     <span>1. Select CSV file</span><br />
-                    <span>2. Ensure that the first column is timestamp</span><br />
-                    <span>3. Ensure that there are no empty cells at the end of the data</span>
+                    <span>2. Ensure that the first column is timestamp - integers</span><br />
+                    <span>3. We remove empty cells at the end of your file.</span>
                 </p>
             ) : (
                 <PrimaryButton text={"Preview"} action={handleUpload} />
