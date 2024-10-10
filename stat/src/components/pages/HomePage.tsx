@@ -90,6 +90,8 @@ function FileUpload({onClose, onUpload}: { onClose: () => void, onUpload: (frequ
         setFrequency(parseInt(event.target.value));
     }
 
+    
+    //edited the rows here as well instead of only hanldeAccept function.
     const handleUpload = async () => {
         if (file && frequency) {
             const formData = new FormData();
@@ -101,18 +103,18 @@ function FileUpload({onClose, onUpload}: { onClose: () => void, onUpload: (frequ
                 const target = event.target;
                 if (target && target.result) {
                     const text = target.result as string;
-                    
+    
                     // Split the CSV into rows and trim whitespace from each row
                     const rows = text.split("\n").map(row => row.trim()).filter(row => row.length > 0); // Remove completely empty rows
                     
-                    // Log the original rows for inspection
-                    // console.log("Original Rows:", rows);
-    
                     // Determine the number of columns (assuming the first row is the header)
                     const numColumns = rows[0]?.split(",").length || 0;
     
-                    // Log the counts of rows and columns
-                    // console.log(`Row Count: ${rows.length}, Column Count: ${numColumns}`);
+                    // Check if the number of columns is less than 2
+                    if (numColumns < 2) {
+                        alert("The CSV file must contain at least 2 columns.");
+                        return; // Stop the upload process if there are fewer than 2 columns
+                    }
     
                     // Check for empty cells at the end of each column
                     for (let col = 0; col < numColumns; col++) {
@@ -136,18 +138,10 @@ function FileUpload({onClose, onUpload}: { onClose: () => void, onUpload: (frequ
                     // Remove any rows that are completely empty after cleaning
                     const cleanedRows = rows.filter(row => row.split(",").some(cell => cell.trim() !== ''));
     
-                    // Log cleaned data
-                    // console.log("Cleaned Rows:", cleanedRows);
-    
-                    // Log the counts of cleaned rows and columns
-                    // console.log(`Cleaned Row Count: ${cleanedRows.length}, Column Count: ${numColumns}`);
-    
-                    // Check if any row is completely empty after cleaning
-                    const hasEmptyRows = cleanedRows.length < rows.length; // Check if cleaned rows are fewer than original
-                    if (hasEmptyRows) {
-                        // console.log("The CSV file contains empty rows after cleaning.");
-                        alert("The CSV file contains empty rows after cleaning. Please remove them and try again.");
-                        return; // Stop the upload process if empty rows are found
+                    // Check for a minimum of 2 rows after cleaning
+                    if (cleanedRows.length < 2) {
+                        alert("The CSV file must contain at least 2 rows of data.");
+                        return; // Stop the upload process if there are fewer than 2 rows
                     }
     
                     // Proceed with the upload if no empty rows are found
@@ -164,6 +158,7 @@ function FileUpload({onClose, onUpload}: { onClose: () => void, onUpload: (frequ
             reader.readAsText(file);
         }
     };
+    
        
     
     
@@ -205,26 +200,54 @@ export default function HomePage() {
     }
 
     const handleAccept = async (selectedColumns: string[]) => {
-
         // First reset rawData and pipelineData
         dispatch(resetData());
         dispatch(resetPipelineData());
-
+    
         // Filter the previewData with the selection from the preview
-        const newRawData = previewData.map(row =>
+        let newRawData = previewData.map(row =>
             Object.fromEntries(Object.entries(row).filter(([key]) => selectedColumns.includes(key)))
         );
+    
+        // Remove rows where the first column is empty
+        newRawData = newRawData.filter(row => {
+            const firstKey = Object.keys(row)[0]; // Get the first key
+            return row[firstKey] !== undefined && row[firstKey] !== ''; // Keep row if first column is not empty
+        });
+    
+        // Clean the newRawData to ensure no empty values at the end of each row
+        const cleanedData = newRawData.map(row => {
+            const cleanedRow = { ...row }; // Create a shallow copy of the row
+            const keys = Object.keys(cleanedRow);
+            let lastNonEmptyKeyIndex = keys.length - 1;
+    
+            // Find the last non-empty key in the row
+            while (lastNonEmptyKeyIndex >= 0 && (cleanedRow[keys[lastNonEmptyKeyIndex]] === null || cleanedRow[keys[lastNonEmptyKeyIndex]] === '')) {
+                lastNonEmptyKeyIndex--; // Move upwards until a non-empty value is found
+            }
+    
+            // If there are empty values after the last non-empty key, set them to empty string
+            for (let i = lastNonEmptyKeyIndex + 1; i < keys.length; i++) {
+                cleanedRow[keys[i]] = ''; // Set the remaining keys to an empty string
+            }
+    
+            return cleanedRow;
+        });
+    
         // Update the rawData in the redux store
-        dispatch(setRawData(newRawData));
-
+        dispatch(setRawData(cleanedData));
+    
         // Create pipeline and block
         await dispatch(createNewPipeline());
         dispatch(setFileFrequency(frequency));
-        dispatch(createNewBlock({blockType: 'CSVStringLoader', blockName: 'Data loader'}));
-
-        // route to /main
+        dispatch(createNewBlock({ blockType: 'CSVStringLoader', blockName: 'Data loader' }));
+    
+        // Route to /main
         navigate('/main');
-    }
+    };
+    
+    
+    
 
     function handleOnClose() {
         // Reset the previewData in the redux store
