@@ -117,25 +117,6 @@ function FileUpload({onClose, onUpload}: { onClose: () => void, onUpload: (frequ
                         return; // Stop the upload process if there are fewer than 2 columns
                     }
     
-                    // Check for empty cells at the end of each column
-                    for (let col = 0; col < numColumns; col++) {
-                        let lastNonEmptyRow = rows.length - 1;
-    
-                        // Find the last non-empty cell in this column
-                        while (lastNonEmptyRow >= 0 && (rows[lastNonEmptyRow].split(",")[col]?.trim() === '' || rows[lastNonEmptyRow].split(",")[col] === undefined)) {
-                            lastNonEmptyRow--; // Move upwards until a non-empty cell is found
-                        }
-    
-                        // If the last non-empty cell is not the last row, slice the rows to remove empty cells
-                        if (lastNonEmptyRow < rows.length - 1) {
-                            for (let row = lastNonEmptyRow + 1; row < rows.length; row++) {
-                                const currentRowArray = rows[row].split(","); // Split the current row into columns
-                                currentRowArray[col] = ''; // Set the cell to empty for those below the last non-empty cell
-                                rows[row] = currentRowArray.join(","); // Rejoin the columns back into a row
-                            }
-                        }
-                    }
-    
                     // Remove any rows that are completely empty after cleaning
                     const cleanedRows = rows.filter(row => row.split(",").some(cell => cell.trim() !== ''));
     
