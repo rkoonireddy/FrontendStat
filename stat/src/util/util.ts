@@ -79,11 +79,50 @@ export function convertToDataPoints(data: any[]): DataPoint[][] {
     const xValues = data[0].data.data;
     const yArray = data.slice(1);
     return yArray.map((yData: any) => yData.data.data.map((y: number, i: number) => ({x: xValues[i], y: y})));
-    // const yValues = data[1].data.data;
-    // return [xValues.map((x: number, i: number) => ({x: x, y: yValues[i]}))];
 }
 
 export function getFirstKey(dict: Record<string, any>): string | undefined {
     const keys = Object.keys(dict);
     return keys.length > 0 ? keys[0] : undefined;
+}
+
+// Function to format numbers to avoid scientific notation
+export function formatNumber (value: any) {
+    // Check if value is a number or a string representation of a number
+    if (typeof value === 'number' || (typeof value === 'string' && !isNaN(Number(value)))) {
+        // Parse the number and convert to locale string
+        return Number(value).toLocaleString('en-US', { maximumFractionDigits: 10 });
+    }
+    return value;
+}
+
+export function preProcessCSVData(csvString: { [key: string]: string; }[], selectedColumns: string[]) {
+    let newRawData = csvString.map(row =>
+        Object.fromEntries(Object.entries(row).filter(([key]) => selectedColumns.includes(key)))
+    );
+
+    // Remove rows where the first column is empty
+    newRawData = newRawData.filter(row => {
+        const firstKey = Object.keys(row)[0]; // Get the first key
+        return row[firstKey] !== undefined && row[firstKey] !== ''; // Keep row if first column is not empty
+    });
+
+    // Clean the newRawData to ensure no empty values at the end of each row
+    return newRawData.map(row => {
+        const cleanedRow = {...row}; // Create a shallow copy of the row
+        const keys = Object.keys(cleanedRow);
+        let lastNonEmptyKeyIndex = keys.length - 1;
+
+        // Find the last non-empty key in the row
+        while (lastNonEmptyKeyIndex >= 0 && (cleanedRow[keys[lastNonEmptyKeyIndex]] === null || cleanedRow[keys[lastNonEmptyKeyIndex]] === '')) {
+            lastNonEmptyKeyIndex--; // Move upwards until a non-empty value is found
+        }
+
+        // If there are empty values after the last non-empty key, set them to empty string
+        for (let i = lastNonEmptyKeyIndex + 1; i < keys.length; i++) {
+            cleanedRow[keys[i]] = ''; // Set the remaining keys to an empty string
+        }
+
+        return cleanedRow;
+    });
 }

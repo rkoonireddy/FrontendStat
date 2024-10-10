@@ -14,6 +14,7 @@ import {
 import {Popup} from "../pageElements/Popup";
 import {StyledInput, StyledUnit} from "../controls/InputControl";
 import {PreviewTable} from "../tables/PreviewTable";
+import {preProcessCSVData} from "../../util/util";
 
 
 const StyledHomeContainer = styled.div`
@@ -90,21 +91,59 @@ function FileUpload({onClose, onUpload}: { onClose: () => void, onUpload: (frequ
         setFrequency(parseInt(event.target.value));
     }
 
+    
+    //edited the rows here as well instead of only handleAccept function.
     const handleUpload = async () => {
         if (file && frequency) {
             const formData = new FormData();
             formData.append('csvFile', file);
-            // Do not reset any rawData yet in case user stops the upload
-            try {
-                // This sets the previewData in the redux store
-                await dispatch(readData(formData) as any).unwrap();
-                onUpload(frequency);
-            } catch (error) {
-                console.error("File upload failed:", error);
-            }
+    
+            const reader = new FileReader();
+    
+            reader.onload = async (event) => {
+                const target = event.target;
+                if (target && target.result) {
+                    const text = target.result as string;
+    
+                    // Split the CSV into rows and trim whitespace from each row
+                    const rows = text.split("\n").map(row => row.trim()).filter(row => row.length > 0); // Remove completely empty rows
+                    
+                    // Determine the number of columns (assuming the first row is the header)
+                    const numColumns = rows[0]?.split(",").length || 0;
+    
+                    // Check if the number of columns is less than 2
+                    if (numColumns < 2) {
+                        alert("The CSV file must contain at least 2 columns.");
+                        return; // Stop the upload process if there are fewer than 2 columns
+                    }
+    
+                    // Remove any rows that are completely empty after cleaning
+                    const cleanedRows = rows.filter(row => row.split(",").some(cell => cell.trim() !== ''));
+    
+                    // Check for a minimum of 2 rows after cleaning
+                    if (cleanedRows.length < 2) {
+                        alert("The CSV file must contain at least 2 rows of data.");
+                        return; // Stop the upload process if there are fewer than 2 rows
+                    }
+    
+                    // Proceed with the upload if no empty rows are found
+                    try {
+                        // Optionally set the cleaned data to formData or other logic
+                        await dispatch(readData(formData) as any).unwrap();
+                        onUpload(frequency);
+                    } catch (error) {
+                        console.error("File upload failed:", error);
+                    }
+                }
+            };
+    
+            reader.readAsText(file);
         }
-    }
-
+    };
+    
+       
+    
+    
     return (
         <Popup title={"File upload"} onCloseAction={onClose}>
             <StyledInput $width={"300px"} $margin={'20px 0 0 0'} type="file" accept=".csv" onChange={handleFileChange}/>
@@ -113,7 +152,15 @@ function FileUpload({onClose, onUpload}: { onClose: () => void, onUpload: (frequ
                              onChange={handleFrequencyChange}/>
                 <StyledUnit>HZ</StyledUnit>
             </StyledFrequencyInputContainer>
-            {!file || !frequency || !(file.type === 'text/csv' || file.type === 'application/vnd.ms-excel') ? <p>Select CSV file</p> : <PrimaryButton text={"Preview"} action={handleUpload}/>}
+            {!file || !frequency || !(file.type === 'text/csv' || file.type === 'application/vnd.ms-excel') ? (
+                <p style={{ color: 'white' }}>
+                    <span>1. Select CSV file</span><br />
+                    <span>2. Ensure that the first column is timestamp</span><br />
+                    <span>3. Ensure that there are no empty cells at the end of the data</span>
+                </p>
+            ) : (
+                <PrimaryButton text={"Preview"} action={handleUpload} />
+            )}        
         </Popup>
     )
 }
@@ -135,26 +182,26 @@ export default function HomePage() {
     }
 
     const handleAccept = async (selectedColumns: string[]) => {
-
         // First reset rawData and pipelineData
         dispatch(resetData());
         dispatch(resetPipelineData());
 
-        // Filter the previewData with the selection from the preview
-        const newRawData = previewData.map(row =>
-            Object.fromEntries(Object.entries(row).filter(([key]) => selectedColumns.includes(key)))
-        );
+        const cleanedData = preProcessCSVData(previewData, selectedColumns);
+    
         // Update the rawData in the redux store
-        dispatch(setRawData(newRawData));
-
+        dispatch(setRawData(cleanedData));
+    
         // Create pipeline and block
         await dispatch(createNewPipeline());
         dispatch(setFileFrequency(frequency));
-        dispatch(createNewBlock({blockType: 'CSVStringLoader', blockName: 'Data loader'}));
-
-        // route to /main
+        dispatch(createNewBlock({ blockType: 'CSVStringLoader', blockName: 'Data loader' }));
+    
+        // Route to /main
         navigate('/main');
-    }
+    };
+    
+    
+    
 
     function handleOnClose() {
         // Reset the previewData in the redux store

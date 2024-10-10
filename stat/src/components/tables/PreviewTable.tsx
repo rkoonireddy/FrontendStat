@@ -2,10 +2,11 @@ import {
     getPreviewData
 } from "../../redux/dataSlice";
 import styled from "styled-components";
-import {useState} from "react";
+import { useState } from "react";
 import { PrimaryButton } from "../buttons/PrimaryButton";
-import {useAppSelector} from "../../hooks";
-import {StyledCheckbox, StyledTableCell, StyledTableHeader} from "../charts/CSVViewer";
+import { useAppSelector } from "../../hooks";
+import { StyledCheckbox, StyledTableCell, StyledTableHeader } from "../charts/CSVViewer";
+import {formatNumber} from "../../util/util";
 
 const StyledPreviewPopupContainer = styled.div`
   display: flex;
@@ -24,10 +25,9 @@ const StyledCSVTable = styled.table`
   max-height: 100%;
 `;
 
-export function PreviewTable({onAccept} : {onAccept: (arg0: string[]) => void}) {
-
+export function PreviewTable({ onAccept }: { onAccept: (arg0: string[]) => void }) {
     const previewData = useAppSelector(getPreviewData);
-    const headerData = previewData.slice(0,10);
+    const headerData = previewData.slice(0, 10);
     const columns = headerData.length > 0 ? Object.keys(headerData[0]) : [];
     const [selectedColumns, setSelectedColumns] = useState<string[]>(columns);
 
@@ -51,35 +51,34 @@ export function PreviewTable({onAccept} : {onAccept: (arg0: string[]) => void}) 
                 <StyledPreviewPopupContainer>
                     <StyledCSVTable>
                         <thead>
-                        <tr>
-                            {columns.map(col => (
-                                <StyledTableHeader key={col} $isSelected={selectedColumns.includes(col)}>
-                                    <StyledCheckbox
-                                        type="checkbox"
-                                        checked={selectedColumns.includes(col)}
-                                        onChange={() => handleColumnChange(col)}
-                                    />
-                                    {col}
-                                </StyledTableHeader>
-                            ))}
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {headerData.map((row, rowIndex) => (
-                            <tr key={rowIndex}>
+                            <tr>
                                 {columns.map(col => (
-                                    <StyledTableCell key={col} $isSelected={selectedColumns.includes(col)}>
-                                        {row[col]}
-                                    </StyledTableCell>
+                                    <StyledTableHeader key={col} $isSelected={selectedColumns.includes(col)}>
+                                        <StyledCheckbox
+                                            type="checkbox"
+                                            checked={selectedColumns.includes(col)}
+                                            onChange={() => handleColumnChange(col)}
+                                        />
+                                        {col}
+                                    </StyledTableHeader>
                                 ))}
                             </tr>
-                        ))}
+                        </thead>
+                        <tbody>
+                            {headerData.map((row, rowIndex) => (
+                                <tr key={rowIndex}>
+                                    {columns.map(col => (
+                                        <StyledTableCell key={col} $isSelected={selectedColumns.includes(col)}>
+                                            {formatNumber(row[col])} {/* Use the formatting function */}
+                                        </StyledTableCell>
+                                    ))}
+                                </tr>
+                            ))}
                         </tbody>
                     </StyledCSVTable>
-                    {selectedColumns.length > 0 ? <PrimaryButton text = "Upload" action = {acceptClicked}></PrimaryButton> : <p>Select at least one column</p>}
+                    {selectedColumns.length > 0 ? <PrimaryButton text="Upload" action={acceptClicked}></PrimaryButton> : <p>Select at least one column</p>}
                 </StyledPreviewPopupContainer>
-            )   
-            }
+            )}
         </div>
     );
 };
