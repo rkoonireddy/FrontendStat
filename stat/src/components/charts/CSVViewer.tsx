@@ -6,10 +6,10 @@ import {
     setFilteredDataChanged
 } from "../../redux/dataSlice";
 import styled from "styled-components";
-import {useState, useEffect, useRef} from "react";
-import {useAppDispatch, useAppSelector} from "../../hooks";
-import {updateCSVLoaderBlock} from "../../service/blockService";
-import {fetchFullBlock, getFrequency} from "../../redux/pipelineSlice";
+import { useState, useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "../../hooks";
+import { updateCSVLoaderBlock } from "../../service/blockService";
+import { fetchFullBlock, getFrequency } from "../../redux/pipelineSlice";
 
 const StyledCSVTable = styled.table<{ $small?: boolean }>`
   width: 100%;
@@ -17,13 +17,13 @@ const StyledCSVTable = styled.table<{ $small?: boolean }>`
   border-spacing: 0;
   margin-top: 20px;
   border: 1px solid #ddd;
-  font-size: ${props => props.$small ? '0.6rem' : '1rem'};
+  font-size: ${props => (props.$small ? '0.6rem' : '1rem')};
   max-height: 100%;
 `;
 
 export const StyledTableHeader = styled.th<{ $isSelected: boolean }>`
-  background-color: ${props => props.$isSelected ? '#3D3D3D' : '#adacac'};
-  color: ${props => props.$isSelected ? '#00bfa6' : '#808080'};
+  background-color: ${props => (props.$isSelected ? '#3D3D3D' : '#adacac')};
+  color: ${props => (props.$isSelected ? '#00bfa6' : '#808080')};
   border: 1px solid #00bfa6;
   padding: 8px;
   text-align: left;
@@ -31,9 +31,9 @@ export const StyledTableHeader = styled.th<{ $isSelected: boolean }>`
 
 export const StyledTableCell = styled.td<{ $isSelected: boolean }>`
   border: 1px solid #00bfa6;
-  color: ${props => props.$isSelected ? '#ffffff' : '#808080'};
+  color: ${props => (props.$isSelected ? '#ffffff' : '#808080')};
   padding: 8px;
-  background-color: ${props => props.$isSelected ? '#3D3D3D' : '#adacac'};
+  background-color: ${props => (props.$isSelected ? '#3D3D3D' : '#adacac')};
 `;
 
 export const StyledFilterContainer = styled.div`
@@ -42,10 +42,10 @@ export const StyledFilterContainer = styled.div`
 
 export const StyledCheckbox = styled.input`
   margin-right: 10px;
-  color: white
+  color: white;
 `;
 
-export default function CSVViewer({blockId, small}: { blockId: string, small?: boolean }) {
+export default function CSVViewer({ blockId, small }: { blockId: string; small?: boolean }) {
     const dispatch = useAppDispatch();
     const rawData = useAppSelector(getData);
     const filteredDataChanged = useAppSelector(getFilteredDataChanged);
@@ -71,7 +71,7 @@ export default function CSVViewer({blockId, small}: { blockId: string, small?: b
         }
     }, [filteredDataChanged, blockId, filteredDataCSVString]);
 
-    // update filtered data if column selection changes
+    // Update filtered data if column selection changes
     useEffect(() => {
         if (rawData.length > 0) {
             const filteredData = rawData.map(row =>
@@ -79,7 +79,6 @@ export default function CSVViewer({blockId, small}: { blockId: string, small?: b
             );
             dispatch(setFilteredData(filteredData));
         }
-
     }, [selectedColumns, rawData]);
 
     const handleColumnChange = (column: string) => {
@@ -90,6 +89,17 @@ export default function CSVViewer({blockId, small}: { blockId: string, small?: b
         );
     };
 
+    // Function to format numbers to avoid scientific notation
+    const formatNumber = (value: any) => {
+        // Check if value is a number or a string representation of a number
+        if (typeof value === 'number' || (typeof value === 'string' && !isNaN(Number(value)))) {
+            // Parse the number and convert to locale string
+            const number = Number(value);
+            return number.toLocaleString('en-US', { maximumFractionDigits: 20 });
+        }
+        return value; // Return the original value if not a number
+    };
+
     return (
         <div>
             {data.length === 0 ? (
@@ -97,29 +107,29 @@ export default function CSVViewer({blockId, small}: { blockId: string, small?: b
             ) : (
                 <StyledCSVTable $small={small}>
                     <thead>
-                    <tr>
-                        {columns.map(col => (
-                            <StyledTableHeader key={col} $isSelected={selectedColumns.includes(col)}>
-                                <StyledCheckbox
-                                    type="checkbox"
-                                    checked={selectedColumns.includes(col)}
-                                    onChange={() => handleColumnChange(col)}
-                                />
-                                {col}
-                            </StyledTableHeader>
-                        ))}
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {data.map((row, rowIndex) => (
-                        <tr key={rowIndex}>
+                        <tr>
                             {columns.map(col => (
-                                <StyledTableCell key={col} $isSelected={selectedColumns.includes(col)}>
-                                    {row[col]}
-                                </StyledTableCell>
+                                <StyledTableHeader key={col} $isSelected={selectedColumns.includes(col)}>
+                                    <StyledCheckbox
+                                        type="checkbox"
+                                        checked={selectedColumns.includes(col)}
+                                        onChange={() => handleColumnChange(col)}
+                                    />
+                                    {col}
+                                </StyledTableHeader>
                             ))}
                         </tr>
-                    ))}
+                    </thead>
+                    <tbody>
+                        {data.map((row, rowIndex) => (
+                            <tr key={rowIndex}>
+                                {columns.map(col => (
+                                    <StyledTableCell key={col} $isSelected={selectedColumns.includes(col)}>
+                                        {formatNumber(row[col])} {/* Use the formatting function */}
+                                    </StyledTableCell>
+                                ))}
+                            </tr>
+                        ))}
                     </tbody>
                 </StyledCSVTable>
             )}

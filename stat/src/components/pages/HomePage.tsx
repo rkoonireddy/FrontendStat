@@ -94,17 +94,79 @@ function FileUpload({onClose, onUpload}: { onClose: () => void, onUpload: (frequ
         if (file && frequency) {
             const formData = new FormData();
             formData.append('csvFile', file);
-            // Do not reset any rawData yet in case user stops the upload
-            try {
-                // This sets the previewData in the redux store
-                await dispatch(readData(formData) as any).unwrap();
-                onUpload(frequency);
-            } catch (error) {
-                console.error("File upload failed:", error);
-            }
+    
+            const reader = new FileReader();
+    
+            reader.onload = async (event) => {
+                const target = event.target;
+                if (target && target.result) {
+                    const text = target.result as string;
+                    
+                    // Split the CSV into rows and trim whitespace from each row
+                    const rows = text.split("\n").map(row => row.trim()).filter(row => row.length > 0); // Remove completely empty rows
+                    
+                    // Log the original rows for inspection
+                    // console.log("Original Rows:", rows);
+    
+                    // Determine the number of columns (assuming the first row is the header)
+                    const numColumns = rows[0]?.split(",").length || 0;
+    
+                    // Log the counts of rows and columns
+                    // console.log(`Row Count: ${rows.length}, Column Count: ${numColumns}`);
+    
+                    // Check for empty cells at the end of each column
+                    for (let col = 0; col < numColumns; col++) {
+                        let lastNonEmptyRow = rows.length - 1;
+    
+                        // Find the last non-empty cell in this column
+                        while (lastNonEmptyRow >= 0 && (rows[lastNonEmptyRow].split(",")[col]?.trim() === '' || rows[lastNonEmptyRow].split(",")[col] === undefined)) {
+                            lastNonEmptyRow--; // Move upwards until a non-empty cell is found
+                        }
+    
+                        // If the last non-empty cell is not the last row, slice the rows to remove empty cells
+                        if (lastNonEmptyRow < rows.length - 1) {
+                            for (let row = lastNonEmptyRow + 1; row < rows.length; row++) {
+                                const currentRowArray = rows[row].split(","); // Split the current row into columns
+                                currentRowArray[col] = ''; // Set the cell to empty for those below the last non-empty cell
+                                rows[row] = currentRowArray.join(","); // Rejoin the columns back into a row
+                            }
+                        }
+                    }
+    
+                    // Remove any rows that are completely empty after cleaning
+                    const cleanedRows = rows.filter(row => row.split(",").some(cell => cell.trim() !== ''));
+    
+                    // Log cleaned data
+                    // console.log("Cleaned Rows:", cleanedRows);
+    
+                    // Log the counts of cleaned rows and columns
+                    // console.log(`Cleaned Row Count: ${cleanedRows.length}, Column Count: ${numColumns}`);
+    
+                    // Check if any row is completely empty after cleaning
+                    const hasEmptyRows = cleanedRows.length < rows.length; // Check if cleaned rows are fewer than original
+                    if (hasEmptyRows) {
+                        // console.log("The CSV file contains empty rows after cleaning.");
+                        alert("The CSV file contains empty rows after cleaning. Please remove them and try again.");
+                        return; // Stop the upload process if empty rows are found
+                    }
+    
+                    // Proceed with the upload if no empty rows are found
+                    try {
+                        // Optionally set the cleaned data to formData or other logic
+                        await dispatch(readData(formData) as any).unwrap();
+                        onUpload(frequency);
+                    } catch (error) {
+                        console.error("File upload failed:", error);
+                    }
+                }
+            };
+    
+            reader.readAsText(file);
         }
-    }
-
+    };
+       
+    
+    
     return (
         <Popup title={"File upload"} onCloseAction={onClose}>
             <StyledInput $width={"300px"} $margin={'20px 0 0 0'} type="file" accept=".csv" onChange={handleFileChange}/>
@@ -113,7 +175,15 @@ function FileUpload({onClose, onUpload}: { onClose: () => void, onUpload: (frequ
                              onChange={handleFrequencyChange}/>
                 <StyledUnit>HZ</StyledUnit>
             </StyledFrequencyInputContainer>
-            {!file || !frequency || !(file.type === 'text/csv' || file.type === 'application/vnd.ms-excel') ? <p>Select CSV file</p> : <PrimaryButton text={"Preview"} action={handleUpload}/>}
+            {!file || !frequency || !(file.type === 'text/csv' || file.type === 'application/vnd.ms-excel') ? (
+                <p style={{ color: 'white' }}>
+                    <span>1. Select CSV file</span><br />
+                    <span>2. Ensure that the first column is timestamp</span><br />
+                    <span>3. Ensure that there are no empty cells at the end of the data</span>
+                </p>
+            ) : (
+                <PrimaryButton text={"Preview"} action={handleUpload} />
+            )}        
         </Popup>
     )
 }
