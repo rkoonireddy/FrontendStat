@@ -1,7 +1,7 @@
 import {createAsyncThunk, createSelector, createSlice} from "@reduxjs/toolkit";
 import {parseCSV} from "../service/dataService";
 import {RootState} from "../store";
-import {convertToCSV} from "../util/util";
+import {convertToCSV} from "../util/fileUtil";
 
 
 interface IDataState {

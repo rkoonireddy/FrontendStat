@@ -19,21 +19,6 @@ export function getMinMax(data: DataPoint[][]): {x: {min: number, max: number}, 
     };
 }
 
-export function createNodes(pipeline: Pipeline) {
-    // let x = -100;
-    let y = -100;
-    return pipeline.steps.map(step => {
-        // x += 100;
-        y += 100;
-        return {
-            id: step.id,
-            data: { label: step.name, type: step.type },
-            position: { x: 225, y: y },
-            ...(y === 0 && { type: "input" })
-        };
-    });
-}
-
 // blocks to customReactFlow
 export function createNodesFromBlocks(blocks: BlockModel[]) {
     let y = -100;
@@ -64,16 +49,6 @@ export function createEdges(pipeline: PipelineModel): {id: string, type: string,
     return edges;
 }
 
-export function convertToCSV(data: { [key: string]: string }[]): string {
-    if (data.length === 0) return '';
-
-    const columns = Object.keys(data[0]);
-    const header = columns.join(',');
-    const rows = data.map(row =>
-        columns.map(col => row[col]).join(',')
-    );
-    return [header, ...rows].join('\n');
-}
 
 export function convertToDataPoints(data: any[]): DataPoint[][] {
     const xValues = data[0].data.data;
@@ -101,33 +76,3 @@ export function formatNumber (value: any) {
     return value;
 }
 
-export function preProcessCSVData(csvString: { [key: string]: string; }[], selectedColumns: string[]) {
-    let newRawData = csvString.map(row =>
-        Object.fromEntries(Object.entries(row).filter(([key]) => selectedColumns.includes(key)))
-    );
-
-    // Remove rows where the first column is empty
-    newRawData = newRawData.filter(row => {
-        const firstKey = Object.keys(row)[0]; // Get the first key
-        return row[firstKey] !== undefined && row[firstKey] !== ''; // Keep row if first column is not empty
-    });
-
-    // Clean the newRawData to ensure no empty values at the end of each row
-    return newRawData.map(row => {
-        const cleanedRow = {...row}; // Create a shallow copy of the row
-        const keys = Object.keys(cleanedRow);
-        let lastNonEmptyKeyIndex = keys.length - 1;
-
-        // Find the last non-empty key in the row
-        while (lastNonEmptyKeyIndex >= 0 && (cleanedRow[keys[lastNonEmptyKeyIndex]] === null || cleanedRow[keys[lastNonEmptyKeyIndex]] === '')) {
-            lastNonEmptyKeyIndex--; // Move upwards until a non-empty value is found
-        }
-
-        // If there are empty values after the last non-empty key, set them to empty string
-        for (let i = lastNonEmptyKeyIndex + 1; i < keys.length; i++) {
-            cleanedRow[keys[i]] = ''; // Set the remaining keys to an empty string
-        }
-
-        return cleanedRow;
-    });
-}
