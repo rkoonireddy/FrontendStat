@@ -55,6 +55,11 @@ export async function checkFileValidity(text: string): Promise<{ isValid: boolea
     // Remove any rows that are completely empty after cleaning
     const cleanedRows = rows.filter(row => row.split(",").some(cell => cell.trim() !== ''));
 
+    // Check if the number of rows is less than 2
+    if (cleanedRows.length < 2) {
+        return { isValid: false, message: "The CSV file must contain at least 1 row of data." };
+    }
+
     // Check if any value in the first column (timestamp) is missing
     const firstColumnValues = cleanedRows.map(row => row.split(",")[0]?.trim());
     const emptyTimestampIndex = firstColumnValues.findIndex(value => value === '');
