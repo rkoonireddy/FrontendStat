@@ -52,10 +52,13 @@ export function RangeControl({title, range, columnSpan = 2, rowSpan = 1}: {
             <StyledRangeContainer>
                 <StyledRangeValue $left={true}>{value[0]}</StyledRangeValue>
                 <Slider value={value}
+                        range
+                        min={value[0]}
+                        max={value[1]}
                         orientation={"horizontal"}
                         style={{width: width + "px", margin: "auto 10px"}}
                         onChange={(e) => updateRange(e.value as [number, number])}
-                        range/>
+                />
                 <StyledRangeValue $left={false}>{value[1]}</StyledRangeValue>
             </StyledRangeContainer>
         </StyledControl>
