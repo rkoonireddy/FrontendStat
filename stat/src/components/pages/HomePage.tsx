@@ -125,15 +125,22 @@ function FileUpload({onClose, onUpload}: { onClose: () => void, onUpload: (frequ
                     const emptyTimestampIndex = firstColumnValues.findIndex(value => value === '');
                     
                     if (emptyTimestampIndex !== -1) {
-                        alert(`Detected empty time-stamp value at row ${emptyTimestampIndex}, please ensure that the first column is timestamp and the values are integers.`);
+                        alert(`Found empty value in the first column at row ${emptyTimestampIndex}, please ensure that the first column only contains valid integers.`);
                         return; // Stop the upload process if there are empty timestamp values
                     }
     
                     // Check if any value in the first column (timestamp) from the second row onwards is not an integer
-                    const nonIntegerIndex = firstColumnValues.slice(1).findIndex(value => isNaN(parseInt(value)));
+                    const nonIntegerIndex = firstColumnValues.slice(1).findIndex(value => {
+                        const parsedFloat = parseFloat(value); // First try to convert to float
+                        const isValidFloat = !isNaN(parsedFloat); // Check if valid float
+                        if (!isValidFloat) return true; // If not valid float, return true
+                        
+                        return !Number.isInteger(parsedFloat); // Then check if it is also a valid integer
+
+                    });
                     
                     if (nonIntegerIndex !== -1) {
-                        alert(`Found string in timestamp column at row ${nonIntegerIndex + 1}, please ensure that you have only integers starting from the second row.`);
+                        alert(`Found non-integer string in the first column at row ${nonIntegerIndex + 1} with value '${firstColumnValues.slice(1)[nonIntegerIndex]}', please ensure that the first column only contains valid integers.`);
                         return; // Stop the upload process if there are strings in the timestamp column from the second row
                     }
     
