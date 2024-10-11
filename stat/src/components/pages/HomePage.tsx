@@ -14,8 +14,7 @@ import {
 import {Popup} from "../pageElements/Popup";
 import {StyledInput, StyledUnit} from "../controls/InputControl";
 import {PreviewTable} from "../tables/PreviewTable";
-import {preProcessCSVData} from "../../util/util";
-
+import {checkFileValidity, preProcessCSVData} from "../../util/fileUtil";
 
 const StyledHomeContainer = styled.div`
   width: 100vw;
@@ -25,10 +24,10 @@ const StyledHomeContainer = styled.div`
 `;
 
 const StyledHeader = styled.div`
-  width: 500px;
-  display: flex;
-  justify-content: center;
-  margin: 0 auto 100px auto;
+    width: 500px;
+    display: flex;
+    justify-content: center;
+    margin: 0 auto 100px auto;
 `;
 
 const StyledHomeContentContainer = styled.div`
@@ -60,11 +59,6 @@ const StyledButtonContainer = styled.div`
   display: flex;
 `;
 
-const StyledUploadFileTitle = styled.div`
-  font-size: 2rem;
-  color: white;
-  margin: 15px auto;
-`;
 
 const StyledFrequencyInputContainer = styled.div`
   margin: auto;
@@ -74,6 +68,17 @@ const StyledFrequencyInputContainer = styled.div`
   align-items: center;
   justify-content: center;
 `;
+
+const StyledFileUploadInfo = styled.p`
+    color: white;
+    margin-top: 10px;
+`;
+
+const StyledFileUploadInfoSpan = styled.span`
+    display: inline-block;
+    margin: 8px 0;
+`;
+
 
 function FileUpload({onClose, onUpload}: { onClose: () => void, onUpload: (frequency: number) => void}) {
     const [file, setFile] = useState<File | null>(null);
@@ -92,7 +97,6 @@ function FileUpload({onClose, onUpload}: { onClose: () => void, onUpload: (frequ
     }
 
     
-    //edited the rows here as well instead of only handleAccept function.
     const handleUpload = async () => {
         if (file && frequency) {
             const formData = new FormData();
@@ -105,28 +109,14 @@ function FileUpload({onClose, onUpload}: { onClose: () => void, onUpload: (frequ
                 if (target && target.result) {
                     const text = target.result as string;
     
-                    // Split the CSV into rows and trim whitespace from each row
-                    const rows = text.split("\n").map(row => row.trim()).filter(row => row.length > 0); // Remove completely empty rows
-                    
-                    // Determine the number of columns (assuming the first row is the header)
-                    const numColumns = rows[0]?.split(",").length || 0;
-    
-                    // Check if the number of columns is less than 2
-                    if (numColumns < 2) {
-                        alert("The CSV file must contain at least 2 columns.");
-                        return; // Stop the upload process if there are fewer than 2 columns
+                    const { isValid, message } = await checkFileValidity(text);
+
+                    if(!isValid) {
+                        alert(message);
+                        return;
                     }
     
-                    // Remove any rows that are completely empty after cleaning
-                    const cleanedRows = rows.filter(row => row.split(",").some(cell => cell.trim() !== ''));
-    
-                    // Check for a minimum of 2 rows after cleaning
-                    if (cleanedRows.length < 2) {
-                        alert("The CSV file must contain at least 2 rows of data.");
-                        return; // Stop the upload process if there are fewer than 2 rows
-                    }
-    
-                    // Proceed with the upload if no empty rows are found
+                    // Proceed with the upload if no empty rows or invalid values are found
                     try {
                         // Optionally set the cleaned data to formData or other logic
                         await dispatch(readData(formData) as any).unwrap();
@@ -141,26 +131,23 @@ function FileUpload({onClose, onUpload}: { onClose: () => void, onUpload: (frequ
         }
     };
     
-       
-    
-    
     return (
-        <Popup title={"File upload"} onCloseAction={onClose}>
+        <Popup title={"File upload"} onCloseAction={onClose} large={false}>
             <StyledInput $width={"300px"} $margin={'20px 0 0 0'} type="file" accept=".csv" onChange={handleFileChange}/>
             <StyledFrequencyInputContainer>
                 <StyledInput $largeText={true} type="number" value={frequency}
                              onChange={handleFrequencyChange}/>
                 <StyledUnit>HZ</StyledUnit>
             </StyledFrequencyInputContainer>
-            {!file || !frequency || !(file.type === 'text/csv' || file.type === 'application/vnd.ms-excel') ? (
-                <p style={{ color: 'white' }}>
-                    <span>1. Select CSV file</span><br />
-                    <span>2. Ensure that the first column is timestamp</span><br />
-                    <span>3. Ensure that there are no empty cells at the end of the data</span>
-                </p>
-            ) : (
+            {!file || !frequency || !(file.type === 'text/csv' || file.type === 'application/vnd.ms-excel') ? (null) : (
                 <PrimaryButton text={"Preview"} action={handleUpload} />
-            )}        
+            )}
+            <StyledFileUploadInfo>
+                <StyledFileUploadInfoSpan>- Select CSV file. It must have a header</StyledFileUploadInfoSpan><br />
+                <StyledFileUploadInfoSpan>- The first column will be the index</StyledFileUploadInfoSpan><br />
+                <StyledFileUploadInfoSpan>- Make sure it contains only integers and no missing values</StyledFileUploadInfoSpan><br />
+                <StyledFileUploadInfoSpan>- Make sure the remaining columns only contain valid numbers or NA (empty)</StyledFileUploadInfoSpan><br />
+            </StyledFileUploadInfo>
         </Popup>
     )
 }
