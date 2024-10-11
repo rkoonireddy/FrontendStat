@@ -152,12 +152,6 @@ function FileUpload({onClose, onUpload}: { onClose: () => void, onUpload: (frequ
         }
     };
     
-    
-    
-    
-       
-    
-    
     return (
         <Popup title={"File upload"} onCloseAction={onClose}>
             <StyledInput $width={"300px"} $margin={'20px 0 0 0'} type="file" accept=".csv" onChange={handleFileChange}/>
@@ -166,15 +160,14 @@ function FileUpload({onClose, onUpload}: { onClose: () => void, onUpload: (frequ
                              onChange={handleFrequencyChange}/>
                 <StyledUnit>HZ</StyledUnit>
             </StyledFrequencyInputContainer>
-            {!file || !frequency || !(file.type === 'text/csv' || file.type === 'application/vnd.ms-excel') ? (
-                <p style={{ color: 'white' }}>
-                    <span>1. Select CSV file</span><br />
-                    <span>2. Ensure that the first column is timestamp - integers</span><br />
-                    <span>3. We remove empty cells at the end of your file.</span>
-                </p>
-            ) : (
+            {!file || !frequency || !(file.type === 'text/csv' || file.type === 'application/vnd.ms-excel') ? (null) : (
                 <PrimaryButton text={"Preview"} action={handleUpload} />
-            )}        
+            )}
+            <p style={{ color: 'white', marginTop: "30px" }}>
+                <span>1. Select CSV file. It must have a header</span><br />
+                <span>2. The first column will be de index used as timestamp</span><br />
+                <span>3. Make sure it contains only integers and no missing values</span><br />
+            </p>   
         </Popup>
     )
 }
