@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import {VerticalSliderControl} from "../controls/SliderControl";
+import {VerticalIntegerSliderControl} from "../controls/SliderControl";
 import {FilterControl} from "../controls/FilterControl";
 import {InputControl} from "../controls/InputControl";
 import {DropdownControl} from "../controls/DropdownControl";
@@ -78,13 +78,36 @@ export function ControlSection({show}: { show: boolean }) {
                                                             defaultValues={filter.default}/>);
                         break;
                     case "slider":
-                        components.push(<VerticalSliderControl key={filter.name} title={filter.name} min={filter.min}
-                                                               max={filter.max} step={filter.step}
-                                                               start={filter.start}/>);
+                        components.push(<VerticalIntegerSliderControl
+                            key={filter.name}
+                            title={filter.name}
+                            min={filter.min}
+                            max={filter.max}
+                            step={1}
+                            start={filter.default}/>
+                        );
                         break;
-                    case "range":
-                        components.push(<RangeControl key={filter.name} title={filter.name}
-                                                      range={[filter.min, filter.max]}/>);
+                    case "range_int":
+
+                        console.log("Range int filter", filter);
+
+                        components.push(<RangeControl
+                            key={filter.name}
+                            title={filter.name}
+                            range={[filter.min, filter.max]}
+                            initial_range={[filter.default[0], filter.default[1]]}
+                            step={1}/>
+                        );
+                        break;
+                    case "range_float":
+                        components.push(<RangeControl
+                            key={filter.name}
+                            title={filter.name}
+                            range={[filter.min, filter.max]}
+                            initial_range={[filter.default[0], filter.default[1]]}
+                            step={filter.step}
+                            />
+                        );
                         break;
                     default:
                         break;

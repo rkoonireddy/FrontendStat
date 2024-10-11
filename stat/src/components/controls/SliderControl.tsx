@@ -25,7 +25,7 @@ const StyledSliderValue = styled.div`
 `;
 
 
-export function VerticalSliderControl({title, min, max, step, start, columnSpan = 1, rowSpan = 1}: {
+export function VerticalIntegerSliderControl({title, min, max, step, start, columnSpan = 1, rowSpan = 1}: {
     title: string,
     min: number,
     max: number,
