@@ -32,9 +32,8 @@ export const StyledUnit = styled.span`
 `;
 
 
-export function InputControl({title, unit, columnSpan = 1, rowSpan = 1}: {
+export function InputControl({title, columnSpan = 1, rowSpan = 1}: {
     title: string,
-    unit: string,
     columnSpan?: number,
     rowSpan?: number
 }) {
@@ -57,7 +56,6 @@ export function InputControl({title, unit, columnSpan = 1, rowSpan = 1}: {
                 <StyledInput id={"input text"}
                              value={value}
                              onChange={(e) => setValue(e.target.value)}/>
-                <StyledUnit>{unit}</StyledUnit>
             </StyledInputContainer>
             <PrimaryButton text={"Confirm"} action={action} size={130}/>
         </StyledControl>

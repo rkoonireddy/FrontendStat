@@ -58,10 +58,10 @@ export function ControlSection({show}: { show: boolean }) {
                 switch (filter.filter_type) {
                     case "boolean":
                         components.push(<FilterControl key={filter.name} title={filter.name} onLabel={"On"}
-                                                       offLabel={"Off"} value={true}/>);
+                                                       offLabel={"Off"} value={filter.default}/>);
                         break;
                     case "input":
-                        components.push(<InputControl key={filter.name} title={filter.name} unit={"Hz"}/>);
+                        components.push(<InputControl key={filter.name} title={filter.name}/>);
                         break;
                     case "singleselect":
                         components.push(<DropdownControl key={filter.name} title={filter.name}
