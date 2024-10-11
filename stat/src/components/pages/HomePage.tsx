@@ -177,7 +177,7 @@ function FileUpload({onClose, onUpload}: { onClose: () => void, onUpload: (frequ
     };
     
     return (
-        <Popup title={"File upload"} onCloseAction={onClose}>
+        <Popup title={"File upload"} onCloseAction={onClose} large={false}>
             <StyledInput $width={"300px"} $margin={'20px 0 0 0'} type="file" accept=".csv" onChange={handleFileChange}/>
             <StyledFrequencyInputContainer>
                 <StyledInput $largeText={true} type="number" value={frequency}
@@ -187,11 +187,11 @@ function FileUpload({onClose, onUpload}: { onClose: () => void, onUpload: (frequ
             {!file || !frequency || !(file.type === 'text/csv' || file.type === 'application/vnd.ms-excel') ? (null) : (
                 <PrimaryButton text={"Preview"} action={handleUpload} />
             )}
-            <p style={{ color: 'white', marginTop: "30px" }}>
-                <span>1. Select CSV file. It must have a header</span><br />
-                <span>2. The first column will be de index used as timestamp</span><br />
-                <span>3. Make sure it contains only integers and no missing values</span><br />
-                <span>4. Make sure the remaining columns only contain valid numbers or empty (missing value)</span><br />
+            <p style={{ color: 'white', marginTop: "10px" }}>
+                <span style={{ display: 'inline-block', margin: "8px 0" }}>- Select CSV file. It must have a header</span><br />
+                <span style={{ display: 'inline-block', margin: "8px 0" }}>- The first column will be the index</span><br />
+                <span style={{ display: 'inline-block', margin: "8px 0" }}>- Make sure it contains only integers and no missing values</span><br />
+                <span style={{ display: 'inline-block', margin: "8px 0" }}>- Make sure the remaining columns only contain valid numbers or NA (empty)</span><br />
             </p>   
         </Popup>
     )

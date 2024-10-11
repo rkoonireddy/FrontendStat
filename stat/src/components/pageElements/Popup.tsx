@@ -7,8 +7,8 @@ const StyledPopup = styled.div<{ $large: boolean}>`
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: ${props => props.$large ? '800px' : '600px'};
-  height: ${props => props.$large ? '600px' : '400px'};
+  width: ${props => props.$large ? '1000px' : '800px'};
+  height: ${props => props.$large ? '625px' : '500px'};
   background: linear-gradient(to bottom right, #3D3D3D 0%, #000000 100%);;
   bottom: 0;
   left: 0;
