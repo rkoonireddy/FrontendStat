@@ -88,6 +88,11 @@ export function getFirstKey(dict: Record<string, any>): string | undefined {
 
 // Function to format numbers to avoid scientific notation
 export function formatNumber (value: any) {
+
+    // Catch empty strings early. Also account for end of line value, with trailing \r
+    if (value === '' || value === '\r') {
+        return "NA";
+    }
     // Check if value is a number or a string representation of a number
     if (typeof value === 'number' || (typeof value === 'string' && !isNaN(Number(value)))) {
         // Parse the number and convert to locale string
