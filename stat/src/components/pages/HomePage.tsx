@@ -125,7 +125,7 @@ function FileUpload({onClose, onUpload}: { onClose: () => void, onUpload: (frequ
                     const emptyTimestampIndex = firstColumnValues.findIndex(value => value === '');
                     
                     if (emptyTimestampIndex !== -1) {
-                        alert(`Found empty value in the first column at row ${emptyTimestampIndex}, please ensure that the first column only contains valid integers.`);
+                        alert(`Found empty value in the first column at row ${emptyTimestampIndex}, please ensure that the first column only contains valid integers. This is the row:\n${cleanedRows[emptyTimestampIndex]}`);
                         return; // Stop the upload process if there are empty timestamp values
                     }
     
@@ -140,7 +140,24 @@ function FileUpload({onClose, onUpload}: { onClose: () => void, onUpload: (frequ
                     });
                     
                     if (nonIntegerIndex !== -1) {
-                        alert(`Found non-integer string in the first column at row ${nonIntegerIndex + 1} with value '${firstColumnValues.slice(1)[nonIntegerIndex]}', please ensure that the first column only contains valid integers.`);
+                        alert(`Found non-integer string in the first column at row ${nonIntegerIndex + 1} with value '${firstColumnValues.slice(1)[nonIntegerIndex]}', please ensure that the first column only contains valid integers. This is the row:\n${cleanedRows[nonIntegerIndex + 1]}`);
+                        return; // Stop the upload process if there are strings in the timestamp column from the second row
+                    }
+
+                    // Also check if any value in the columns 2 to N are not numbers
+                    const nonNumberIndex = cleanedRows.slice(1).findIndex(row => {
+                        const values = row.split(",").slice(1);
+                        // Each value must either be valid number or empty
+                        const isValid = values.every(value => {
+                            const cleanedValue = value.trim();  // Remove any surrounding whitespace, e.g. "\r"
+                            return cleanedValue === "" || !isNaN(parseFloat(cleanedValue));  // Check if it's not empty and also not a number
+                        })
+
+                        return !isValid;
+                    });
+
+                    if (nonNumberIndex !== -1) {
+                        alert(`Found non-number value in one of the value columns at row ${nonNumberIndex + 1}, please ensure that the second to N columns only contain valid numbers or empty (missing) values. This is the row:\n${cleanedRows[nonNumberIndex + 1]}`);
                         return; // Stop the upload process if there are strings in the timestamp column from the second row
                     }
     
@@ -174,6 +191,7 @@ function FileUpload({onClose, onUpload}: { onClose: () => void, onUpload: (frequ
                 <span>1. Select CSV file. It must have a header</span><br />
                 <span>2. The first column will be de index used as timestamp</span><br />
                 <span>3. Make sure it contains only integers and no missing values</span><br />
+                <span>4. Make sure the remaining columns only contain valid numbers or empty (missing value)</span><br />
             </p>   
         </Popup>
     )
