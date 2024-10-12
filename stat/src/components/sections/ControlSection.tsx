@@ -52,13 +52,17 @@ export function ControlSection({show}: { show: boolean }) {
         setFilterComponents([]);
         if (activeBlock && activeBlock.filters && Object.keys(activeBlock.filters).length > 0) {
             const components: JSX.Element[] = [];
-            let blockControls: { [key: string]: string } = {};
+            let blockControls: { [key: string]: any } = {};
             Object.entries(activeBlock.filters).forEach(([key, filter]) => {
-                blockControls[key] = filter.default;
+
+                // If the activeBlock has a value for field <key>, use it. Otherwise use the default from the filter or undefined if nothing is set
+                const activeBlockFilterValue = activeBlock[key as keyof typeof activeBlock] ?? filter.default;
+                blockControls[key] = activeBlockFilterValue;
+                
                 switch (filter.filter_type) {
                     case "boolean":
                         components.push(<FilterControl key={filter.name} title={filter.name} onLabel={"On"}
-                                                       offLabel={"Off"} value={filter.default}/>);
+                                                       offLabel={"Off"} value={blockControls[key]}/>);
                         break;
                     case "input":
                         components.push(<InputControl key={filter.name} title={filter.name}/>);
@@ -68,14 +72,14 @@ export function ControlSection({show}: { show: boolean }) {
                                                          options={filter.options.map((option: any) => {
                                                              return {label: option, value: option};
                                                          })}
-                                                         defaultValue={filter.default}/>);                           
+                                                         defaultValue={blockControls[key]}/>);                           
                         break;
                     case "multiselect":
                         components.push(<MultiSelectControl key={filter.name} title={filter.name}
                                                             options={filter.options.map((option: any) => {
                                                                 return {label: option, value: option};
                                                             })}
-                                                            defaultValues={filter.default}/>);
+                                                            defaultValues={blockControls[key]}/>);
                         break;
                     case "slider":
                         components.push(<VerticalIntegerSliderControl
@@ -84,18 +88,18 @@ export function ControlSection({show}: { show: boolean }) {
                             min={filter.min}
                             max={filter.max}
                             step={1}
-                            start={filter.default}/>
+                            start={blockControls[key]}/>
                         );
                         break;
                     case "range_int":
 
-                        console.log("Range int filter", filter);
+                        // console.log("Range int filter", filter);
 
                         components.push(<RangeControl
                             key={filter.name}
                             title={filter.name}
                             range={[filter.min, filter.max]}
-                            initial_range={[filter.default[0], filter.default[1]]}
+                            initial_range={[blockControls[key][0], blockControls[key][1]]}
                             step={1}/>
                         );
                         break;
@@ -104,7 +108,7 @@ export function ControlSection({show}: { show: boolean }) {
                             key={filter.name}
                             title={filter.name}
                             range={[filter.min, filter.max]}
-                            initial_range={[filter.default[0], filter.default[1]]}
+                            initial_range={[blockControls[key][0], blockControls[key][1]]}
                             step={filter.step}
                             />
                         );

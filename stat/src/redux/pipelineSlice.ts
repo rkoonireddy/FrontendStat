@@ -277,7 +277,7 @@ export const pipelineSlice = createSlice({
             // If the blockId contains the control action.payload.filter.key, update the value, otherwise do nothing
             if (action.payload.blockId in state.controls && action.payload.filter.key in state.controls[action.payload.blockId]) {
                 
-                console.log("updateControl: using value ", action.payload.filter.value);
+                // console.log("updateControl: using value ", action.payload.filter.value);
 
                 state.controls[action.payload.blockId][action.payload.filter.key] = action.payload.filter.value;
             } else {
