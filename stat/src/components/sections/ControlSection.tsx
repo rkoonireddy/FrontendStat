@@ -64,7 +64,7 @@ export function ControlSection({show}: { show: boolean }) {
                         components.push(<FilterControl key={filter.name} title={filter.name} onLabel={"On"}
                                                        offLabel={"Off"} value={blockControls[key]}/>);
                         break;
-                    case "input":
+                    case "input_str":
                         components.push(<InputControl key={filter.name} title={filter.name}/>);
                         break;
                     case "singleselect":

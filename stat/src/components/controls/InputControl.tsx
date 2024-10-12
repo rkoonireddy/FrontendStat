@@ -32,8 +32,9 @@ export const StyledUnit = styled.span`
 `;
 
 
-export function InputControl({title, columnSpan = 1, rowSpan = 1}: {
+export function InputControl({title, dtype, columnSpan = 1, rowSpan = 1}: {
     title: string,
+    dtype: string,
     columnSpan?: number,
     rowSpan?: number
 }) {
@@ -43,7 +44,6 @@ export function InputControl({title, columnSpan = 1, rowSpan = 1}: {
 
 
     function action() {
-        console.log(value);
         if(activeBlock) {
             dispatch(updateControl({blockId: activeBlock.id, filter: {key: title, value: value}}));
         }
