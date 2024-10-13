@@ -32,18 +32,19 @@ export const StyledUnit = styled.span`
 `;
 
 
-export function InputControl({title, dtype, columnSpan = 1, rowSpan = 1}: {
+// String input is always valid, no validation needed
+export function InputControlString({title, initialValue, columnSpan = 1, rowSpan = 1}: {
     title: string,
-    dtype: string,
+    initialValue: string,
     columnSpan?: number,
     rowSpan?: number
 }) {
     const activeBlock = useAppSelector(getActiveBlock);
     const dispatch = useAppDispatch();
-    const [value, setValue] = useState("");
-
-
-    function action() {
+    const [value, setValue] = useState(initialValue);
+    
+    function handleChange() {
+        console.log(value);
         if(activeBlock) {
             dispatch(updateControl({blockId: activeBlock.id, filter: {key: title, value: value}}));
         }
@@ -57,7 +58,62 @@ export function InputControl({title, dtype, columnSpan = 1, rowSpan = 1}: {
                              value={value}
                              onChange={(e) => setValue(e.target.value)}/>
             </StyledInputContainer>
-            <PrimaryButton text={"Confirm"} action={action} size={130}/>
+            <PrimaryButton text={"Confirm"} action={handleChange} size={130}/>
+        </StyledControl>
+    )
+}
+
+// String input is always valid, no validation needed
+export function InputControlInt({title, initialValue, columnSpan = 1, rowSpan = 1}: {
+    title: string,
+    initialValue: string,
+    columnSpan?: number,
+    rowSpan?: number
+}) {
+    const activeBlock = useAppSelector(getActiveBlock);
+    const dispatch = useAppDispatch();
+    const [value, setValue] = useState<string>(initialValue);
+    const [isValid, setIsValid] = useState<boolean>(validate(value));
+    
+    function validate(v: string): boolean {
+        return Number.isInteger(Number(v));
+    }
+
+    function handleChange(newValue: string) {
+
+        // Change the value anyways
+        setValue(newValue)
+
+        // Catch empty, converted to 0
+        if (newValue === "") {
+            setIsValid(false);
+            return;
+        }
+ 
+        // Try to convert string to int
+        const newValueNumber = Number(newValue);
+        if (Number.isInteger(newValueNumber)) {
+            setIsValid(true);
+        } else {
+            setIsValid(false);
+        }
+    }
+
+    function handleConfirm() {
+        if(activeBlock) {
+            dispatch(updateControl({blockId: activeBlock.id, filter: {key: title, value: value}}));
+        }
+    }
+
+    return (
+        <StyledControl $columnSpan={columnSpan} $rowSpan={rowSpan}>
+            <ControlTitle title={title} margin={'0'}/>
+            <StyledInputContainer>
+                <StyledInput id={"input text"}
+                             value={value}
+                             onChange={(e) => handleChange(e.target.value)}/>
+            </StyledInputContainer>
+            {isValid ? <PrimaryButton text={"Confirm"} action={handleConfirm} size={130}/> : <ControlTitle title="Enter integer"/>}
         </StyledControl>
     )
 }
