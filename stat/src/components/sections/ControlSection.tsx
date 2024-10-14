@@ -88,6 +88,9 @@ export function ControlSection({show}: { show: boolean }) {
                                                             defaultValues={blockControls[key]}/>);
                         break;
                     case "slider":
+                        
+                        console.log("Slider Int filter", filter);
+
                         components.push(<VerticalIntegerSliderControl
                             key={filter.name}
                             title={filter.name}

@@ -36,14 +36,14 @@ export function VerticalIntegerSliderControl({title, min, max, step, start, colu
 }) {
     const activeBlock = useAppSelector(getActiveBlock);
     const dispatch = useAppDispatch();
-    const [value, setValue] = useState<number | [number, number]>(start);
+    const [value, setValue] = useState<number|[number, number]>(start);
     const height = 150 * rowSpan;
 
-    function updateValues(minMaxValue: number | [number, number]) {
+    function handleChange(newValue: number|[number, number]) {
         if(activeBlock) {
-            dispatch(updateControl({blockId: activeBlock.id, filter: {key: title, value: minMaxValue}}));
+            dispatch(updateControl({blockId: activeBlock.id, filter: {key: title, value: newValue}}));
         }
-        setValue(minMaxValue);
+        setValue(newValue);
     }
 
     return (
@@ -57,7 +57,7 @@ export function VerticalIntegerSliderControl({title, min, max, step, start, colu
                         value={value}
                         orientation={"vertical"}
                         style={{height: height + "px", margin: "10px 0"}}
-                        onChange={(e) => updateValues(e.value)}/>
+                        onChange={(e) => handleChange(e.value)}/>
             </StyledSliderContainer>
         </StyledControl>
     )
