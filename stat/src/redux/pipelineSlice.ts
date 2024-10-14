@@ -2,7 +2,7 @@ import {PipelineModel} from "../types/dataType";
 import {createAsyncThunk, createSelector, createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {RootState} from "../store";
 import {BlockModel, CreateBlockResponse} from "../types/responseType";
-import {createPipeline, fetchPipeline, runPipeline} from "../service/pipelineService";
+import {createPipeline, exportPipeline, fetchPipeline, runPipeline} from "../service/pipelineService";
 import {
     addBlockToPipeline,
     createBlock,
@@ -14,6 +14,7 @@ import {
 import {createEdges, createNodesFromBlocks} from "../util/util";
 import {addEdgeToPipeline, deleteEdge} from "../service/edgeService";
 import { stat } from "fs";
+import {downloadPythonScript} from "../util/fileUtil";
 
 
 interface IPipelineState {
@@ -156,6 +157,19 @@ export const executePipeline = createAsyncThunk<string, { pipelineId: string, st
             return response;
         } catch (error) {
             return thunkAPI.rejectWithValue(`Failed to run pipeline \n ${String(error)}`);
+        }
+    }
+);
+
+export const fetchExportPipeline = createAsyncThunk<string, { pipelineId: string, startBlockId: string, endBlockId: string }, {
+    rejectValue: string
+}>(
+    'pipeline/exportPipeline',
+    async ({pipelineId, startBlockId, endBlockId}, thunkAPI) => {
+        try {
+            return await exportPipeline({pipelineId: pipelineId, startBlockId: startBlockId, endBlockId: endBlockId});
+        } catch (error) {
+            return thunkAPI.rejectWithValue(`Failed to export pipeline \n ${String(error)}`);
         }
     }
 );
@@ -375,6 +389,17 @@ export const pipelineSlice = createSlice({
         builder.addCase(fetchUpdateBlock.rejected, (state, action) => {
             state.errorStatus = true;
             state.errorMessage = String(action.payload);
+        });
+        builder.addCase(fetchExportPipeline.fulfilled, (state, action) => {
+            state.errorStatus = false;
+            state.errorMessage = null;
+            state.loading = false;
+            downloadPythonScript(action.payload, 'pipeline.py');
+        });
+        builder.addCase(fetchExportPipeline.rejected, (state, action) => {
+            state.errorStatus = true;
+            state.errorMessage = String(action.payload);
+            state.loading = false;
         });
     }
 })

@@ -10,7 +10,7 @@ import React, {useCallback, useEffect, useState} from "react";
 import {useAppDispatch, useAppSelector} from "../../hooks";
 import {
     connectTwoBlocks,
-    executePipeline, getActiveBlockId,
+    executePipeline, fetchExportPipeline, getActiveBlockId,
     getAllEdges,
     getAllNodes,
     getBlocks,
@@ -21,6 +21,7 @@ import CustomNode from "../customReactFlow/CustomNode";
 import CustomStartNode from "../customReactFlow/CustomStartNode";
 import CustomEdge from "../customReactFlow/CustomEdge";
 import {ReactComponent as RunSVG} from "../../assets/run.svg";
+import {ReactComponent as ExportSVG} from "../../assets/filetype-py.svg";
 
 const NodeTypes = {customNode: CustomNode, customStartNode: CustomStartNode};
 const edgeTypes = {
@@ -28,24 +29,32 @@ const edgeTypes = {
 }
 
 const StyledStepsContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  margin: 5px;
-  height: calc(100vh - 10px);
-  background-color: #ffffff08;
+    display: flex;
+    justify-content: center;
+    margin: 5px;
+    height: calc(100vh - 10px);
+    background-color: #ffffff08;
 `;
 
-const StyledRunButton = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: fit-content;
-  height: fit-content;
+const StyledToolbar = styled.div`
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin: 2px;
+`;
 
-  &:hover {
-    cursor: pointer;
-    scale: 1.05;
-  }
+const StyledActionButton = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: fit-content;
+    height: fit-content;
+
+    &:hover {
+        cursor: pointer;
+        scale: 1.05;
+    }
 `;
 
 function Flow() {
@@ -53,6 +62,7 @@ function Flow() {
     const dispatch = useAppDispatch();
     const pipeline = useAppSelector(getPipeline);
     const blocks = useAppSelector(getBlocks);
+    const activeBlockId = useAppSelector(getActiveBlockId);
     const initialNodes = useAppSelector(getAllNodes);
     const initialEdges = useAppSelector(getAllEdges);
 
@@ -118,19 +128,18 @@ function Flow() {
             });
         }
 
-        return { sortedNodes, noEdgeNodes: Array.from(noEdgeNodes) };
+        return {sortedNodes, noEdgeNodes: Array.from(noEdgeNodes)};
     };
 
     const alignNodes = useCallback(async () => {
-        const { sortedNodes, noEdgeNodes } = topologicalSort(nodes, edges);
-        await setNodes((nds) =>
-            nds.map((node) => {
+        const {sortedNodes, noEdgeNodes} = topologicalSort(nodes, edges);
+        setNodes((nds) => nds.map((node) => {
                 const yPos = sortedNodes.includes(node.id)
                     ? sortedNodes.indexOf(node.id) * 150
                     : (sortedNodes.length + noEdgeNodes.indexOf(node.id)) * 150;
                 return {
                     ...node,
-                    position: { x: 0, y: yPos },
+                    position: {x: 0, y: yPos},
                 };
             })
         );
@@ -192,13 +201,30 @@ function Flow() {
                 </button>
             </Panel>
             <Panel position={"bottom-right"}>
-                <StyledRunButton title={"Run Pipeline"} onClick={(e) => {
-                    dispatch(setLoading(true));
-                    dispatch(executePipeline({pipelineId: pipeline.id, startingBlockId: getFirstKey(pipeline.block_dict) as string}));
-                    e.stopPropagation();
-                }}>
-                    <RunSVG style={{width: "50px", height: "50px", color: "#00ff00"}}/>
-                </StyledRunButton>
+                <StyledToolbar>
+                    <StyledActionButton title={"Run Pipeline"} onClick={(e) => {
+                        dispatch(setLoading(true));
+                        dispatch(executePipeline({
+                            pipelineId: pipeline.id,
+                            startingBlockId: getFirstKey(pipeline.block_dict) as string
+                        }));
+                        e.stopPropagation();
+                    }}>
+                        <RunSVG style={{width: "50px", height: "50px", color: "#00ff00"}}/>
+                    </StyledActionButton>
+                    <StyledActionButton title={"Export Pipeline"} onClick={(e) => {
+                        dispatch(setLoading(true));
+                        dispatch(fetchExportPipeline({
+                            pipelineId: pipeline.id,
+                            startBlockId: blocks[0].id,
+                            endBlockId: activeBlockId ? activeBlockId : blocks[blocks.length - 1].id
+                        }));
+                        e.stopPropagation()
+                    }
+                    }>
+                        <ExportSVG style={{width: "35px", height: "35px", color: "#ffffff"}}/>
+                    </StyledActionButton>
+                </StyledToolbar>
             </Panel>
         </ReactFlow>
 

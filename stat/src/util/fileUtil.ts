@@ -99,3 +99,14 @@ export async function checkFileValidity(text: string): Promise<{ isValid: boolea
 
     return { isValid: true, message: "The CSV file is valid." };
 }
+
+export function downloadPythonScript(script: string, filename: string) {
+    const blob = new Blob([script], { type: 'application/x-python-code or text/x-python' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.append(a);
+    a.click();
+    a.remove();
+}

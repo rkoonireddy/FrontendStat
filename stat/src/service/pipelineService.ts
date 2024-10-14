@@ -50,6 +50,15 @@ export async function runPipeline({pipelineId, startingBlockId}: {
     return await response.text();
 }
 
+export async function exportPipeline({pipelineId, startBlockId, endBlockId}: { pipelineId: string, startBlockId: string, endBlockId: string }): Promise<string> {
+    const response =  await fetch(baseurl + "pipeline/" + pipelineId + "/export/" + startBlockId + "/" + endBlockId);
+    if (!response.ok) {
+        const err = await response.text();
+        throw new Error(err);
+    }
+    return await response.text();
+}
+
 
 export function deletePipeline({pipelineId}: { pipelineId: string }): Promise<void> {
     return fetch(baseurl + "pipeline/" + pipelineId,
