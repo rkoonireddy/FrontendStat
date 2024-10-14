@@ -165,6 +165,7 @@ export const fetchUpdateBlock = createAsyncThunk<string, { pipelineId: string, b
     async ({pipelineId, blockId, filters}, thunkAPI) => {
         try {
             const response = await updateBlock({blockId, filters});
+            // TODO: How to catch a non-200 here? Inform the user that parameter were not updated
             thunkAPI.dispatch(updatePipeline({pipelineId}));
             return response
         } catch (error) {
