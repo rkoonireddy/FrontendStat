@@ -8,98 +8,62 @@ import {getActiveBlock, updateControl} from "../../redux/pipelineSlice";
 import {ControlsChangedPopup} from "../pageElements/ControlsChangedPopup";
 
 const StyledInputContainer = styled.div`
-  width: 100%;
-  margin: auto;
-  max-width: 150px;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
+    width: 100%;
+    margin: auto;
+    max-width: 150px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 `;
 
 export const StyledInput = styled.input<{ $largeText?: boolean, $width?: string, $margin?: string }>`
-  border-radius: 5px;
-  font-size: ${props => props.$largeText ? '1.5rem' : '1.25rem'};
-  border: 1px solid #727272;
-  background-color: #2B2B2B;
-  color: #ffffff;
-  ${props => props.$width ? `max-width: ${props.$width}` : 'max-width: 120px'};
-  ${props => props.$margin ? `margin: ${props.$margin};` : ''}
+    border-radius: 5px;
+    font-size: ${props => props.$largeText ? '1.5rem' : '1.25rem'};
+    border: 1px solid #727272;
+    background-color: #2B2B2B;
+    color: #ffffff;
+    ${props => props.$width ? `max-width: ${props.$width}` : 'max-width: 120px'};
+    ${props => props.$margin ? `margin: ${props.$margin};` : ''}
 `;
 
 export const StyledUnit = styled.span`
-  font-size: 1.25rem;
-  color: #ffffff;
-  margin-left: 5px;
+    font-size: 1.25rem;
+    color: #ffffff;
+    margin-left: 5px;
 `;
 
+export const StyledControlError = styled.div`
+    font-size: 0.75rem;
+    color: #ff0000;
+    text-align: center;
+`;
 
-// String input is always valid, no validation needed
-export function InputControlString({title, initialValue, columnSpan = 1, rowSpan = 1}: {
-    title: string,
-    initialValue: string,
-    columnSpan?: number,
-    rowSpan?: number
-}) {
+export function InputControl({title, initialValue, columnSpan = 1, rowSpan = 1, validate, invalidMessage}:
+                                 {
+                                     title: string,
+                                     initialValue: string,
+                                     columnSpan?: number,
+                                     rowSpan?: number,
+                                     validate?: (value: string) => boolean,
+                                     invalidMessage?: string
+                                 }) {
     const activeBlock = useAppSelector(getActiveBlock);
     const dispatch = useAppDispatch();
     const [value, setValue] = useState<string>(initialValue);
+    const [isValid, setIsValid] = useState<boolean>(validate ? validate(initialValue) : true);
     const [isPopupVisible, setIsPopupVisible] = useState<boolean>(false);
-
-    function handleChange() {
-        if(activeBlock) {
-            dispatch(updateControl({blockId: activeBlock.id, filter: {key: title, value: value}}));
-        }
-        setIsPopupVisible(true);
-    }
-
-    return (
-        <StyledControl $columnSpan={columnSpan} $rowSpan={rowSpan}>
-            <ControlTitle title={title} margin={'0'}/>
-            <StyledInputContainer>
-                <StyledInput id={"input string"}
-                            value={value}
-                            onChange={(e) => setValue(e.target.value)}/>
-            </StyledInputContainer>
-            <PrimaryButton text={"Confirm"} action={handleChange} size={130}/>
-            {isPopupVisible && (
-                <ControlsChangedPopup text={value} onCloseAction={() => { setIsPopupVisible(false); }}/>
-            )}
-        </StyledControl>
-    )
-}
-
-export function InputControlInt({title, initialValue, columnSpan = 1, rowSpan = 1}: {
-    title: string,
-    initialValue: string,
-    columnSpan?: number,
-    rowSpan?: number
-}) {
-    const activeBlock = useAppSelector(getActiveBlock);
-    const dispatch = useAppDispatch();
-    const [value, setValue] = useState<string>(initialValue);
-    const [isValid, setIsValid] = useState<boolean>(validate(value));
-    const [isPopupVisible, setIsPopupVisible] = useState<boolean>(false);
-    
-    function validate(v: string): boolean {
-        return Number.isInteger(Number(v));
-    }
 
     function handleChange(newValue: string) {
-        // Change the value anyways
-        setValue(newValue)
-
-        // Catch empty, converted to 0
-        if (newValue.trim() === "") {
-            setIsValid(false);
-            return;
+        setValue(newValue);
+        if (validate) {
+            setIsValid(validate(newValue));
         }
-        setIsValid(validate(newValue));
     }
 
     function handleConfirm() {
-        if(activeBlock) {
-            const valueInt = Number(value); // make sure an number is passed to redux
-            dispatch(updateControl({blockId: activeBlock.id, filter: {key: title, value: valueInt}}));
+        if (activeBlock) {
+            const valueToDispatch = validate ? Number(value) : value; // Convert to number if validation is provided
+            dispatch(updateControl({blockId: activeBlock.id, filter: {key: title, value: valueToDispatch}}));
         }
         setIsPopupVisible(true);
     }
@@ -108,66 +72,17 @@ export function InputControlInt({title, initialValue, columnSpan = 1, rowSpan = 
         <StyledControl $columnSpan={columnSpan} $rowSpan={rowSpan}>
             <ControlTitle title={title} margin={'0'}/>
             <StyledInputContainer>
-                <StyledInput id={"input int"}
+                <StyledInput id={`input-${title.toLowerCase()}`}
                              value={value}
                              onChange={(e) => handleChange(e.target.value)}/>
             </StyledInputContainer>
-            {isValid ? <PrimaryButton text={"Confirm"} action={handleConfirm} size={130}/> : <ControlTitle title="Enter integer"/>}
+            {isValid ? <PrimaryButton text={"Confirm"} action={handleConfirm} size={130}/> :
+                <StyledControlError>{invalidMessage}</StyledControlError>}
             {isPopupVisible && (
-                <ControlsChangedPopup text={value} onCloseAction={() => { setIsPopupVisible(false); }}/>
+                <ControlsChangedPopup text={value} onCloseAction={() => {
+                    setIsPopupVisible(false);
+                }}/>
             )}
         </StyledControl>
-    )
-}
-
-export function InputControlFloat({title, initialValue, columnSpan = 1, rowSpan = 1}: {
-    title: string,
-    initialValue: string,
-    columnSpan?: number,
-    rowSpan?: number
-}) {
-    const activeBlock = useAppSelector(getActiveBlock);
-    const dispatch = useAppDispatch();
-    const [value, setValue] = useState<string>(initialValue);
-    const [isValid, setIsValid] = useState<boolean>(validate(value));
-    const [isPopupVisible, setIsPopupVisible] = useState<boolean>(false);
-    
-    function validate(v: string): boolean {
-        return !isNaN(Number(v));
-    }
-
-    function handleChange(newValue: string) {
-        // Change the value anyways
-        setValue(newValue)
-
-        // Catch empty, converted to 0
-        if (newValue.trim() === "") {
-            setIsValid(false);
-            return;
-        }
-        setIsValid(validate(newValue));
-    }
-
-    function handleConfirm() {
-        if(activeBlock) {
-            const valueInt = Number(value); // make sure an number is passed to redux
-            dispatch(updateControl({blockId: activeBlock.id, filter: {key: title, value: valueInt}}));
-        }
-        setIsPopupVisible(true);
-    }
-
-    return (
-        <StyledControl $columnSpan={columnSpan} $rowSpan={rowSpan}>
-            <ControlTitle title={title} margin={'0'}/>
-            <StyledInputContainer>
-                <StyledInput id={"input float"}
-                             value={value}
-                             onChange={(e) => handleChange(e.target.value)}/>
-            </StyledInputContainer>
-            {isValid ? <PrimaryButton text={"Confirm"} action={handleConfirm} size={130}/> : <ControlTitle title="Enter float"/>}
-            {isPopupVisible && (
-                <ControlsChangedPopup text={value} onCloseAction={() => { setIsPopupVisible(false); }}/>
-            )}
-        </StyledControl>
-    )
+    );
 }
