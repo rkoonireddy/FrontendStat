@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import {VerticalIntegerSliderControl} from "../controls/SliderControl";
 import {FilterControl} from "../controls/FilterControl";
-import {InputControlString, InputControlInt} from "../controls/InputControl";
+import {InputControlString, InputControlInt, InputControlFloat} from "../controls/InputControl";
 import {DropdownControl} from "../controls/DropdownControl";
 import {RangeControl} from "../controls/RangeControl";
 import {addControl, fetchUpdateBlock, getActiveBlock, getControls, getPipelineModel} from "../../redux/pipelineSlice";
@@ -70,9 +70,9 @@ export function ControlSection({show}: { show: boolean }) {
                     case "input_int":
                         components.push(<InputControlInt key={filter.name} title={filter.name} initialValue={blockControls[key]}/>);
                         break;
-                    // case "input_float":
-                    //     components.push(<InputControlFloat key={filter.name} title={filter.name} initialValue={blockControls[key]}/>);
-                    //     break;
+                    case "input_float":
+                        components.push(<InputControlFloat key={filter.name} title={filter.name} initialValue={blockControls[key]}/>);
+                        break;
                     case "singleselect":
                         components.push(<DropdownControl key={filter.name} title={filter.name}
                                                          options={filter.options.map((option: any) => {

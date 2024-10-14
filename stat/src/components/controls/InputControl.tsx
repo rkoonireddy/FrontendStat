@@ -54,7 +54,7 @@ export function InputControlString({title, initialValue, columnSpan = 1, rowSpan
         <StyledControl $columnSpan={columnSpan} $rowSpan={rowSpan}>
             <ControlTitle title={title} margin={'0'}/>
             <StyledInputContainer>
-                <StyledInput id={"input text"}
+                <StyledInput id={"input string"}
                              value={value}
                              onChange={(e) => setValue(e.target.value)}/>
             </StyledInputContainer>
@@ -63,7 +63,6 @@ export function InputControlString({title, initialValue, columnSpan = 1, rowSpan
     )
 }
 
-// String input is always valid, no validation needed
 export function InputControlInt({title, initialValue, columnSpan = 1, rowSpan = 1}: {
     title: string,
     initialValue: string,
@@ -80,28 +79,21 @@ export function InputControlInt({title, initialValue, columnSpan = 1, rowSpan = 
     }
 
     function handleChange(newValue: string) {
-
         // Change the value anyways
         setValue(newValue)
 
         // Catch empty, converted to 0
-        if (newValue === "") {
+        if (newValue.trim() === "") {
             setIsValid(false);
             return;
         }
- 
-        // Try to convert string to int
-        const newValueNumber = Number(newValue);
-        if (Number.isInteger(newValueNumber)) {
-            setIsValid(true);
-        } else {
-            setIsValid(false);
-        }
+        setIsValid(validate(newValue));
     }
 
     function handleConfirm() {
         if(activeBlock) {
-            dispatch(updateControl({blockId: activeBlock.id, filter: {key: title, value: value}}));
+            const valueInt = Number(value); // make sure an number is passed to redux
+            dispatch(updateControl({blockId: activeBlock.id, filter: {key: title, value: valueInt}}));
         }
     }
 
@@ -109,11 +101,58 @@ export function InputControlInt({title, initialValue, columnSpan = 1, rowSpan = 
         <StyledControl $columnSpan={columnSpan} $rowSpan={rowSpan}>
             <ControlTitle title={title} margin={'0'}/>
             <StyledInputContainer>
-                <StyledInput id={"input text"}
+                <StyledInput id={"input int"}
                              value={value}
                              onChange={(e) => handleChange(e.target.value)}/>
             </StyledInputContainer>
             {isValid ? <PrimaryButton text={"Confirm"} action={handleConfirm} size={130}/> : <ControlTitle title="Enter integer"/>}
+        </StyledControl>
+    )
+}
+
+export function InputControlFloat({title, initialValue, columnSpan = 1, rowSpan = 1}: {
+    title: string,
+    initialValue: string,
+    columnSpan?: number,
+    rowSpan?: number
+}) {
+    const activeBlock = useAppSelector(getActiveBlock);
+    const dispatch = useAppDispatch();
+    const [value, setValue] = useState<string>(initialValue);
+    const [isValid, setIsValid] = useState<boolean>(validate(value));
+    
+    function validate(v: string): boolean {
+        return !isNaN(Number(v));
+    }
+
+    function handleChange(newValue: string) {
+        // Change the value anyways
+        setValue(newValue)
+
+        // Catch empty, converted to 0
+        if (newValue.trim() === "") {
+            setIsValid(false);
+            return;
+        }
+        setIsValid(validate(newValue));
+    }
+
+    function handleConfirm() {
+        if(activeBlock) {
+            const valueInt = Number(value); // make sure an number is passed to redux
+            dispatch(updateControl({blockId: activeBlock.id, filter: {key: title, value: valueInt}}));
+        }
+    }
+
+    return (
+        <StyledControl $columnSpan={columnSpan} $rowSpan={rowSpan}>
+            <ControlTitle title={title} margin={'0'}/>
+            <StyledInputContainer>
+                <StyledInput id={"input float"}
+                             value={value}
+                             onChange={(e) => handleChange(e.target.value)}/>
+            </StyledInputContainer>
+            {isValid ? <PrimaryButton text={"Confirm"} action={handleConfirm} size={130}/> : <ControlTitle title="Enter float"/>}
         </StyledControl>
     )
 }
