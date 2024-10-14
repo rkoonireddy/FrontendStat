@@ -56,8 +56,7 @@ export function ControlSection({show}: { show: boolean }) {
             Object.entries(activeBlock.filters).forEach(([key, filter]) => {
 
                 // If the activeBlock has a value for field <key>, use it. Otherwise use the default from the filter or undefined if nothing is set
-                const activeBlockFilterValue = activeBlock[key as keyof typeof activeBlock] ?? filter.default;
-                blockControls[key] = activeBlockFilterValue;
+                blockControls[key] = activeBlock[key as keyof typeof activeBlock] ?? filter.default;
 
                 switch (filter.filter_type) {
                     case "boolean":
@@ -71,7 +70,7 @@ export function ControlSection({show}: { show: boolean }) {
                     case "input_int":
                         components.push(<InputControl key={filter.name} title={filter.name}
                                                       initialValue={blockControls[key]}
-                                                      validate={(value) => Number.isInteger(value)}
+                                                      validate={(value) => Number.isInteger(Number(value))}
                                                       invalidMessage={"Only integer values are allowed."}/>);
                         break;
                     case "input_float":

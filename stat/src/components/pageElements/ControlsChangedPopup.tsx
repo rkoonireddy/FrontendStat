@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import {Popup} from "./Popup";
+import {MiniPopup, Popup} from "./Popup";
 
 const StyledMessage = styled.div`
   font-size: 0.9rem;
@@ -12,8 +12,8 @@ const StyledMessage = styled.div`
 
 export function ControlsChangedPopup({ text, onCloseAction }: { text: string; onCloseAction: () => void }) {
     return (
-        <Popup title={`Input changed to ${text}`} onCloseAction={onCloseAction}>
+        <MiniPopup title={`Input changed to ${text}`} onCloseAction={onCloseAction}>
             <StyledMessage>Press "APPLY" to confirm new parameters</StyledMessage>
-        </Popup>
+        </MiniPopup>
     )
 }
