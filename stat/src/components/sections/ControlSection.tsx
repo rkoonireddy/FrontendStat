@@ -128,9 +128,18 @@ export function ControlSection({show}: { show: boolean }) {
 
     function applyFilters() {
         if (activeBlock) {
-            dispatch(fetchUpdateBlock({pipelineId: pipeline.id, blockId: activeBlock.id, filters: controls[activeBlock.id]})).then(() => {
+            dispatch(fetchUpdateBlock({
+                pipelineId: pipeline.id,
+                blockId: activeBlock.id,
+                filters: controls[activeBlock.id]
+            }))
+            .unwrap()
+            .then(() => {
                 console.log("Filters applied");
             })
+            .catch((err) => {
+                console.log("Failed to apply filters");
+            });
         }
     }
 

@@ -165,11 +165,10 @@ export const fetchUpdateBlock = createAsyncThunk<string, { pipelineId: string, b
     async ({pipelineId, blockId, filters}, thunkAPI) => {
         try {
             const response = await updateBlock({blockId, filters});
-            // TODO: How to catch a non-200 here? Inform the user that parameter were not updated
             thunkAPI.dispatch(updatePipeline({pipelineId}));
             return response
         } catch (error) {
-            return thunkAPI.rejectWithValue(`Failed to fetch full block \n ${String(error)}`);
+            return thunkAPI.rejectWithValue(`Failed to update and fetch full block \n ${String(error)}`);
         }
     }
 );
@@ -370,6 +369,10 @@ export const pipelineSlice = createSlice({
         });
         builder.addCase(connectTwoBlocks.rejected, (state, action) => {
             state.loading = false;
+            state.errorStatus = true;
+            state.errorMessage = String(action.payload);
+        });
+        builder.addCase(fetchUpdateBlock.rejected, (state, action) => {
             state.errorStatus = true;
             state.errorMessage = String(action.payload);
         });
