@@ -42,6 +42,11 @@ export function RangeControl({title, range, initial_range, step, columnSpan = 2,
     const width = 175 * columnSpan;
 
     function updateRange(minMaxValue: [number, number]) {
+        // make sure the order is lower, higher
+        if(minMaxValue[0] > minMaxValue[1]) {
+            minMaxValue = [minMaxValue[1], minMaxValue[0]];
+        }
+        
         if(activeBlock) {
             dispatch(updateControl({blockId: activeBlock.id, filter: {key: title, value: minMaxValue}}));
         }
