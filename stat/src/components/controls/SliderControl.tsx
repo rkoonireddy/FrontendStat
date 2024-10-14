@@ -25,7 +25,7 @@ const StyledSliderValue = styled.div`
 `;
 
 
-export function VerticalSliderControl({title, min, max, step, start, columnSpan = 1, rowSpan = 1}: {
+export function VerticalIntegerSliderControl({title, min, max, step, start, columnSpan = 1, rowSpan = 1}: {
     title: string,
     min: number,
     max: number,
@@ -36,14 +36,14 @@ export function VerticalSliderControl({title, min, max, step, start, columnSpan 
 }) {
     const activeBlock = useAppSelector(getActiveBlock);
     const dispatch = useAppDispatch();
-    const [value, setValue] = useState<number | [number, number]>(start);
+    const [value, setValue] = useState<number|[number, number]>(start);
     const height = 150 * rowSpan;
 
-    function updateValues(minMaxValue: number | [number, number]) {
+    function handleChange(newValue: number|[number, number]) {
         if(activeBlock) {
-            dispatch(updateControl({blockId: activeBlock.id, filter: {key: title, value: minMaxValue}}));
+            dispatch(updateControl({blockId: activeBlock.id, filter: {key: title, value: newValue}}));
         }
-        setValue(minMaxValue);
+        setValue(newValue);
     }
 
     return (
@@ -57,7 +57,7 @@ export function VerticalSliderControl({title, min, max, step, start, columnSpan 
                         value={value}
                         orientation={"vertical"}
                         style={{height: height + "px", margin: "10px 0"}}
-                        onChange={(e) => updateValues(e.value)}/>
+                        onChange={(e) => handleChange(e.value)}/>
             </StyledSliderContainer>
         </StyledControl>
     )

@@ -168,7 +168,7 @@ export const fetchUpdateBlock = createAsyncThunk<string, { pipelineId: string, b
             thunkAPI.dispatch(updatePipeline({pipelineId}));
             return response
         } catch (error) {
-            return thunkAPI.rejectWithValue(`Failed to fetch full block \n ${String(error)}`);
+            return thunkAPI.rejectWithValue(`Failed to update and fetch full block \n ${String(error)}`);
         }
     }
 );
@@ -276,6 +276,9 @@ export const pipelineSlice = createSlice({
         updateControl(state, action: PayloadAction<{ blockId: string, filter: { key: string, value: any } }>) {
             // If the blockId contains the control action.payload.filter.key, update the value, otherwise do nothing
             if (action.payload.blockId in state.controls && action.payload.filter.key in state.controls[action.payload.blockId]) {
+                
+                // console.log("updateControl: using value ", action.payload.filter.value);
+
                 state.controls[action.payload.blockId][action.payload.filter.key] = action.payload.filter.value;
             } else {
                 console.log("updateControl: blockId or filter key not found in state.controls");
@@ -366,6 +369,10 @@ export const pipelineSlice = createSlice({
         });
         builder.addCase(connectTwoBlocks.rejected, (state, action) => {
             state.loading = false;
+            state.errorStatus = true;
+            state.errorMessage = String(action.payload);
+        });
+        builder.addCase(fetchUpdateBlock.rejected, (state, action) => {
             state.errorStatus = true;
             state.errorMessage = String(action.payload);
         });

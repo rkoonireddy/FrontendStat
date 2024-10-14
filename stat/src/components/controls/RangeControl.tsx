@@ -28,18 +28,25 @@ const StyledRangeValue = styled.div<{$left: boolean}>`
 `;
 
 
-export function RangeControl({title, range, columnSpan = 2, rowSpan = 1}: {
+export function RangeControl({title, range, initial_range, step, columnSpan = 2, rowSpan = 1}: {
     title: string,
     range: [number, number],
+    step: number,
+    initial_range: [number, number],
     columnSpan?: number,
     rowSpan?: number
 }) {
     const activeBlock = useAppSelector(getActiveBlock);
     const dispatch = useAppDispatch();
-    const [value, setValue] = useState<[number, number]>(range);
+    const [value, setValue] = useState<[number, number]>(initial_range);
     const width = 175 * columnSpan;
 
     function updateRange(minMaxValue: [number, number]) {
+        // make sure the order is lower, higher
+        if(minMaxValue[0] > minMaxValue[1]) {
+            minMaxValue = [minMaxValue[1], minMaxValue[0]];
+        }
+        
         if(activeBlock) {
             dispatch(updateControl({blockId: activeBlock.id, filter: {key: title, value: minMaxValue}}));
         }
@@ -52,10 +59,14 @@ export function RangeControl({title, range, columnSpan = 2, rowSpan = 1}: {
             <StyledRangeContainer>
                 <StyledRangeValue $left={true}>{value[0]}</StyledRangeValue>
                 <Slider value={value}
+                        range
+                        min={range[0]}
+                        max={range[1]}
+                        step={step}
                         orientation={"horizontal"}
                         style={{width: width + "px", margin: "auto 10px"}}
                         onChange={(e) => updateRange(e.value as [number, number])}
-                        range/>
+                />
                 <StyledRangeValue $left={false}>{value[1]}</StyledRangeValue>
             </StyledRangeContainer>
         </StyledControl>

@@ -31,6 +31,11 @@ const StyledPopup = styled.div<{ $large: boolean}>`
   }
 `;
 
+const StyledMiniPopup = styled(StyledPopup)`
+    width: 500px;
+    height: 300px;
+`;
+
 const StyledTitle = styled.div`
   font-size: 2rem;
   color: white;
@@ -44,5 +49,15 @@ export function Popup({ children, title, onCloseAction, large=false}: { children
             <StyledTitle>{title}</StyledTitle>
             {children}
         </StyledPopup>
+    )
+}
+
+export function MiniPopup({ children, title, onCloseAction }: { children: ReactNode, title: string, onCloseAction: () => void }) {
+    return (
+        <StyledMiniPopup $large={false}>
+            <XSVG onClick={onCloseAction}/>
+            <StyledTitle>{title}</StyledTitle>
+            {children}
+        </StyledMiniPopup>
     )
 }

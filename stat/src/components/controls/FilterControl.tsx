@@ -18,11 +18,24 @@ export function FilterControl({title, onLabel, offLabel, value, columnSpan = 1, 
     const [filterValue, setFilterValue] = useState(value);
     const [label, setLabel] = useState(filterValue ? onLabel : offLabel);
 
-    function toggle() {
-        setFilterValue(!filterValue);
-        setLabel(filterValue ? offLabel : onLabel);
+    const toggle = (e: { value: boolean }) => {
+        setFilterValue(e.value);  // Update the state with the new value
+        updateLabel(e.value);  // Update the label
+    };
+    
+    function updateLabel(e: boolean) {
+        setLabel(e ? onLabel : offLabel);
+        update(e);
+    }
+
+    function update(e: boolean) {
         if(activeBlock) {
-            dispatch(updateControl({blockId: activeBlock.id, filter: {key: title, value: filterValue}}));
+            dispatch(
+                updateControl({
+                    blockId: activeBlock.id,
+                    filter: {key: title, value: e}
+                })
+            );
         }
     }
 
