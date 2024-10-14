@@ -88,9 +88,6 @@ export function ControlSection({show}: { show: boolean }) {
                                                             defaultValues={blockControls[key]}/>);
                         break;
                     case "slider":
-                        
-                        console.log("Slider Int filter", filter);
-
                         components.push(<VerticalIntegerSliderControl
                             key={filter.name}
                             title={filter.name}
@@ -101,9 +98,6 @@ export function ControlSection({show}: { show: boolean }) {
                         );
                         break;
                     case "range_int":
-
-                        // console.log("Range int filter", filter);
-
                         components.push(<RangeControl
                             key={filter.name}
                             title={filter.name}

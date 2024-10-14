@@ -5,6 +5,7 @@ import {PrimaryButton} from "../buttons/PrimaryButton";
 import {ControlTitle} from "./ControlTitle";
 import {useAppDispatch, useAppSelector} from "../../hooks";
 import {getActiveBlock, updateControl} from "../../redux/pipelineSlice";
+import {ControlsChangedPopup} from "../pageElements/ControlsChangedPopup";
 
 const StyledInputContainer = styled.div`
   width: 100%;
@@ -41,13 +42,14 @@ export function InputControlString({title, initialValue, columnSpan = 1, rowSpan
 }) {
     const activeBlock = useAppSelector(getActiveBlock);
     const dispatch = useAppDispatch();
-    const [value, setValue] = useState(initialValue);
-    
+    const [value, setValue] = useState<string>(initialValue);
+    const [isPopupVisible, setIsPopupVisible] = useState<boolean>(false);
+
     function handleChange() {
-        console.log(value);
         if(activeBlock) {
             dispatch(updateControl({blockId: activeBlock.id, filter: {key: title, value: value}}));
         }
+        setIsPopupVisible(true);
     }
 
     return (
@@ -55,10 +57,13 @@ export function InputControlString({title, initialValue, columnSpan = 1, rowSpan
             <ControlTitle title={title} margin={'0'}/>
             <StyledInputContainer>
                 <StyledInput id={"input string"}
-                             value={value}
-                             onChange={(e) => setValue(e.target.value)}/>
+                            value={value}
+                            onChange={(e) => setValue(e.target.value)}/>
             </StyledInputContainer>
             <PrimaryButton text={"Confirm"} action={handleChange} size={130}/>
+            {isPopupVisible && (
+                <ControlsChangedPopup text={value} onCloseAction={() => { setIsPopupVisible(false); }}/>
+            )}
         </StyledControl>
     )
 }
@@ -73,6 +78,7 @@ export function InputControlInt({title, initialValue, columnSpan = 1, rowSpan = 
     const dispatch = useAppDispatch();
     const [value, setValue] = useState<string>(initialValue);
     const [isValid, setIsValid] = useState<boolean>(validate(value));
+    const [isPopupVisible, setIsPopupVisible] = useState<boolean>(false);
     
     function validate(v: string): boolean {
         return Number.isInteger(Number(v));
@@ -95,6 +101,7 @@ export function InputControlInt({title, initialValue, columnSpan = 1, rowSpan = 
             const valueInt = Number(value); // make sure an number is passed to redux
             dispatch(updateControl({blockId: activeBlock.id, filter: {key: title, value: valueInt}}));
         }
+        setIsPopupVisible(true);
     }
 
     return (
@@ -106,6 +113,9 @@ export function InputControlInt({title, initialValue, columnSpan = 1, rowSpan = 
                              onChange={(e) => handleChange(e.target.value)}/>
             </StyledInputContainer>
             {isValid ? <PrimaryButton text={"Confirm"} action={handleConfirm} size={130}/> : <ControlTitle title="Enter integer"/>}
+            {isPopupVisible && (
+                <ControlsChangedPopup text={value} onCloseAction={() => { setIsPopupVisible(false); }}/>
+            )}
         </StyledControl>
     )
 }
@@ -120,6 +130,7 @@ export function InputControlFloat({title, initialValue, columnSpan = 1, rowSpan 
     const dispatch = useAppDispatch();
     const [value, setValue] = useState<string>(initialValue);
     const [isValid, setIsValid] = useState<boolean>(validate(value));
+    const [isPopupVisible, setIsPopupVisible] = useState<boolean>(false);
     
     function validate(v: string): boolean {
         return !isNaN(Number(v));
@@ -142,6 +153,7 @@ export function InputControlFloat({title, initialValue, columnSpan = 1, rowSpan 
             const valueInt = Number(value); // make sure an number is passed to redux
             dispatch(updateControl({blockId: activeBlock.id, filter: {key: title, value: valueInt}}));
         }
+        setIsPopupVisible(true);
     }
 
     return (
@@ -153,6 +165,9 @@ export function InputControlFloat({title, initialValue, columnSpan = 1, rowSpan 
                              onChange={(e) => handleChange(e.target.value)}/>
             </StyledInputContainer>
             {isValid ? <PrimaryButton text={"Confirm"} action={handleConfirm} size={130}/> : <ControlTitle title="Enter float"/>}
+            {isPopupVisible && (
+                <ControlsChangedPopup text={value} onCloseAction={() => { setIsPopupVisible(false); }}/>
+            )}
         </StyledControl>
     )
 }
