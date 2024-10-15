@@ -27,7 +27,7 @@ export function LineChart({ block, small = false }: { block: BlockModel, small?:
     const pipeline = useAppSelector(getPipeline);
     const [chartData, setChartData] = useState<DataPoint[][]>([]);
     const [legendLabels, setLegendLabels] = useState<string[]>([]);
-    const [selectedLineIndex, setSelectedLineIndex] = useState<number | null>(null); // State to track the selected line
+    const [selectedLineIndex, setSelectedLineIndex] = useState<number | null>(0); // First line selected by default
 
     useEffect(() => {
         if (block?.output?.Dataframe?.data !== undefined) {
@@ -130,9 +130,9 @@ export function LineChart({ block, small = false }: { block: BlockModel, small?:
             .attr("stroke-opacity", (d, i) => (i === selectedLineIndex ? 1 : 0.4)) // Set opacity based on selection
             .attr("stroke-width", "2px")
             .attr("transform", `translate(${margin.left}, ${margin.top})`)
+            .style("cursor", "pointer") // Hand cursor on graph lines
             .on("click", (event, d) => {
                 const index = chartData.indexOf(d); // Get the index of the clicked data
-                // console.log(`Clicked Line Index: ${index}`); // Log the index of the selected line
                 setSelectedLineIndex(index); // Set the selected line index
             });
 
@@ -172,30 +172,22 @@ export function LineChart({ block, small = false }: { block: BlockModel, small?:
                 .attr("y", 14)
                 .attr("width", 15)
                 .attr("height", 10)
-                .attr("fill", (d, i) => DEFAULT_COLORS[i % DEFAULT_COLORS.length]); // Default color for legend
+                .attr("fill", (d, i) => DEFAULT_COLORS[i % DEFAULT_COLORS.length]);
 
             legend.append("text")
                 .attr("x", -24)
                 .attr("y", 20)
                 .attr("dy", "0.35em")
                 .style("text-anchor", "end")
-                .style("fill", "white") // White legend text
+                .style("fill", "white")
+                .style("cursor", "pointer") // Hand cursor on legend
                 .text((d, i) => legendLabels[i] || `Line ${i + 1}`)
-                .on("click", function(event: MouseEvent) {
-                    // Get the index from the closure scope (i)
-                    const i = legendLabels.indexOf(this.textContent || ""); // Get the index of the clicked legend item using textContent
-                    
-                    // Log the index of the clicked legend
-                    // console.log(`Clicked Legend Index: ${i}`); 
-                    
-                    // When clicking on the legend, select the corresponding line
-                    setSelectedLineIndex(i);
+                .on("click", function (event: MouseEvent) {
+                    const i = legendLabels.indexOf(this.textContent || ""); // Get the index of the clicked legend item
+                    setSelectedLineIndex(i); // When clicking on the legend, select the corresponding line
                 });
-            
-            
         }
-
-    }, [chartData, dimensions, legendLabels, selectedLineIndex]); // Add selectedLineIndex to the dependencies
+    }, [chartData, dimensions, legendLabels, selectedLineIndex]);
 
     return (
         block?.output?.Dataframe?.data !== undefined ? (
