@@ -27,7 +27,7 @@ export function LineChart({ block, small = false }: { block: BlockModel, small?:
     const pipeline = useAppSelector(getPipeline);
     const [chartData, setChartData] = useState<DataPoint[][]>([]);
     const [legendLabels, setLegendLabels] = useState<string[]>([]);
-    const [selectedLineIndex, setSelectedLineIndex] = useState<number | null>(0); // First line selected by default
+    const [selectedLineIndex, setSelectedLineIndex] = useState<number | null>(null);
 
     useEffect(() => {
         if (block?.output?.Dataframe?.data !== undefined) {
@@ -127,13 +127,17 @@ export function LineChart({ block, small = false }: { block: BlockModel, small?:
             .attr("d", myLine)
             .attr("fill", "none")
             .attr("stroke", (d, i) => (i === selectedLineIndex ? DEFAULT_COLORS[i % DEFAULT_COLORS.length] : DEFAULT_COLORS[i % DEFAULT_COLORS.length])) // Use default colors
-            .attr("stroke-opacity", (d, i) => (i === selectedLineIndex ? 1 : 0.4)) // Set opacity based on selection
+            .attr("stroke-opacity", (d, i) => (selectedLineIndex !== null  && i !== selectedLineIndex ? 0.4 : 1)) // Set opacity based on selection
             .attr("stroke-width", "2px")
             .attr("transform", `translate(${margin.left}, ${margin.top})`)
             .style("cursor", "pointer") // Hand cursor on graph lines
             .on("click", (event, d) => {
                 const index = chartData.indexOf(d); // Get the index of the clicked data
-                setSelectedLineIndex(index); // Set the selected line index
+                if (selectedLineIndex === index) {
+                    setSelectedLineIndex(null);
+                } else {
+                    setSelectedLineIndex(index);
+                }
             });
 
         if (!small) {
@@ -167,24 +171,29 @@ export function LineChart({ block, small = false }: { block: BlockModel, small?:
                 .attr("class", "legend")
                 .attr("transform", (d, i) => `translate(${width - margin.right}, ${i * 20})`);
 
+
             legend.append("rect")
                 .attr("x", -18)
                 .attr("y", 14)
                 .attr("width", 15)
                 .attr("height", 10)
-                .attr("fill", (d, i) => DEFAULT_COLORS[i % DEFAULT_COLORS.length]);
+                .attr("fill", (d, i) => DEFAULT_COLORS[i % DEFAULT_COLORS.length])
 
             legend.append("text")
                 .attr("x", -24)
                 .attr("y", 20)
                 .attr("dy", "0.35em")
                 .style("text-anchor", "end")
-                .style("fill", "white")
+                .style("fill", (d, i) => (selectedLineIndex !== null && i !== selectedLineIndex ? "grey" : "white"))
                 .style("cursor", "pointer") // Hand cursor on legend
                 .text((d, i) => legendLabels[i] || `Line ${i + 1}`)
                 .on("click", function (event: MouseEvent) {
                     const i = legendLabels.indexOf(this.textContent || ""); // Get the index of the clicked legend item
-                    setSelectedLineIndex(i); // When clicking on the legend, select the corresponding line
+                    if (selectedLineIndex === i) {
+                        setSelectedLineIndex(null);
+                    } else {
+                        setSelectedLineIndex(i);
+                    }
                 });
         }
     }, [chartData, dimensions, legendLabels, selectedLineIndex]);
