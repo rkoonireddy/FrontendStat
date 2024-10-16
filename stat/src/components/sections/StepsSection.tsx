@@ -6,8 +6,8 @@ import {
     addEdge, useNodesState, useEdgesState, useReactFlow, ReactFlowProvider, Panel
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import React, {useCallback, useEffect, useState} from "react";
-import {useAppDispatch, useAppSelector} from "../../hooks";
+import React, { useCallback, useEffect, useState } from "react";
+import { useAppDispatch, useAppSelector } from "../../hooks";
 import {
     connectTwoBlocks,
     executePipeline, fetchExportPipeline, getActiveBlockId,
@@ -16,14 +16,14 @@ import {
     getBlocks,
     getPipeline, setLoading
 } from "../../redux/pipelineSlice";
-import {createEdges, createNodesFromBlocks, getFirstKey} from "../../util/util";
+import { createEdges, createNodesFromBlocks, getFirstKey } from "../../util/util";
 import CustomNode from "../customReactFlow/CustomNode";
 import CustomStartNode from "../customReactFlow/CustomStartNode";
 import CustomEdge from "../customReactFlow/CustomEdge";
-import {ReactComponent as RunSVG} from "../../assets/run.svg";
-import {ReactComponent as ExportSVG} from "../../assets/filetype-py.svg";
+import { ReactComponent as RunSVG } from "../../assets/run.svg";
+import { ReactComponent as ExportSVG } from "../../assets/filetype-py.svg";
 
-const NodeTypes = {customNode: CustomNode, customStartNode: CustomStartNode};
+const NodeTypes = { customNode: CustomNode, customStartNode: CustomStartNode };
 const edgeTypes = {
     'custom-edge': CustomEdge
 }
@@ -57,8 +57,10 @@ const StyledActionButton = styled.div`
     }
 `;
 
+const flowKey = 'react-flow-flow';
+
 function Flow() {
-    const {fitView} = useReactFlow();
+    const { fitView } = useReactFlow();
     const dispatch = useAppDispatch();
     const pipeline = useAppSelector(getPipeline);
     const blocks = useAppSelector(getBlocks);
@@ -66,11 +68,9 @@ function Flow() {
     const initialNodes = useAppSelector(getAllNodes);
     const initialEdges = useAppSelector(getAllEdges);
 
-
     const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
     const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
     const [isDragging, setIsDragging] = useState(false);
-
 
     useEffect(() => {
         const ns = createNodesFromBlocks(blocks);
@@ -128,26 +128,25 @@ function Flow() {
             });
         }
 
-        return {sortedNodes, noEdgeNodes: Array.from(noEdgeNodes)};
+        return { sortedNodes, noEdgeNodes: Array.from(noEdgeNodes) };
     };
 
     const alignNodes = useCallback(async () => {
-        const {sortedNodes, noEdgeNodes} = topologicalSort(nodes, edges);
+        const { sortedNodes, noEdgeNodes } = topologicalSort(nodes, edges);
         setNodes((nds) => nds.map((node) => {
-                const yPos = sortedNodes.includes(node.id)
-                    ? sortedNodes.indexOf(node.id) * 150
-                    : (sortedNodes.length + noEdgeNodes.indexOf(node.id)) * 150;
-                return {
-                    ...node,
-                    position: {x: 0, y: yPos},
-                };
-            })
-        );
+            const yPos = sortedNodes.includes(node.id)
+                ? sortedNodes.indexOf(node.id) * 150
+                : (sortedNodes.length + noEdgeNodes.indexOf(node.id)) * 150;
+            return {
+                ...node,
+                position: { x: 0, y: yPos },
+            };
+        }));
     }, [nodes, edges, setNodes, fitView]);
 
     const onConnect = useCallback(
         (connection: any) => {
-            const edge = {...connection, type: 'custom-edge'};
+            const edge = { ...connection, type: 'custom-edge' };
             console.log(edge);
 
             // Check if the edge already exists to avoid duplicates
@@ -155,13 +154,13 @@ function Flow() {
                 const edgeExists = eds.some(e => e.source === edge.source && e.target === edge.target);
                 if (!edgeExists) {
                     dispatch(
-                        connectTwoBlocks({fromBlockId: edge.source, toBlockId: edge.target, pipelineId: pipeline.id}))
+                        connectTwoBlocks({ fromBlockId: edge.source, toBlockId: edge.target, pipelineId: pipeline.id }))
                         .unwrap()
                         .then(() => {
                             return addEdge(edge, eds);
                         })
                         .catch((err) => {
-                            //Err carries the error message, but it is already retrieved from pipielineSlice
+                            // Err carries the error message, but it is already retrieved from pipelineSlice
                             return eds;
                         })
                 }
@@ -179,8 +178,28 @@ function Flow() {
         setIsDragging(false);
     };
 
-    return (
+    // Save function
+    const onSave = useCallback(() => {
+        const flow = { nodes, edges };
+        localStorage.setItem(flowKey, JSON.stringify(flow));
+        console.log("Pipeline flow saved.");
+    }, [nodes, edges]);
 
+    // Restore function
+    const onRestore = useCallback(() => {
+        const flowString = localStorage.getItem(flowKey);
+        if (flowString) {
+            const { nodes: restoredNodes, edges: restoredEdges } = JSON.parse(flowString);
+            setNodes(restoredNodes);
+            setEdges(restoredEdges);
+            fitView(); // Adjust the view to fit the restored flow
+            console.log("Pipeline flow restored.");
+        } else {
+            console.log("No saved flow found.");
+        }
+    }, [setNodes, setEdges, fitView]);
+
+    return (
         <ReactFlow
             nodes={nodes}
             onNodesChange={onNodesChange}
@@ -193,11 +212,18 @@ function Flow() {
             edgeTypes={edgeTypes}
             fitView
         >
-            <Background/>
-            <Controls/>
+            <Background />
+            <Controls />
             <Panel position="top-right">
                 <button onClick={alignNodes}>
                     Align Nodes
+                </button>
+                {/* Save and Restore buttons */}
+                <button onClick={onSave}>
+                    Save graph view
+                </button>
+                <button onClick={onRestore}>
+                    Restore saved view
                 </button>
             </Panel>
             <Panel position={"bottom-right"}>
@@ -210,7 +236,7 @@ function Flow() {
                         }));
                         e.stopPropagation();
                     }}>
-                        <RunSVG style={{width: "50px", height: "50px", color: "#00ff00"}}/>
+                        <RunSVG style={{ width: "50px", height: "50px", color: "#00ff00" }} />
                     </StyledActionButton>
                     <StyledActionButton title={"Export Pipeline"} onClick={(e) => {
                         dispatch(setLoading(true));
@@ -219,15 +245,13 @@ function Flow() {
                             startBlockId: blocks[0].id,
                             endBlockId: activeBlockId ? activeBlockId : blocks[blocks.length - 1].id
                         }));
-                        e.stopPropagation()
-                    }
-                    }>
-                        <ExportSVG style={{width: "35px", height: "35px", color: "#ffffff"}}/>
+                        e.stopPropagation();
+                    }}>
+                        <ExportSVG style={{ width: "35px", height: "35px", color: "#ffffff" }} />
                     </StyledActionButton>
                 </StyledToolbar>
             </Panel>
         </ReactFlow>
-
     );
 }
 
@@ -235,7 +259,7 @@ export function StepsSection() {
     return (
         <StyledStepsContainer>
             <ReactFlowProvider>
-                <Flow/>
+                <Flow />
             </ReactFlowProvider>
         </StyledStepsContainer>
     )
