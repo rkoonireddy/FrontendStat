@@ -10,7 +10,7 @@ const StyledPrimaryButton = styled.button<{ size: number }>`
   height: ${props => props.size / 4}px;
   background: none;
   font-size: ${props => Math.max((props.size / 200), 1)}rem;
-  font-family: 'Gaoel', sans-serif;
+  font-family: 'a Area Kilometer 50', sans-serif;
   margin: 0 auto;
 
   &:hover {
