@@ -11,7 +11,7 @@ const StyledPipelineHistorySection = styled.div<{ $historyVisible: boolean }>`
   margin: 0 10px;
   padding: 5px;
   width: calc(100% - 20px);
-  height: ${props => props.$historyVisible ? 'calc(35% - 30px)' : '5%'};
+  height: ${props => props.$historyVisible ? 'calc(35% - 30px)' : '0%'};
   opacity: ${props => props.$historyVisible ? '1' : '0.25'};
   position: ${props => props.$historyVisible ? 'relative' : 'absolute'};
   overflow-y: auto;
