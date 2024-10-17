@@ -207,7 +207,7 @@ export function LineChart({ block, small = false }: { block: BlockModel, small?:
                 <text className="y-axis-label" />
             </svg>
         ) : (
-            <div>Please run the pipeline to visualize your data!</div>
+            <div style={{ color: "#ffffff", alignContent: "center"}}>Please run the pipeline to visualize your data !</div>
         )
     );
 }

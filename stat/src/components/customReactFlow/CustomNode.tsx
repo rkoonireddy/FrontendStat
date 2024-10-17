@@ -9,38 +9,37 @@ import {
     getPipelineModel, isBlockRunnable,
     setActiveBlockId
 } from "../../redux/pipelineSlice";
-import {ReactComponent as TrashSVG} from "../../assets/trash.svg";
+import {ReactComponent as TrashSVG} from "../../assets/trash3-fill.svg";
 import {ReactComponent as RunSVG} from "../../assets/run.svg";
 
 export const StyledNodeContainer = styled.div<{ $active?: boolean }>`
-  padding: 10px;
-  border: 2px solid ${props => !props.$active ? '#73B5B4' : '#ffffff'};
+  padding: 5px;
+  border: 1px solid ${props => !props.$active ? '#73B5B4' : '#73B5B4'};
   border-radius: 5px;
-  background: linear-gradient(to bottom right, #3D3D3D 0%, #000000 100%);
+  background: ${props => props.$active ? '#eeede9' : 'linear-gradient(to bottom right, #3D3D3D 0%, #000000 100%)'};
   position: relative;
-  width: 150px;
+  width: 100px;
   text-align: center;
 `;
 
 export const StyledNodeLabel = styled.div<{ $active?: boolean }>`
-  font-size: 12px;
-  font-weight: bold;
+  font-size: 8px; //changed from 10px to eight 
+  font-weight: normal; //changed from bold to normal
   color: ${props => !props.$active ? '#ffffff' : '#73B5B4'};
 `;
 
 export const StyledNodeType = styled.div`
-  font-size: 7px;
-  position: absolute;
-  bottom: 0;
-  right: 3px;
+  font-size: 5px;
+  position: center;
+  center: 0;
   color: #888;
 `;
 
 export const StyledDeleteButton = styled.div`
   position: absolute;
-  top: 0;
-  left: 0;
-  padding: 1px;
+  top: -5px;
+  right: 3px;
+  // padding: 1px;
   opacity: 0.25;
 
   &:hover {
@@ -74,7 +73,7 @@ const CustomNode = ({data}: CustomNodeProps) => {
                 dispatch(deleteBlockFromPipeline({pipelineId: pipeline.id, blockId: data.id}));
                 e.stopPropagation();
             }}>
-                <TrashSVG style={{width: "10px", height: "10px", color: "#ff0000"}}/>
+                <TrashSVG style={{width: "7px", height: "7px", color: "#ff0000"}}/>
             </StyledDeleteButton>
             {/* <StyledRunButton title={"Run Block"} onClick={(e) => {
                 dispatch(executeBlock({blockId: data.id}));
