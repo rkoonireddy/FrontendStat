@@ -2,11 +2,11 @@ import { DataPoint } from "../../types/dataType";
 import { convertToDataPoints, getMinMax } from "../../util/util";
 import { useEffect, useRef, useState } from "react";
 import { axisBottom, axisLeft, curveCardinal, line, scaleLinear, select } from "d3";
-import { useAppDispatch, useAppSelector } from "../../hooks";
+import { useAppSelector } from "../../hooks";
 import { getPipeline } from "../../redux/pipelineSlice";
 import { BlockModel } from "../../types/responseType";
 
-// Color blind friendly colors
+// Color-blind friendly colors
 const DEFAULT_COLORS = [
     "#00bfa6",
     "#ff5733",
@@ -15,7 +15,7 @@ const DEFAULT_COLORS = [
     "#56B4E9", // sky blue
     "#F0E442", // yellow
     "#0072B2", // blue
-    "#D55E00", // red
+    "#D55E00", // redu
     "#CC79A7", // pink
     "#999999", // grey
     "#C5B0D5", // lavender
@@ -23,7 +23,6 @@ const DEFAULT_COLORS = [
 ];
 
 export function LineChart({ block, small = false }: { block: BlockModel, small?: boolean }) {
-    const dispatch = useAppDispatch();
     const pipeline = useAppSelector(getPipeline);
     const [chartData, setChartData] = useState<DataPoint[][]>([]);
     const [legendLabels, setLegendLabels] = useState<string[]>([]);
@@ -71,7 +70,10 @@ export function LineChart({ block, small = false }: { block: BlockModel, small?:
         if (!svgRef.current || dimensions.width === 0 || dimensions.height === 0) return;
         const svg = select(svgRef.current);
 
-        const margin = { top: 20, right: 30, bottom: 60, left: 60 };
+        let margin = { top: 20, right: 10, bottom: 50, left: 50 };
+        if (small) {
+            margin = { top: 10, right: 10, bottom: 25, left: 25 };
+        }
         const width = dimensions.width - margin.left - margin.right;
         const height = dimensions.height - margin.top - margin.bottom;
 
@@ -159,7 +161,7 @@ export function LineChart({ block, small = false }: { block: BlockModel, small?:
                 .attr("class", "y-axis-label")
                 .attr("text-anchor", "middle")
                 .attr("x", -(height / 2 + margin.top))
-                .attr("y", margin.left - 40)
+                .attr("y", margin.left - 35)
                 .attr("transform", "rotate(-90)")
                 .style("fill", "white")
                 .text("Amplitude");
@@ -173,14 +175,14 @@ export function LineChart({ block, small = false }: { block: BlockModel, small?:
 
 
             legend.append("rect")
-                .attr("x", -18)
+                .attr("x", 30)
                 .attr("y", 14)
                 .attr("width", 15)
                 .attr("height", 10)
                 .attr("fill", (d, i) => DEFAULT_COLORS[i % DEFAULT_COLORS.length])
 
             legend.append("text")
-                .attr("x", -24)
+                .attr("x", 20)
                 .attr("y", 20)
                 .attr("dy", "0.35em")
                 .style("text-anchor", "end")
@@ -207,7 +209,7 @@ export function LineChart({ block, small = false }: { block: BlockModel, small?:
                 <text className="y-axis-label" />
             </svg>
         ) : (
-            <div>Please run the pipeline to visualize your data!</div>
+            <div style={{ color: "#ffffff", alignContent: "center"}}>Please run the pipeline to visualize your data !</div>
         )
     );
 }

@@ -24,7 +24,7 @@ import {ErrorPopup} from "../pageElements/ErrorPopup";
 const StyledMainPage = styled.div`
   position: relative;
   display: grid;
-  grid-template-columns: 70px 600px 1fr;
+  grid-template-columns: 70px 500px 1fr; //made to make the graph view bigger and better interface view
   background: linear-gradient(to bottom right, #3D3D3D 0%, #000000 100%);
 `;
 
@@ -40,12 +40,6 @@ const StyledSideBar = styled.div`
     scale: 1.05;
     cursor: pointer;
   }
-`;
-
-const StyledCreateBlockTitle = styled.div`
-  font-size: 2rem;
-  color: white;
-  margin: 15px auto;
 `;
 
 

@@ -1,11 +1,11 @@
 @font-face {
-    font-family: 'Gaoel';
-    src: url("./fonts/gaoel-1/web-font/Gaoel.woff") format('woff'),
-    url("./fonts/gaoel-1/web-font/Gaoel.ttf") format('truetype');
+    font-family: 'a Area Kilometer 50';
+    src: url("./fonts/a-area-kilometer-50-font/AreaKilometer50-ow3xB.woff") format('woff'),
+    url("./fonts/a-area-kilometer-50-font/AreaKilometer50-ow3xB.ttf") format('truetype');
 }
 
 body {
-    font-family: 'Gaoel', sans-serif;
+    font-family: 'a Area Kilometer 50', sans-serif;
     margin: 0;
 }
 

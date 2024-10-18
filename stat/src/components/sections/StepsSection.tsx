@@ -71,13 +71,11 @@ function Flow() {
     const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
     const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
     const [isDragging, setIsDragging] = useState(false);
+    const [onGraphChange, setOnGraphChange] = useState(0); // New state variable
 
     useEffect(() => {
         const ns = createNodesFromBlocks(blocks);
         setNodes(ns);
-        if (nodes.length > 1) {
-            // alignNodes();
-        }
     }, [blocks])
 
     useEffect(() => {
@@ -172,10 +170,14 @@ function Flow() {
 
     const onNodeDragStart = () => {
         setIsDragging(true);
+        setOnGraphChange(1); // Set graph change state
     };
 
     const onNodeDragStop = () => {
         setIsDragging(false);
+        setOnGraphChange(1); // Set graph change state
+        console.log("Node drag stopped. Current nodes:", nodes); // Log current nodes
+        onSave(); // Save graph when dragging stops
     };
 
     // Save function
@@ -229,11 +231,15 @@ function Flow() {
             <Panel position={"bottom-right"}>
                 <StyledToolbar>
                     <StyledActionButton title={"Run Pipeline"} onClick={(e) => {
+                        onSave();
                         dispatch(setLoading(true));
                         dispatch(executePipeline({
                             pipelineId: pipeline.id,
                             startingBlockId: getFirstKey(pipeline.block_dict) as string
-                        }));
+                        }))
+                        .then(() => {
+                            onRestore(); // Restore after running pipeline
+                        });
                         e.stopPropagation();
                     }}>
                         <RunSVG style={{ width: "50px", height: "50px", color: "#00ff00" }} />
@@ -262,5 +268,5 @@ export function StepsSection() {
                 <Flow />
             </ReactFlowProvider>
         </StyledStepsContainer>
-    )
+    );
 }
