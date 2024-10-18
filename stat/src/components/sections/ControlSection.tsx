@@ -27,7 +27,7 @@ const StyledControlContainer = styled.div<{ $columnNumber?: number, $rowNumber?:
 `;
 
 export const StyledControl = styled.div<{ $columnSpan: number, $rowSpan: number }>`
-    background-color: #ffffff08;
+    background-color: #ffffff12;
     padding: 5px;
     border-radius: 15px;
     display: flex;
@@ -35,7 +35,7 @@ export const StyledControl = styled.div<{ $columnSpan: number, $rowSpan: number 
     flex-direction: column;
     grid-column: span ${props => props.$columnSpan};
     grid-row: span ${props => props.$rowSpan};
-    margin: auto;
+    margin: 2px auto;
     min-width: 175px;
     min-height: 175px;
 `;

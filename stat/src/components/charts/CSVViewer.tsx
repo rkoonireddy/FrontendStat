@@ -6,47 +6,54 @@ import {
     setFilteredDataChanged
 } from "../../redux/dataSlice";
 import styled from "styled-components";
-import { useState, useEffect } from "react";
-import { useAppDispatch, useAppSelector } from "../../hooks";
-import { updateCSVLoaderBlock } from "../../service/blockService";
-import { fetchFullBlock, getFrequency } from "../../redux/pipelineSlice";
+import {useState, useEffect} from "react";
+import {useAppDispatch, useAppSelector} from "../../hooks";
+import {updateCSVLoaderBlock} from "../../service/blockService";
+import {fetchFullBlock, getFrequency} from "../../redux/pipelineSlice";
 import {formatNumber} from "../../util/util";
 
 const StyledCSVTable = styled.table<{ $small?: boolean }>`
-  width: 100%;
-  border-collapse: collapse;
-  border-spacing: 0;
-  margin-top: 20px;
-  border: 1px solid #ddd;
-  font-size: ${props => (props.$small ? '0.6rem' : '1rem')};
-  max-height: 100%;
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+    margin-top: ${props => (props.$small ? '0' : '20px')};
+    border: 1px solid #ddd;
+    font-size: ${props => (props.$small ? '0.6rem' : '1rem')};
+    max-height: 100%;
 `;
 
 export const StyledTableHeader = styled.th<{ $isSelected: boolean }>`
-  background-color: ${props => (props.$isSelected ? '#3D3D3D' : '#adacac')};
-  color: ${props => (props.$isSelected ? '#00bfa6' : '#808080')};
-  border: 1px solid #00bfa6;
-  padding: 8px;
-  text-align: left;
+    background-color: ${props => (props.$isSelected ? '#3D3D3D' : '#adacac')};
+    color: ${props => (props.$isSelected ? '#00bfa6' : '#808080')};
+    border: 1px solid #00bfa6;
+    padding: 8px;
+    text-align: left;
 `;
 
 export const StyledTableCell = styled.td<{ $isSelected: boolean }>`
-  border: 1px solid #00bfa6;
-  color: ${props => (props.$isSelected ? '#ffffff' : '#808080')};
-  padding: 8px;
-  background-color: ${props => (props.$isSelected ? '#3D3D3D' : '#adacac')};
+    border: 1px solid #00bfa6;
+    color: ${props => (props.$isSelected ? '#ffffff' : '#808080')};
+    padding: 8px;
+    background-color: ${props => (props.$isSelected ? '#3D3D3D' : '#adacac')};
 `;
 
 export const StyledFilterContainer = styled.div`
-  margin-bottom: 20px;
+    margin-bottom: 20px;
 `;
 
 export const StyledCheckbox = styled.input`
-  margin-right: 10px;
-  color: white;
+    margin-right: 10px;
+    color: white;
 `;
 
-export default function CSVViewer({ blockId, small }: { blockId: string; small?: boolean }) {
+const StyledFrequency = styled.div`
+    margin-top: 20px;
+    text-align: center;
+    font-size: 1.25rem;
+    color: white;
+`;
+
+export default function CSVViewer({blockId, small}: { blockId: string; small?: boolean }) {
     const dispatch = useAppDispatch();
     const rawData = useAppSelector(getData);
     const filteredDataChanged = useAppSelector(getFilteredDataChanged);
@@ -95,8 +102,10 @@ export default function CSVViewer({ blockId, small }: { blockId: string; small?:
             {data.length === 0 ? (
                 <div>No data available</div>
             ) : (
-                <StyledCSVTable $small={small}>
-                    <thead>
+                <>
+                {!small && <StyledFrequency>Data Frequency: {dataFrequency} Hz</StyledFrequency>}
+                    <StyledCSVTable $small={small}>
+                        <thead>
                         <tr>
                             {columns.map(col => (
                                 <StyledTableHeader key={col} $isSelected={selectedColumns.includes(col)}>
@@ -109,8 +118,8 @@ export default function CSVViewer({ blockId, small }: { blockId: string; small?:
                                 </StyledTableHeader>
                             ))}
                         </tr>
-                    </thead>
-                    <tbody>
+                        </thead>
+                        <tbody>
                         {data.map((row, rowIndex) => (
                             <tr key={rowIndex}>
                                 {columns.map(col => (
@@ -120,8 +129,9 @@ export default function CSVViewer({ blockId, small }: { blockId: string; small?:
                                 ))}
                             </tr>
                         ))}
-                    </tbody>
-                </StyledCSVTable>
+                        </tbody>
+                    </StyledCSVTable>
+                </>
             )}
         </div>
     );
