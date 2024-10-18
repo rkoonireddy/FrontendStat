@@ -42,12 +42,6 @@ const StyledSideBar = styled.div`
   }
 `;
 
-const StyledCreateBlockTitle = styled.div`
-  font-size: 2rem;
-  color: white;
-  margin: 15px auto;
-`;
-
 
 function MainPage() {
     const loading = useAppSelector(getLoading);

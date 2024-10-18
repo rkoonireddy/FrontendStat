@@ -30,20 +30,18 @@ const StyledChartContainer = styled.div<{ $controlsVisible: boolean }>`
   padding: 5px;
   width: calc(100% - 20px);
   height: ${(props) =>
-    props.$controlsVisible ? 'calc(100% - 80px)' : 'calc(100% - 30px)'}; /* Adjust for controls and history sections */
+    props.$controlsVisible ? 'calc(100% - 80px)' : 'calc(100% - 30px)'}; 
   border-radius: 15px;
-  flex-grow: 1; /* Allow the chart container to fill available space */
+  flex-grow: 1;
+  margin: auto;
 `;
 
 const StyledShowHideControls = styled.div<{ $marginTop?: string; $isExpanded: boolean }>`
-  display: flex; /* Set display to flex for alignment */
-  align-items: center; /* Vertically center items */
-  /* Conditional background color based on controlsExpanded */
+  display: flex;
+  align-items: center;
   background-color: ${(props) => (props.$isExpanded ? '#73b5b4' : '#73b5b4')};
-
-  justify-content: center; /* Space between text and icon */
+  justify-content: center;
   height: 25px;
-  /* Conditional Opacity based on controlsExpanded */
   opacity: ${(props) => (props.$isExpanded ? '0.25' : '0.8')};
   margin-left: 10px;
   width: calc(100% - 20px);

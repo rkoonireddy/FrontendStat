@@ -205,11 +205,9 @@ export default function HomePage() {
             <StyledHomeContentContainer>
                 <StyledContentContainer>
                     <p>
-                        Some text some text some text some text
-                        some text some text some text some text
-                        some text some text some text some text
-                        some text some text some text some text
-                        some text some text some text some text
+                        Welcome to the Statistical Timeseries Analysis Toolkit! This is a web-based tool for
+                        building and visualizing data processing pipelines using the python based stat library.
+                        Get started by uploading your data and creating a pipeline!
                     </p>
                 </StyledContentContainer>
                 <StyledDividor/>

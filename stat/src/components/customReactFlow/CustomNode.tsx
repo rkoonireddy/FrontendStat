@@ -4,13 +4,12 @@ import {Handle, Position} from '@xyflow/react';
 import {CustomNodeProps} from "../../types/nodeTypes";
 import {useAppDispatch, useAppSelector} from "../../hooks";
 import {
-    deleteBlockFromPipeline, executeBlock,
+    deleteBlockFromPipeline,
     getActiveBlockId,
     getPipelineModel, isBlockRunnable,
     setActiveBlockId
 } from "../../redux/pipelineSlice";
 import {ReactComponent as TrashSVG} from "../../assets/trash3-fill.svg";
-import {ReactComponent as RunSVG} from "../../assets/run.svg";
 
 export const StyledNodeContainer = styled.div<{ $active?: boolean }>`
   padding: 5px;
@@ -23,23 +22,23 @@ export const StyledNodeContainer = styled.div<{ $active?: boolean }>`
 `;
 
 export const StyledNodeLabel = styled.div<{ $active?: boolean }>`
-  font-size: 8px; //changed from 10px to eight 
-  font-weight: normal; //changed from bold to normal
+  font-size: 0.75rem;
+  font-weight: normal;
   color: ${props => !props.$active ? '#ffffff' : '#73B5B4'};
 `;
 
 export const StyledNodeType = styled.div`
-  font-size: 5px;
-  position: center;
-  center: 0;
-  color: #888;
+    font-size: 5px;
+    position: absolute;
+    bottom: 0;
+    right: 3px;
+    color: #888;
 `;
 
 export const StyledDeleteButton = styled.div`
   position: absolute;
   top: -5px;
   right: 3px;
-  // padding: 1px;
   opacity: 0.25;
 
   &:hover {
@@ -75,14 +74,6 @@ const CustomNode = ({data}: CustomNodeProps) => {
             }}>
                 <TrashSVG style={{width: "7px", height: "7px", color: "#ff0000"}}/>
             </StyledDeleteButton>
-            {/* <StyledRunButton title={"Run Block"} onClick={(e) => {
-                dispatch(executeBlock({blockId: data.id}));
-                e.stopPropagation();
-            }}>
-                {blockRunnable &&
-                    <RunSVG style={{width: "15px", height: "15px", color: "#00ff00"}}/>
-                }
-            </StyledRunButton> */}
             <StyledNodeLabel $active={data.id === activeNodeId}>{data.label}</StyledNodeLabel>
             <StyledNodeType>{data.type}</StyledNodeType>
             <Handle type="source" position={Position.Bottom}/>
