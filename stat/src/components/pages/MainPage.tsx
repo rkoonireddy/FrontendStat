@@ -81,7 +81,7 @@ function MainPage() {
             {<ErrorPopup/>}
             {showCreateBlockPopup &&
                 <Popup title={"Create Block"} onCloseAction={closePopup}>
-                    <StyledInput $largeText={true} $width={"200px"} type="text" placeholder="Block Name"
+                    <StyledInput $largeText={true} $width={"200px"} type="text" placeholder="Block Name" maxLength={18}
                                  onChange={(e) => setBlockName(e.target.value)}/>
                     <Dropdown id={"typeDropdown"} placeholder="Block Type"
                               value={blockType} options={blockTypes}
