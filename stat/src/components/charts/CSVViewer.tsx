@@ -77,17 +77,20 @@ export default function CSVViewer({blockId, small}: { blockId: string; small?: b
                 dispatch(fetchFullBlock(blockId));
             });
         }
-    }, [filteredDataChanged, blockId, filteredDataCSVString]);
+    }, [filteredDataCSVString, blockId]);
 
     // Update filtered data if column selection changes
     useEffect(() => {
-        if (rawData.length > 0) {
-            const filteredData = rawData.map(row =>
-                Object.fromEntries(Object.entries(row).filter(([key]) => selectedColumns.includes(key)))
-            );
-            dispatch(setFilteredData(filteredData));
+        if (selectedColumns !== columns) {
+            if (rawData.length > 0) {
+                const filteredData = rawData.map(row =>
+                    Object.fromEntries(Object.entries(row).filter(([key]) => selectedColumns.includes(key)))
+                );
+                dispatch(setFilteredData(filteredData));
+            }
         }
-    }, [selectedColumns, rawData]);
+
+    }, [selectedColumns]);
 
     const handleColumnChange = (column: string) => {
         setSelectedColumns(prevSelectedColumns =>
@@ -103,7 +106,7 @@ export default function CSVViewer({blockId, small}: { blockId: string; small?: b
                 <div>No data available</div>
             ) : (
                 <>
-                {!small && <StyledFrequency>Data Frequency: {dataFrequency} Hz</StyledFrequency>}
+                    {!small && <StyledFrequency>Data Frequency: {dataFrequency} Hz</StyledFrequency>}
                     <StyledCSVTable $small={small}>
                         <thead>
                         <tr>
