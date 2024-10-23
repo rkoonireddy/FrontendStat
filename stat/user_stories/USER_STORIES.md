@@ -12,10 +12,10 @@ This document describes all the supported operations that a user is able to perf
 
 ## Stories
 ### 000 - Provide Input Data
-As a user I want to upload my data using the UI so that I can select columns (parameters) for the data as I sent it unto further processes.
+As a user, I want to upload my data through the UI, allowing me to review and select specific columns (parameters) of this dataset before applying preprocessing steps.
 
 #### Prerequisites
-Knowing the address where the application is hosted, e.g http://localhost:3000 for development.
+Knowing the address where the application is hosted, e.g http://localhost:3000
 
 #### Steps
 1.	Access the application via a browser. 
