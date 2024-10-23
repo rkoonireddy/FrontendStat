@@ -64,6 +64,22 @@ export default function CSVViewer({blockId, small}: { blockId: string; small?: b
 
     const [selectedColumns, setSelectedColumns] = useState<string[]>(columns);
 
+    function updateRawData() {
+        if (rawData.length > 0) {
+            const filteredData = rawData.map(row =>
+                Object.fromEntries(Object.entries(row).filter(([key]) => selectedColumns.includes(key)))
+            );
+            dispatch(setFilteredData(filteredData));
+        }
+    }
+
+    // update raw data if empty
+    useEffect(() => {
+        if (filteredDataCSVString == '') {
+            updateRawData();
+        }
+    }, []);
+
     // Update the csv loader block with the filtered data
     useEffect(() => {
         if (filteredDataChanged && blockId) {
@@ -82,12 +98,7 @@ export default function CSVViewer({blockId, small}: { blockId: string; small?: b
     // Update filtered data if column selection changes
     useEffect(() => {
         if (selectedColumns !== columns) {
-            if (rawData.length > 0) {
-                const filteredData = rawData.map(row =>
-                    Object.fromEntries(Object.entries(row).filter(([key]) => selectedColumns.includes(key)))
-                );
-                dispatch(setFilteredData(filteredData));
-            }
+            updateRawData();
         }
 
     }, [selectedColumns]);

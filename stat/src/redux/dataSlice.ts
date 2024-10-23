@@ -15,7 +15,7 @@ const initialState: IDataState = {
     previewData: [] as Array<{ [key: string]: string }>,
     rawData: [] as Array<{ [key: string]: string }>,
     filteredData: [] as Array<{ [key: string]: string }>,
-    filteredDataChanged: false
+    filteredDataChanged: true
 }
 
 export const readData = createAsyncThunk("data/readData",
