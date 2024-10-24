@@ -64,20 +64,35 @@ export function ControlSection({show}: { show: boolean }) {
                                                        offLabel={"Off"} value={blockControls[key]}/>);
                         break;
                     case "input_str":
-                        components.push(<InputControl key={filter.name} title={filter.name}
-                                                      initialValue={blockControls[key]}/>);
+                        components.push(<InputControl
+                            key={filter.name}
+                            title={filter.name}
+                            initialValue={blockControls[key]}
+                            validate={(value) => true}/> // No validation for strings, they can be anything
+                        );
                         break;
                     case "input_int":
-                        components.push(<InputControl key={filter.name} title={filter.name}
-                                                      initialValue={blockControls[key]}
-                                                      validate={(value) => Number.isInteger(Number(value))}
-                                                      invalidMessage={"Only integer values are allowed."}/>);
+                        components.push(<InputControl
+                            key={filter.name}
+                            title={filter.name}
+                            initialValue={blockControls[key]}
+                            validate={filter.nullable ?
+                                (value) => value === undefined || Number.isInteger(Number(value)) :
+                                (value) => value !== "" && Number.isInteger(Number(value))
+                            }
+                            invalidMessage={filter.nullable ? "Enter valid integer or leave blank for null" : "Enter valid integer"}/>
+                        );
                         break;
                     case "input_float":
-                        components.push(<InputControl key={filter.name} title={filter.name}
-                                                      initialValue={blockControls[key]}
-                                                      validate={(value) => !isNaN(Number(value))}
-                                                      invalidMessage={"Only float values are allowed."}/>);
+                        components.push(<InputControl
+                            key={filter.name}
+                            title={filter.name}
+                            initialValue={blockControls[key]}
+                            validate={filter.nullable ?
+                                (value) => value === undefined || !isNaN(Number(value)) :
+                                (value) => value !== "" && !isNaN(Number(value))
+                            }
+                            invalidMessage={filter.nullable ? "Enter valid float or leave blank for null" : "Enter valid float"}/>);
                         break;
                     case "singleselect":
                         components.push(<DropdownControl key={filter.name} title={filter.name}

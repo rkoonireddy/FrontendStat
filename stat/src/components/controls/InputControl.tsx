@@ -44,25 +44,30 @@ export function InputControl({title, initialValue, columnSpan = 1, rowSpan = 1, 
                                      initialValue: string,
                                      columnSpan?: number,
                                      rowSpan?: number,
-                                     validate?: (value: string) => boolean,
+                                     validate: (value: string|undefined) => boolean,
                                      invalidMessage?: string
                                  }) {
     const activeBlock = useAppSelector(getActiveBlock);
     const dispatch = useAppDispatch();
-    const [value, setValue] = useState<string>(initialValue);
-    const [isValid, setIsValid] = useState<boolean>(validate ? validate(initialValue) : true);
+    const [value, setValue] = useState<string|undefined>(initialValue);
+    const [isValid, setIsValid] = useState<boolean>(validate(initialValue));
     const [isPopupVisible, setIsPopupVisible] = useState<boolean>(false);
 
     function handleChange(newValue: string) {
-        setValue(newValue);
-        if (validate) {
-            setIsValid(validate(newValue));
-        }
+        // trim whitespaces
+        newValue = newValue.trim();
+
+        // Convert to string or undefined
+        let newValueOptional = newValue === "" ? undefined : newValue;
+
+        // Set isValid and value
+        setIsValid(validate(newValueOptional));
+        setValue(newValueOptional);
     }
 
     function handleConfirm() {
         if (activeBlock) {
-            const valueToDispatch = validate ? Number(value) : value; // Convert to number if validation is provided
+            const valueToDispatch = typeof value === undefined ? undefined : Number(value);
             dispatch(updateControl({blockId: activeBlock.id, filter: {key: title, value: valueToDispatch}}));
         }
         setIsPopupVisible(true);
@@ -73,13 +78,13 @@ export function InputControl({title, initialValue, columnSpan = 1, rowSpan = 1, 
             <ControlTitle title={title} margin={'0'}/>
             <StyledInputContainer>
                 <StyledInput id={`input-${title.toLowerCase()}`}
-                             value={value}
+                             value={value ?? ""}
                              onChange={(e) => handleChange(e.target.value)}/>
             </StyledInputContainer>
             {isValid ? <PrimaryButton text={"Confirm"} action={handleConfirm} size={130}/> :
                 <StyledControlError>{invalidMessage}</StyledControlError>}
             {isPopupVisible && (
-                <ControlsChangedPopup text={value} onCloseAction={() => {
+                <ControlsChangedPopup text={value ?? "<None>"} onCloseAction={() => {
                     setIsPopupVisible(false);
                 }}/>
             )}
