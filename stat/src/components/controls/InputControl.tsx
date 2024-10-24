@@ -52,7 +52,6 @@ export function InputControl({title, initialValue, columnSpan = 1, rowSpan = 1, 
     const dispatch = useAppDispatch();
     const [value, setValue] = useState<string|undefined>(initialValue);
     const [isValid, setIsValid] = useState<boolean>(validate(initialValue));
-    const [isPopupVisible, setIsPopupVisible] = useState<boolean>(false);
 
     function handleChange(newValue: string) {
         // trim whitespaces
@@ -64,14 +63,18 @@ export function InputControl({title, initialValue, columnSpan = 1, rowSpan = 1, 
         // Set isValid and value
         setIsValid(validate(newValueOptional));
         setValue(newValueOptional);
+
+        // Directly handle the confirm by relying it, but dont use the state (due to async nature of state)
+        handleConfirm(newValueOptional);
     }
 
-    function handleConfirm() {
+    function handleConfirm(valueToSet: string|undefined) {
         if (activeBlock) {
-            let valueToDispatch = value === undefined ? undefined : convert(value as string);
-            dispatch(updateControl({blockId: activeBlock.id, filter: {key: title, value: valueToDispatch}}));
+            if (validate(valueToSet)) {
+                let valueToDispatch = valueToSet === undefined ? undefined : convert(valueToSet as string);
+                dispatch(updateControl({blockId: activeBlock.id, filter: {key: title, value: valueToDispatch}}));
+            }
         }
-        setIsPopupVisible(true);
     }
 
     return (
@@ -82,13 +85,7 @@ export function InputControl({title, initialValue, columnSpan = 1, rowSpan = 1, 
                              value={value ?? ""}
                              onChange={(e) => handleChange(e.target.value)}/>
             </StyledInputContainer>
-            {isValid ? <PrimaryButton text={"Confirm"} action={handleConfirm} size={130}/> :
-                <StyledControlError>{invalidMessage}</StyledControlError>}
-            {isPopupVisible && (
-                <ControlsChangedPopup text={value ?? "<None>"} onCloseAction={() => {
-                    setIsPopupVisible(false);
-                }}/>
-            )}
+            {!isValid && <StyledControlError>{invalidMessage}</StyledControlError>}
         </StyledControl>
     );
 }
