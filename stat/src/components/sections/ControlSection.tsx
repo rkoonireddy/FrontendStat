@@ -68,7 +68,11 @@ export function ControlSection({show}: { show: boolean }) {
                             key={filter.name}
                             title={filter.name}
                             initialValue={blockControls[key]}
-                            validate={(value) => true}/> // No validation for strings, they can be anything
+                            validate={filter.nullable ?
+                                (value) => true : // If nullable, any string is valid
+                                (value) => value !== undefined // If not nullable (default from backend), don't allow empty strings
+                            }
+                            invalidMessage={filter.nullable ? "Enter string or blank for null" : "Enter string"}/>
                         );
                         break;
                     case "input_int":
@@ -80,7 +84,7 @@ export function ControlSection({show}: { show: boolean }) {
                                 (value) => value === undefined || Number.isInteger(Number(value)) :
                                 (value) => value !== "" && Number.isInteger(Number(value))
                             }
-                            invalidMessage={filter.nullable ? "Enter valid integer or leave blank for null" : "Enter valid integer"}/>
+                            invalidMessage={filter.nullable ? "Enter valid integer or blank for null" : "Enter valid integer"}/>
                         );
                         break;
                     case "input_float":
@@ -92,7 +96,7 @@ export function ControlSection({show}: { show: boolean }) {
                                 (value) => value === undefined || !isNaN(Number(value)) :
                                 (value) => value !== "" && !isNaN(Number(value))
                             }
-                            invalidMessage={filter.nullable ? "Enter valid float or leave blank for null" : "Enter valid float"}/>);
+                            invalidMessage={filter.nullable ? "Enter valid float or blank for null" : "Enter valid float"}/>);
                         break;
                     case "singleselect":
                         components.push(<DropdownControl key={filter.name} title={filter.name}
