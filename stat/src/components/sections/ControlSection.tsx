@@ -72,6 +72,7 @@ export function ControlSection({show}: { show: boolean }) {
                                 (value) => true : // If nullable, any string is valid
                                 (value) => value !== undefined // If not nullable (default from backend), don't allow empty strings
                             }
+                            convert={(value)=>value}
                             invalidMessage={filter.nullable ? "Enter string or blank for null" : "Enter string"}/>
                         );
                         break;
@@ -84,6 +85,7 @@ export function ControlSection({show}: { show: boolean }) {
                                 (value) => value === undefined || Number.isInteger(Number(value)) :
                                 (value) => value !== "" && Number.isInteger(Number(value))
                             }
+                            convert={(value)=>Number(value)}
                             invalidMessage={filter.nullable ? "Enter valid integer or blank for null" : "Enter valid integer"}/>
                         );
                         break;
@@ -96,6 +98,7 @@ export function ControlSection({show}: { show: boolean }) {
                                 (value) => value === undefined || !isNaN(Number(value)) :
                                 (value) => value !== "" && !isNaN(Number(value))
                             }
+                            convert={(value)=>Number(value)}
                             invalidMessage={filter.nullable ? "Enter valid float or blank for null" : "Enter valid float"}/>);
                         break;
                     case "singleselect":

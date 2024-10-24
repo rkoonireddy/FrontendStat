@@ -38,13 +38,14 @@ export const StyledControlError = styled.div`
     text-align: center;
 `;
 
-export function InputControl({title, initialValue, columnSpan = 1, rowSpan = 1, validate, invalidMessage}:
+export function InputControl({title, initialValue, columnSpan = 1, rowSpan = 1, validate, convert, invalidMessage}:
                                  {
                                      title: string,
                                      initialValue: string,
                                      columnSpan?: number,
                                      rowSpan?: number,
                                      validate: (value: string|undefined) => boolean,
+                                     convert: (value: string) => string|number,
                                      invalidMessage?: string
                                  }) {
     const activeBlock = useAppSelector(getActiveBlock);
@@ -67,7 +68,7 @@ export function InputControl({title, initialValue, columnSpan = 1, rowSpan = 1, 
 
     function handleConfirm() {
         if (activeBlock) {
-            const valueToDispatch = typeof value === undefined ? undefined : Number(value);
+            let valueToDispatch = value === undefined ? undefined : convert(value as string);
             dispatch(updateControl({blockId: activeBlock.id, filter: {key: title, value: valueToDispatch}}));
         }
         setIsPopupVisible(true);
