@@ -11,13 +11,13 @@ export function FilterControl({title, onLabel, offLabel, value, columnSpan = 1, 
     offLabel: string,
     value: boolean,
     columnSpan?: number,
-    rowSpan?: number
+    rowSpan?: number,
 }) {
     const activeBlock = useAppSelector(getActiveBlock);
     const dispatch = useAppDispatch();
     const [filterValue, setFilterValue] = useState(value);
     const [label, setLabel] = useState(filterValue ? onLabel : offLabel);
-
+    
     const toggle = (e: { value: boolean }) => {
         setFilterValue(e.value);  // Update the state with the new value
         updateLabel(e.value);  // Update the label

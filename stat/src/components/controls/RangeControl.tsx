@@ -34,7 +34,7 @@ export function RangeControl({title, range, initial_range, step, columnSpan = 2,
     step: number,
     initial_range: [number, number],
     columnSpan?: number,
-    rowSpan?: number
+    rowSpan?: number,
 }) {
     const activeBlock = useAppSelector(getActiveBlock);
     const dispatch = useAppDispatch();

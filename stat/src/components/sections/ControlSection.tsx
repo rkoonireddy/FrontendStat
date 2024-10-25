@@ -47,6 +47,7 @@ export function ControlSection({show}: { show: boolean }) {
     const [filterComponents, setFilterComponents] = useState<JSX.Element[]>([]);
     const [blockFilters, setBlockFilters] = useState<{ [key: string]: string }>({});
     const dispatch = useAppDispatch();
+    const [applyReady, setApplyReady] = useState(true);
 
     useEffect(() => {
         setFilterComponents([]);
@@ -60,8 +61,13 @@ export function ControlSection({show}: { show: boolean }) {
 
                 switch (filter.filter_type) {
                     case "boolean":
-                        components.push(<FilterControl key={filter.name} title={filter.name} onLabel={"On"}
-                                                       offLabel={"Off"} value={blockControls[key]}/>);
+                        components.push(<FilterControl
+                            key={filter.name}
+                            title={filter.name}
+                            onLabel={"On"}
+                            offLabel={"Off"}
+                            value={blockControls[key]}/>
+                        );
                         break;
                     case "input_str":
                         components.push(<InputControl
@@ -73,7 +79,8 @@ export function ControlSection({show}: { show: boolean }) {
                                 (value) => value !== undefined // If not nullable (default from backend), don't allow empty strings
                             }
                             convert={(value)=>value}
-                            invalidMessage={filter.nullable ? "Enter string or blank for null" : "Enter string"}/>
+                            invalidMessage={filter.nullable ? "Enter string or blank for null" : "Enter string"}
+                            onChange={setApplyReady}/>
                         );
                         break;
                     case "input_int":
@@ -86,7 +93,8 @@ export function ControlSection({show}: { show: boolean }) {
                                 (value) => value !== "" && Number.isInteger(Number(value))
                             }
                             convert={(value)=>Number(value)}
-                            invalidMessage={filter.nullable ? "Enter valid integer or blank for null" : "Enter valid integer"}/>
+                            invalidMessage={filter.nullable ? "Enter valid integer or blank for null" : "Enter valid integer"}
+                            onChange={setApplyReady}/>
                         );
                         break;
                     case "input_float":
@@ -99,21 +107,24 @@ export function ControlSection({show}: { show: boolean }) {
                                 (value) => value !== "" && !isNaN(Number(value))
                             }
                             convert={(value)=>Number(value)}
-                            invalidMessage={filter.nullable ? "Enter valid float or blank for null" : "Enter valid float"}/>);
+                            invalidMessage={filter.nullable ? "Enter valid float or blank for null" : "Enter valid float"}
+                            onChange={setApplyReady}/>
+                        );
                         break;
                     case "singleselect":
-                        components.push(<DropdownControl key={filter.name} title={filter.name}
-                                                         options={filter.options.map((option: any) => {
-                                                             return {label: option, value: option};
-                                                         })}
-                                                         defaultValue={blockControls[key]}/>);
+                        components.push(<DropdownControl
+                            key={filter.name}
+                            title={filter.name}
+                            options={filter.options.map((option: any) => {return {label: option, value: option};})}
+                            defaultValue={blockControls[key]}/>
+                        );
                         break;
                     case "multiselect":
-                        components.push(<MultiSelectControl key={filter.name} title={filter.name}
-                                                            options={filter.options.map((option: any) => {
-                                                                return {label: option, value: option};
-                                                            })}
-                                                            defaultValues={blockControls[key]}/>);
+                        components.push(<MultiSelectControl
+                            key={filter.name} title={filter.name}
+                            options={filter.options.map((option: any) => {return {label: option, value: option};})}
+                            defaultValues={blockControls[key]}/>
+                        );
                         break;
                     case "slider":
                         components.push(<VerticalIntegerSliderControl
@@ -136,12 +147,11 @@ export function ControlSection({show}: { show: boolean }) {
                         break;
                     case "range_float":
                         components.push(<RangeControl
-                                key={filter.name}
-                                title={filter.name}
-                                range={[filter.min, filter.max]}
-                                initial_range={[blockControls[key][0], blockControls[key][1]]}
-                                step={filter.step}
-                            />
+                            key={filter.name}
+                            title={filter.name}
+                            range={[filter.min, filter.max]}
+                            initial_range={[blockControls[key][0], blockControls[key][1]]}
+                            step={filter.step}/>
                         );
                         break;
                     default:
@@ -156,6 +166,7 @@ export function ControlSection({show}: { show: boolean }) {
 
     function applyFilters() {
         if (activeBlock) {
+
             dispatch(fetchUpdateBlock({
                 pipelineId: pipeline.id,
                 blockId: activeBlock.id,
@@ -177,7 +188,7 @@ export function ControlSection({show}: { show: boolean }) {
             <StyledControlContainer id={"control-section"} $rowNumber={1}>
                 {filterComponents}
             </StyledControlContainer>
-            <PrimaryButton size={150} text={"Apply"} action={() => applyFilters()}/>
+            {applyReady && <PrimaryButton size={150} text={"Apply"} action={() => applyFilters()}/>}
         </StyledControls>
     )
 }

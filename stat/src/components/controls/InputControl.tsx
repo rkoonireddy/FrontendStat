@@ -5,7 +5,6 @@ import {PrimaryButton} from "../buttons/PrimaryButton";
 import {ControlTitle} from "./ControlTitle";
 import {useAppDispatch, useAppSelector} from "../../hooks";
 import {getActiveBlock, updateControl} from "../../redux/pipelineSlice";
-import {ControlsChangedPopup} from "../pageElements/ControlsChangedPopup";
 
 const StyledInputContainer = styled.div`
     width: 100%;
@@ -38,16 +37,27 @@ export const StyledControlError = styled.div`
     text-align: center;
 `;
 
-export function InputControl({title, initialValue, columnSpan = 1, rowSpan = 1, validate, convert, invalidMessage}:
-                                 {
-                                     title: string,
-                                     initialValue: string,
-                                     columnSpan?: number,
-                                     rowSpan?: number,
-                                     validate: (value: string|undefined) => boolean,
-                                     convert: (value: string) => string|number,
-                                     invalidMessage?: string
-                                 }) {
+export function InputControl(
+    {
+        title,
+        initialValue,
+        columnSpan = 1,
+        rowSpan = 1,
+        validate,
+        convert,
+        invalidMessage,
+        onChange
+    }:
+    {
+        title: string,
+        initialValue: string,
+        columnSpan?: number,
+        rowSpan?: number,
+        validate: (value: string|undefined) => boolean,
+        convert: (value: string) => string|number,
+        invalidMessage?: string,
+        onChange: (v: boolean) => void
+    }) {
     const activeBlock = useAppSelector(getActiveBlock);
     const dispatch = useAppDispatch();
     const [value, setValue] = useState<string|undefined>(initialValue);
@@ -62,6 +72,7 @@ export function InputControl({title, initialValue, columnSpan = 1, rowSpan = 1, 
 
         // Set isValid and value
         setIsValid(validate(newValueOptional));
+        onChange(validate(newValueOptional)); // Notify parent elemment if value is not valid
         setValue(newValueOptional);
 
         // Directly handle the confirm by relying it, but dont use the state (due to async nature of state)
