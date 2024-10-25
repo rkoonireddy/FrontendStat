@@ -27,6 +27,7 @@ const StyledControlContainer = styled.div<{ $columnNumber?: number, $rowNumber?:
 `;
 
 export const StyledControl = styled.div<{ $columnSpan: number, $rowSpan: number }>`
+    position: relative;
     background-color: #ffffff12;
     padding: 5px;
     border-radius: 15px;
@@ -188,7 +189,7 @@ export function ControlSection({show}: { show: boolean }) {
             <StyledControlContainer id={"control-section"} $rowNumber={1}>
                 {filterComponents}
             </StyledControlContainer>
-            {applyReady && <PrimaryButton size={150} text={"Apply"} action={() => applyFilters()}/>}
+            <PrimaryButton size={150} text={"Apply"} action={() => applyFilters()} disabled={!applyReady}/>
         </StyledControls>
     )
 }

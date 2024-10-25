@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import {StyledControl} from "../sections/ControlSection";
-import {useState} from "react";
+import {Ref, useState} from "react";
 import {PrimaryButton} from "../buttons/PrimaryButton";
 import {ControlTitle} from "./ControlTitle";
 import {useAppDispatch, useAppSelector} from "../../hooks";
@@ -15,10 +15,10 @@ const StyledInputContainer = styled.div`
     align-items: center;
 `;
 
-export const StyledInput = styled.input<{ $largeText?: boolean, $width?: string, $margin?: string }>`
+export const StyledInput = styled.input<{ $largeText?: boolean, $width?: string, $margin?: string, $valid?: boolean }>`
     border-radius: 5px;
     font-size: ${props => props.$largeText ? '1.5rem' : '1.25rem'};
-    border: 1px solid #727272;
+    border: 2px solid ${props => props.$valid === undefined ? '#727272' : (props.$valid ? '#039203' : '#ff0000')};
     background-color: #2B2B2B;
     color: #ffffff;
     ${props => props.$width ? `max-width: ${props.$width}` : 'max-width: 120px'};
@@ -32,9 +32,14 @@ export const StyledUnit = styled.span`
 `;
 
 export const StyledControlError = styled.div`
+    position: absolute;
     font-size: 0.75rem;
     color: #ff0000;
     text-align: center;
+    bottom: 5px;
+    left: 0;
+    right: 0;
+    margin: auto;
 `;
 
 export function InputControl(
@@ -94,7 +99,9 @@ export function InputControl(
             <StyledInputContainer>
                 <StyledInput id={`input-${title.toLowerCase()}`}
                              value={value ?? ""}
-                             onChange={(e) => handleChange(e.target.value)}/>
+                             onChange={(e) => handleChange(e.target.value)}
+                $margin={'auto'}
+                $valid={isValid}/>
             </StyledInputContainer>
             {!isValid && <StyledControlError>{invalidMessage}</StyledControlError>}
         </StyledControl>
