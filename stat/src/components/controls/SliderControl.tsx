@@ -32,7 +32,7 @@ export function VerticalIntegerSliderControl({title, min, max, step, start, colu
     step: number,
     start: number,
     columnSpan?: number,
-    rowSpan?: number
+    rowSpan?: number,
 }) {
     const activeBlock = useAppSelector(getActiveBlock);
     const dispatch = useAppDispatch();

@@ -5,13 +5,13 @@ import { ControlTitle } from "./ControlTitle";
 import {useAppDispatch, useAppSelector} from "../../hooks";
 import {getActiveBlock, updateControl} from "../../redux/pipelineSlice";
 
-export function MultiSelectControl({ title, options, placeHolder = "Select...", columnSpan = 1, rowSpan = 1, defaultValues = null }: {
+export function MultiSelectControl({ title, options, placeHolder = "Select...", columnSpan = 1, rowSpan = 1, defaultValues = null}: {
     title: string,
     options: { label: string, value: string }[],
     placeHolder?: string,
     columnSpan?: number,
     rowSpan?: number,
-    defaultValues?: string[] | null
+    defaultValues?: string[] | null,
 }) {
     const activeBlock = useAppSelector(getActiveBlock);
     const dispatch = useAppDispatch();
