@@ -1,7 +1,6 @@
 import styled from "styled-components";
 import {StyledControl} from "../sections/ControlSection";
-import {Ref, useState} from "react";
-import {PrimaryButton} from "../buttons/PrimaryButton";
+import {useState} from "react";
 import {ControlTitle} from "./ControlTitle";
 import {useAppDispatch, useAppSelector} from "../../hooks";
 import {getActiveBlock, updateControl} from "../../redux/pipelineSlice";
@@ -77,7 +76,7 @@ export function InputControl(
 
         // Set isValid and value
         setIsValid(validate(newValueOptional));
-        onChange(validate(newValueOptional)); // Notify parent elemment if value is not valid
+        onChange(validate(newValueOptional)); // Notify parent element if value is not valid
         setValue(newValueOptional);
 
         // Directly handle the confirm by relying it, but dont use the state (due to async nature of state)
