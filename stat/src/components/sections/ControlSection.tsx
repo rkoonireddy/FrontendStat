@@ -21,9 +21,10 @@ const StyledControlContainer = styled.div<{ $columnNumber?: number, $rowNumber?:
     display: grid;
     grid-template-columns: repeat(${props => props.$columnNumber ?? 4}, minmax(150px, 1fr));
     grid-template-rows: repeat(${props => props.$rowNumber ?? 2}, minmax(150px, 1fr));
-    gap: 1fr;
+    gap: 0.5rem;
     height: fit-content;
-    margin-bottom: 10px;
+    margin-top: 15px;
+    margin-bottom: 15px;
 `;
 
 export const StyledControl = styled.div<{ $columnSpan: number, $rowSpan: number }>`
