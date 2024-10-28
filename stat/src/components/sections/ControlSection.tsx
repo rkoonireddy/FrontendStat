@@ -19,7 +19,7 @@ const StyledControls = styled.div<{ $show: boolean }>`
 
 const StyledControlContainer = styled.div<{ $columnNumber?: number, $rowNumber?: number }>`
     display: grid;
-    grid-template-columns: repeat(${props => props.$columnNumber ?? 4}, minmax(150px, 1fr));
+    grid-template-columns: repeat(${props => props.$columnNumber ?? 6}, minmax(150px, 1fr));
     grid-template-rows: repeat(${props => props.$rowNumber ?? 2}, minmax(150px, 1fr));
     gap: 0.5rem;
     height: fit-content;
