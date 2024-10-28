@@ -10,16 +10,16 @@ import { BlockModel } from "../../types/responseType";
 const DEFAULT_COLORS = [
     "#00bfa6",
     "#ff5733",
-    "#009E73", // green
     "#E69F00", // orange
-    "#56B4E9", // sky blue
-    "#F0E442", // yellow
     "#0072B2", // blue
-    "#D55E00", // redu
     "#CC79A7", // pink
     "#999999", // grey
     "#C5B0D5", // lavender
     "#C45E24", // brown
+    "#009E73", // green
+    "#F0E442", // yellow
+    "#56B4E9", // sky blue
+    "#D55E00", // redu
 ];
 
 export function LineChart({ block, small = false }: { block: BlockModel, small?: boolean }) {
@@ -116,9 +116,10 @@ export function LineChart({ block, small = false }: { block: BlockModel, small?:
             .style("stroke-width", "2px");
 
         // Line generator
-        const myLine = line<{ x: number, y: number }>()
+        const myLine = line<{ x: number, y: number | null }>()
+            .defined((d) => d.y !== null && d.y !== undefined) // Only use defined data points for the line
             .x((d, i) => xScale(i))
-            .y((d) => yScale(d.y))
+            .y((d) => yScale(d.y as number)) // `as number` since null values are skipped
             .curve(curveCardinal);
 
         // Drawing the lines
@@ -141,6 +142,22 @@ export function LineChart({ block, small = false }: { block: BlockModel, small?:
                     setSelectedLineIndex(index);
                 }
             });
+
+        // //handling empty values differently on the x-axis
+        // chartData.forEach((lineData, lineIndex) => {
+        //     svg.selectAll(`.missing-dash-${lineIndex}`)
+        //         .data(lineData)
+        //         .join("line")
+        //         .attr("class", `missing-dash-${lineIndex}`)
+        //         .attr("x1", (d, i) => xScale(i) + margin.left - 5) // Adjust x position
+        //         .attr("y1", (d) => (d.y === null || d.y === undefined) ? yScale(0) + margin.top : yScale(d.y) + margin.top)
+        //         .attr("x2", (d, i) => xScale(i) + margin.left + 5) // Adjust x position
+        //         .attr("y2", (d) => (d.y === null || d.y === undefined) ? yScale(0) + margin.top : yScale(d.y) + margin.top)
+        //         .attr("stroke", "red")
+        //         .attr("stroke-width", 2)
+        //         .attr("stroke-dasharray", "4,4") // Create a dashed line
+        //         .style("visibility", (d) => (d.y === null || d.y === undefined) ? "visible" : "hidden"); // Hide if data is present
+        // });
 
         if (!small) {
             // X-axis label (white text)
