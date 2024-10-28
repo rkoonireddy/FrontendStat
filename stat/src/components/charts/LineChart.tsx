@@ -10,16 +10,16 @@ import { BlockModel } from "../../types/responseType";
 const DEFAULT_COLORS = [
     "#00bfa6",
     "#ff5733",
-    "#009E73", // green
     "#E69F00", // orange
-    "#56B4E9", // sky blue
-    "#F0E442", // yellow
     "#0072B2", // blue
-    "#D55E00", // redu
     "#CC79A7", // pink
     "#999999", // grey
     "#C5B0D5", // lavender
     "#C45E24", // brown
+    "#009E73", // green
+    "#F0E442", // yellow
+    "#56B4E9", // sky blue
+    "#D55E00", // redu
 ];
 
 export function LineChart({ block, small = false }: { block: BlockModel, small?: boolean }) {
