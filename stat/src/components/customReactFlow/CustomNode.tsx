@@ -4,6 +4,7 @@ import {Handle, Position} from '@xyflow/react';
 import {CustomNodeProps} from "../../types/nodeTypes";
 import {useAppDispatch, useAppSelector} from "../../hooks";
 import {
+    blockConnectedToPipeline,
     deleteBlockFromPipeline,
     getActiveBlockId, getBlockById, getBlocks,
     getPipelineModel,
@@ -98,6 +99,7 @@ const CustomNode = ({data}: CustomNodeProps) => {
     const activeNodeId = useAppSelector(getActiveBlockId);
     const block = useAppSelector(state => getBlockById(state, data.blockId));
     const [showOutputPopup, setShowOutputPopup] = useState(false);
+    const blockConnected = useAppSelector(state => blockConnectedToPipeline(state, data.blockId))
 
     return (
 
@@ -113,18 +115,15 @@ const CustomNode = ({data}: CustomNodeProps) => {
                              $small={data.label.length > 14}>{data.label}</StyledNodeLabel>
             <StyledNodeType>{data.type}</StyledNodeType>
             <Handle type="source" position={Position.Bottom}/>
-            <StyledNodeOutputContainer onMouseEnter={() => setShowOutputPopup(true)}
-                                       onMouseLeave={() => setShowOutputPopup(false)}>
-                {block &&
-                    <>
-                        <LineChart block={block} small={true} mini={true}/>
-                        {showOutputPopup &&
+            {blockConnected && block && block?.output?.Dataframe?.data !== undefined &&
+                <StyledNodeOutputContainer onMouseEnter={() => setShowOutputPopup(true)}
+                                           onMouseLeave={() => setShowOutputPopup(false)}>
+                    <LineChart block={block} small={true} mini={true}/>
+                    {showOutputPopup &&
                         <StyledNodeOutputPopup>
                             <LineChart block={block} small={true}/>
                         </StyledNodeOutputPopup>}
-                    </>
-                }
-            </StyledNodeOutputContainer>
+                </StyledNodeOutputContainer>}
         </StyledNodeContainer>
     )
         ;

@@ -24,7 +24,7 @@ const CustomStartNode = ({data}: CustomNodeProps) => {
     const dispatch = useAppDispatch();
     const activeNodeId = useAppSelector(getActiveBlockId);
     const block = useAppSelector(state => getBlockById(state, data.blockId));
-    const [showOutputPopup, setShowOutputPopup] = useState(true);
+    const [showOutputPopup, setShowOutputPopup] = useState(false);
 
     return (
         <StyledNodeContainer $active={data.id === activeNodeId} onClick={() => dispatch(setActiveBlockId(data.id))}>

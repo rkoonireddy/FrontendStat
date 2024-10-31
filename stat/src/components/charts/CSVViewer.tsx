@@ -130,7 +130,7 @@ export default function CSVViewer({blockId, small, mini}: { blockId: string; sma
                         <tr>
                             {columns.map(col => (
                                 <StyledTableHeader key={col} $isSelected={selectedColumns.includes(col)}>
-                                    {!mini && <StyledCheckbox
+                                    {!mini && !small && <StyledCheckbox
                                         type="checkbox"
                                         checked={selectedColumns.includes(col)}
                                         onChange={() => handleColumnChange(col)}

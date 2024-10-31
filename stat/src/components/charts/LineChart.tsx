@@ -243,7 +243,7 @@ export function LineChart({ block, small = false, mini = false }: { block: Block
                 <text className="y-axis-label" />
             </svg>
         ) : (
-            <div style={{ color: "#ffffff", alignContent: "center"}}>Please run the pipeline to visualize your data !</div>
+            <div style={{ color: "#ffffff", alignContent: "center", scale: small ? '0.5' : '1'}}> {small ? 'Run Pipeline' : 'Please run the pipeline to visualize your data !'}</div>
         )
     );
 }
