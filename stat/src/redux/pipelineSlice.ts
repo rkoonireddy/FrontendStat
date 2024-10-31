@@ -462,3 +462,10 @@ export const isBlockRunnable = createSelector(
 );
 
 export const getControls = (state: RootState) => state.pipeline.controls;
+
+export const blockConnectedToPipeline = createSelector(
+    [(state: RootState, blockId: string) => blockId, getPipelineModel],
+    (blockId, pipeline) => {
+        return Object.values(pipeline.edge_dict).some(targets => targets.includes(blockId));
+    }
+);

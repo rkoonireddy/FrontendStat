@@ -15,6 +15,7 @@ const StyledPipelineHistorySection = styled.div<{ $historyVisible: boolean }>`
     opacity: ${props => props.$historyVisible ? '1' : '0.25'};
     position: ${props => props.$historyVisible ? 'relative' : 'absolute'};
     overflow-y: auto;
+    max-height: 20vh;
 
     &:hover {
         opacity: 1;

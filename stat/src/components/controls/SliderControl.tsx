@@ -37,7 +37,7 @@ export function VerticalIntegerSliderControl({title, min, max, step, start, colu
     const activeBlock = useAppSelector(getActiveBlock);
     const dispatch = useAppDispatch();
     const [value, setValue] = useState<number|[number, number]>(start);
-    const height = 150 * rowSpan;
+    const height = 70 * rowSpan;
 
     function handleChange(newValue: number|[number, number]) {
         if(activeBlock) {

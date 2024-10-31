@@ -14,13 +14,15 @@ const StyledControls = styled.div<{ $show: boolean }>`
     display: ${props => (props.$show ? "flex" : "none")};
     flex-direction: column;
     height: fit-content;
-    max-height: 35%;
 `;
 
 const StyledControlContainer = styled.div<{ $columnNumber?: number, $rowNumber?: number }>`
-    display: grid;
-    grid-template-columns: repeat(${props => props.$columnNumber ?? 6}, minmax(150px, 1fr));
-    grid-template-rows: repeat(${props => props.$rowNumber ?? 2}, minmax(150px, 1fr));
+    // display: grid;
+    // grid-template-columns: repeat(${props => props.$columnNumber ?? 6}, minmax(140px, 1fr));
+    // grid-template-rows: repeat(${props => props.$rowNumber ?? 2}, minmax(140px, 1fr));
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
     gap: 0.5rem;
     height: fit-content;
     margin-top: 15px;
@@ -39,7 +41,7 @@ export const StyledControl = styled.div<{ $columnSpan: number, $rowSpan: number 
     grid-row: span ${props => props.$rowSpan};
     margin: 2px auto;
     min-width: 175px;
-    min-height: 175px;
+    min-height: 125px;
 `;
 
 export function ControlSection({show}: { show: boolean }) {
