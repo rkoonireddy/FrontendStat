@@ -11,7 +11,7 @@ import {useAppDispatch, useAppSelector} from "../../hooks";
 import {
     blockConnectedToPipeline,
     connectTwoBlocks,
-    executePipeline, fetchExportPipeline, getActiveBlockId,
+    executePipeline, fetchExportPipeline, getActiveBlock, getActiveBlockId,
     getAllEdges,
     getAllNodes,
     getBlocks,
@@ -66,6 +66,7 @@ function Flow() {
     const pipeline = useAppSelector(getPipeline);
     const blocks = useAppSelector(getBlocks);
     const activeBlockId = useAppSelector(getActiveBlockId);
+    const activeBlock = useAppSelector(getActiveBlock);
     const initialNodes = useAppSelector(getAllNodes);
     const initialEdges = useAppSelector(getAllEdges);
     const pipelineExportableRunnable = useAppSelector(state =>
@@ -248,17 +249,18 @@ function Flow() {
                         }}>
                             <RunSVG style={{width: "50px", height: "50px", color: "#00ff00"}}/>
                         </StyledActionButton>
-                        <StyledActionButton title={"Export Pipeline"} onClick={(e) => {
-                            dispatch(setLoading(true));
-                            dispatch(fetchExportPipeline({
-                                pipelineId: pipeline.id,
-                                startBlockId: blocks[0].id,
-                                endBlockId: activeBlockId ? activeBlockId : blocks[blocks.length - 1].id
-                            }));
-                            e.stopPropagation();
-                        }}>
-                            <ExportSVG style={{width: "35px", height: "35px", color: "#ffffff"}}/>
-                        </StyledActionButton>
+                        {activeBlock && activeBlock?.output?.Dataframe?.data !== undefined ?
+                            <StyledActionButton title={"Export Pipeline"} onClick={(e) => {
+                                dispatch(setLoading(true));
+                                dispatch(fetchExportPipeline({
+                                    pipelineId: pipeline.id,
+                                    startBlockId: blocks[0].id,
+                                    endBlockId: activeBlockId ? activeBlockId : blocks[blocks.length - 1].id
+                                }));
+                                e.stopPropagation();
+                            }}>
+                                <ExportSVG style={{width: "35px", height: "35px", color: "#ffffff"}}/>
+                            </StyledActionButton> : <div style={{width: "35px", height: "35px"}}/>}
                     </StyledToolbar>}
             </Panel>
         </ReactFlow>
