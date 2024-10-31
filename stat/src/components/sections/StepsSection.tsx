@@ -6,9 +6,10 @@ import {
     addEdge, useNodesState, useEdgesState, useReactFlow, ReactFlowProvider, Panel
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import React, { useCallback, useEffect, useState } from "react";
-import { useAppDispatch, useAppSelector } from "../../hooks";
+import React, {useCallback, useEffect, useState} from "react";
+import {useAppDispatch, useAppSelector} from "../../hooks";
 import {
+    blockConnectedToPipeline,
     connectTwoBlocks,
     executePipeline, fetchExportPipeline, getActiveBlockId,
     getAllEdges,
@@ -16,14 +17,14 @@ import {
     getBlocks,
     getPipeline, setLoading
 } from "../../redux/pipelineSlice";
-import { createEdges, createNodesFromBlocks, getFirstKey } from "../../util/util";
+import {createEdges, createNodesFromBlocks, getFirstKey} from "../../util/util";
 import CustomNode from "../customReactFlow/CustomNode";
 import CustomStartNode from "../customReactFlow/CustomStartNode";
 import CustomEdge from "../customReactFlow/CustomEdge";
-import { ReactComponent as RunSVG } from "../../assets/run.svg";
-import { ReactComponent as ExportSVG } from "../../assets/filetype-py.svg";
+import {ReactComponent as RunSVG} from "../../assets/run.svg";
+import {ReactComponent as ExportSVG} from "../../assets/filetype-py.svg";
 
-const NodeTypes = { customNode: CustomNode, customStartNode: CustomStartNode };
+const NodeTypes = {customNode: CustomNode, customStartNode: CustomStartNode};
 const edgeTypes = {
     'custom-edge': CustomEdge
 }
@@ -60,18 +61,20 @@ const StyledActionButton = styled.div`
 const flowKey = 'react-flow-flow';
 
 function Flow() {
-    const { fitView } = useReactFlow();
+    const {fitView} = useReactFlow();
     const dispatch = useAppDispatch();
     const pipeline = useAppSelector(getPipeline);
     const blocks = useAppSelector(getBlocks);
     const activeBlockId = useAppSelector(getActiveBlockId);
     const initialNodes = useAppSelector(getAllNodes);
     const initialEdges = useAppSelector(getAllEdges);
-
+    const pipelineExportableRunnable = useAppSelector(state =>
+        activeBlockId ? blockConnectedToPipeline(state, activeBlockId) : false
+    );
     const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
     const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
     const [isDragging, setIsDragging] = useState(false);
-    const [onGraphChange, setOnGraphChange] = useState(0); // New state variable
+    const [onGraphChange, setOnGraphChange] = useState(0);
 
     useEffect(() => {
         const ns = createNodesFromBlocks(blocks);
@@ -126,25 +129,25 @@ function Flow() {
             });
         }
 
-        return { sortedNodes, noEdgeNodes: Array.from(noEdgeNodes) };
+        return {sortedNodes, noEdgeNodes: Array.from(noEdgeNodes)};
     };
 
     const alignNodes = useCallback(async () => {
-        const { sortedNodes, noEdgeNodes } = topologicalSort(nodes, edges);
+        const {sortedNodes, noEdgeNodes} = topologicalSort(nodes, edges);
         setNodes((nds) => nds.map((node) => {
             const yPos = sortedNodes.includes(node.id)
                 ? sortedNodes.indexOf(node.id) * 150
                 : (sortedNodes.length + noEdgeNodes.indexOf(node.id)) * 150;
             return {
                 ...node,
-                position: { x: 0, y: yPos },
+                position: {x: 0, y: yPos},
             };
         }));
     }, [nodes, edges, setNodes, fitView]);
 
     const onConnect = useCallback(
         (connection: any) => {
-            const edge = { ...connection, type: 'custom-edge' };
+            const edge = {...connection, type: 'custom-edge'};
             console.log(edge);
 
             // Check if the edge already exists to avoid duplicates
@@ -152,7 +155,7 @@ function Flow() {
                 const edgeExists = eds.some(e => e.source === edge.source && e.target === edge.target);
                 if (!edgeExists) {
                     dispatch(
-                        connectTwoBlocks({ fromBlockId: edge.source, toBlockId: edge.target, pipelineId: pipeline.id }))
+                        connectTwoBlocks({fromBlockId: edge.source, toBlockId: edge.target, pipelineId: pipeline.id}))
                         .unwrap()
                         .then(() => {
                             return addEdge(edge, eds);
@@ -182,7 +185,7 @@ function Flow() {
 
     // Save function
     const onSave = useCallback(() => {
-        const flow = { nodes, edges };
+        const flow = {nodes, edges};
         localStorage.setItem(flowKey, JSON.stringify(flow));
         console.log("Pipeline flow saved.");
     }, [nodes, edges]);
@@ -191,7 +194,7 @@ function Flow() {
     const onRestore = useCallback(() => {
         const flowString = localStorage.getItem(flowKey);
         if (flowString) {
-            const { nodes: restoredNodes, edges: restoredEdges } = JSON.parse(flowString);
+            const {nodes: restoredNodes, edges: restoredEdges} = JSON.parse(flowString);
             setNodes(restoredNodes);
             setEdges(restoredEdges);
             fitView(); // Adjust the view to fit the restored flow
@@ -214,8 +217,8 @@ function Flow() {
             edgeTypes={edgeTypes}
             fitView
         >
-            <Background />
-            <Controls />
+            <Background/>
+            <Controls/>
             <Panel position="top-right">
                 <button onClick={alignNodes}>
                     Align Nodes
@@ -229,33 +232,34 @@ function Flow() {
                 </button>
             </Panel>
             <Panel position={"bottom-right"}>
-                <StyledToolbar>
-                    <StyledActionButton title={"Run Pipeline"} onClick={(e) => {
-                        onSave();
-                        dispatch(setLoading(true));
-                        dispatch(executePipeline({
-                            pipelineId: pipeline.id,
-                            startingBlockId: getFirstKey(pipeline.block_dict) as string
-                        }))
-                        .then(() => {
-                            onRestore(); // Restore after running pipeline
-                        });
-                        e.stopPropagation();
-                    }}>
-                        <RunSVG style={{ width: "50px", height: "50px", color: "#00ff00" }} />
-                    </StyledActionButton>
-                    <StyledActionButton title={"Export Pipeline"} onClick={(e) => {
-                        dispatch(setLoading(true));
-                        dispatch(fetchExportPipeline({
-                            pipelineId: pipeline.id,
-                            startBlockId: blocks[0].id,
-                            endBlockId: activeBlockId ? activeBlockId : blocks[blocks.length - 1].id
-                        }));
-                        e.stopPropagation();
-                    }}>
-                        <ExportSVG style={{ width: "35px", height: "35px", color: "#ffffff" }} />
-                    </StyledActionButton>
-                </StyledToolbar>
+                {pipelineExportableRunnable &&
+                    <StyledToolbar>
+                        <StyledActionButton title={"Run Pipeline"} onClick={(e) => {
+                            onSave();
+                            dispatch(setLoading(true));
+                            dispatch(executePipeline({
+                                pipelineId: pipeline.id,
+                                startingBlockId: getFirstKey(pipeline.block_dict) as string
+                            }))
+                                .then(() => {
+                                    onRestore(); // Restore after running pipeline
+                                });
+                            e.stopPropagation();
+                        }}>
+                            <RunSVG style={{width: "50px", height: "50px", color: "#00ff00"}}/>
+                        </StyledActionButton>
+                        <StyledActionButton title={"Export Pipeline"} onClick={(e) => {
+                            dispatch(setLoading(true));
+                            dispatch(fetchExportPipeline({
+                                pipelineId: pipeline.id,
+                                startBlockId: blocks[0].id,
+                                endBlockId: activeBlockId ? activeBlockId : blocks[blocks.length - 1].id
+                            }));
+                            e.stopPropagation();
+                        }}>
+                            <ExportSVG style={{width: "35px", height: "35px", color: "#ffffff"}}/>
+                        </StyledActionButton>
+                    </StyledToolbar>}
             </Panel>
         </ReactFlow>
     );
@@ -265,7 +269,7 @@ export function StepsSection() {
     return (
         <StyledStepsContainer>
             <ReactFlowProvider>
-                <Flow />
+                <Flow/>
             </ReactFlowProvider>
         </StyledStepsContainer>
     );
