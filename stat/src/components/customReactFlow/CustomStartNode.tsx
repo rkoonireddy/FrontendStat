@@ -1,7 +1,7 @@
 import React from 'react';
 import {Handle, Position} from '@xyflow/react';
 import {CustomNodeProps} from "../../types/nodeTypes";
-import {StyledNodeContainer, StyledNodeLabel, StyledNodeType, StyledRunButton} from "./CustomNode";
+import {StyledNodeContainer, StyledNodeLabel, StyledNodeType} from "./CustomNode";
 import {useAppDispatch, useAppSelector} from "../../hooks";
 import {getActiveBlockId, setActiveBlockId} from "../../redux/pipelineSlice";
 

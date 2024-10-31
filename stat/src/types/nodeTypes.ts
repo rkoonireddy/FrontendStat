@@ -3,5 +3,7 @@ export interface CustomNodeProps {
         id: string;
         label: string;
         type: string;
+        description: string;
+        tag:string;
     };
 }

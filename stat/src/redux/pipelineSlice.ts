@@ -21,6 +21,7 @@ interface IPipelineState {
     pipelineModel: PipelineModel
     blocks: BlockModel[]
     activeBlockId: string | null
+    description: string|null
     frequency: number
     loading: boolean,
     errorStatus: boolean,
@@ -43,6 +44,7 @@ const initialState: IPipelineState = {
     pipelineModel: initialPipelineModel,
     blocks: [],
     activeBlockId: null,
+    description: null,
     frequency: 60,
     loading: false,
     errorStatus: false,
@@ -444,6 +446,7 @@ export const getActiveBlock = (state: RootState) => {
 }
 
 export const getActiveBlockId = (state: RootState) => state.pipeline.activeBlockId;
+export const getActiveBlockDescription = (state: RootState) => state.pipeline.activeBlockId;
 
 export const getPipelineModel = (state: RootState) => state.pipeline.pipelineModel;
 
