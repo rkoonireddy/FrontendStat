@@ -5,8 +5,9 @@ import { ControlTitle } from "./ControlTitle";
 import {useAppDispatch, useAppSelector} from "../../hooks";
 import {getActiveBlock, updateControl} from "../../redux/pipelineSlice";
 
-export function MultiSelectControl({ title, options, placeHolder = "Select...", columnSpan = 1, rowSpan = 1, defaultValues = null}: {
+export function MultiSelectControl({ title, display_name, options, placeHolder = "Select...", columnSpan = 1, rowSpan = 1, defaultValues = null}: {
     title: string,
+    display_name: string,
     options: { label: string, value: string }[],
     placeHolder?: string,
     columnSpan?: number,
@@ -42,7 +43,7 @@ export function MultiSelectControl({ title, options, placeHolder = "Select...", 
 
     return (
         <StyledControl $columnSpan={columnSpan} $rowSpan={rowSpan}>
-            <ControlTitle title={title} margin={'0'} />
+            <ControlTitle title={display_name} margin={'0'} />
             <MultiSelect id={"multiSelect"}
                          value={selectedOptions}
                          options={options}

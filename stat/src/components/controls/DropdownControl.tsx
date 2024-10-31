@@ -6,8 +6,9 @@ import {useAppDispatch, useAppSelector} from "../../hooks";
 import {getActiveBlock, updateControl} from "../../redux/pipelineSlice";
 
 
-export function DropdownControl({title, options, placeHolder = "Select...", columnSpan = 1, rowSpan = 1, defaultValue = null}: {
+export function DropdownControl({title, display_name, options, placeHolder = "Select...", columnSpan = 1, rowSpan = 1, defaultValue = null}: {
     title: string,
+    display_name: string,
     options: {label: string, value: string}[],
     placeHolder?: string,
     columnSpan?: number,
@@ -29,7 +30,7 @@ export function DropdownControl({title, options, placeHolder = "Select...", colu
 
     return (
         <StyledControl $columnSpan={columnSpan} $rowSpan={rowSpan}>
-            <ControlTitle title={title} margin={'0'}/>
+            <ControlTitle title={display_name} margin={'0'}/>
             <Dropdown id={"dropdown"}
                       value={selectedOption}
                       options={options}
