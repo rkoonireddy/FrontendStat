@@ -2,62 +2,53 @@ import styled from "styled-components";
 import {ReactNode} from "react";
 import {ReactComponent as XSVG} from "../../assets/x.svg";
 
-const StyledPopup = styled.div<{ $large: boolean}>`
-  position: absolute;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: ${props => props.$large ? '1000px' : '800px'};
-  height: ${props => props.$large ? '625px' : '500px'};
-  background: linear-gradient(to bottom right, #3D3D3D 0%, #000000 100%);;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  top: 0;
-  margin: auto;
-  z-index: 100;
-  border-radius: 15px;
-  box-shadow: 5px 5px 5px 0 rgba(147, 147, 147, 0.75);
-  padding: 20px;
-
-  & svg {
-    fill: #ff0000;
+const StyledPopup = styled.div<{ $large: boolean, $noPadding: boolean }>`
     position: absolute;
-    right: 10px;
-    top: 10px;
-    cursor: pointer;
-    width: 30px;
-    height: 30px;
-  }
-`;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: ${props => props.$large ? '1000px' : '800px'};
+    height: ${props => props.$large ? '625px' : '500px'};
+    background: linear-gradient(to bottom right, #3D3D3D 0%, #000000 100%);;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: 0;
+    margin: auto;
+    z-index: 100;
+    border-radius: 15px;
+    box-shadow: 5px 5px 5px 0 rgba(147, 147, 147, 0.75);
+    padding: ${props => props.$noPadding ? '0' : '20px'};
 
-const StyledMiniPopup = styled(StyledPopup)`
-    width: 500px;
-    height: 300px;
+    & svg {
+        fill: #ff0000;
+        position: absolute;
+        right: 10px;
+        top: 10px;
+        cursor: pointer;
+        width: 30px;
+        height: 30px;
+    }
 `;
 
 const StyledTitle = styled.div`
-  font-size: 2rem;
-  color: white;
-  margin: 15px auto;
+    font-size: 2rem;
+    color: white;
+    margin: 5px auto;
 `;
 
-export function Popup({ children, title, onCloseAction, large=false}: { children: ReactNode, title: string, onCloseAction: () => void, large?: boolean }) {
+export function Popup({children, title, onCloseAction, large = false, noPadding = false}: {
+    children: ReactNode,
+    title: string,
+    onCloseAction: () => void,
+    large?: boolean,
+    noPadding?: boolean
+}) {
     return (
-        <StyledPopup $large={large}>
+        <StyledPopup $large={large} $noPadding={noPadding}>
             <XSVG onClick={onCloseAction}/>
-            <StyledTitle>{title}</StyledTitle>
+            {!noPadding && <StyledTitle>{title}</StyledTitle> }
             {children}
         </StyledPopup>
-    )
-}
-
-export function MiniPopup({ children, title, onCloseAction }: { children: ReactNode, title: string, onCloseAction: () => void }) {
-    return (
-        <StyledMiniPopup $large={false}>
-            <XSVG onClick={onCloseAction}/>
-            <StyledTitle>{title}</StyledTitle>
-            {children}
-        </StyledMiniPopup>
     )
 }
