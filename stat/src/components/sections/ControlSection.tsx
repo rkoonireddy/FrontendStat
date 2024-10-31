@@ -61,11 +61,15 @@ export function ControlSection({show}: { show: boolean }) {
                 // If the activeBlock has a value for field <key>, use it. Otherwise use the default from the filter or undefined if nothing is set
                 blockControls[key] = activeBlock[key as keyof typeof activeBlock] ?? filter.default;
 
+                // If the filter provides a label, use it. Otherwise use the name
+                let filter_display_name = filter.label ?? filter.name;
+
                 switch (filter.filter_type) {
                     case "boolean":
                         components.push(<FilterControl
                             key={filter.name}
                             title={filter.name}
+                            display_name={filter_display_name}
                             onLabel={"On"}
                             offLabel={"Off"}
                             value={blockControls[key]}/>
@@ -75,6 +79,7 @@ export function ControlSection({show}: { show: boolean }) {
                         components.push(<InputControl
                             key={filter.name}
                             title={filter.name}
+                            display_name={filter_display_name}
                             initialValue={blockControls[key]}
                             validate={filter.nullable ?
                                 (value) => true : // If nullable, any string is valid
@@ -89,6 +94,7 @@ export function ControlSection({show}: { show: boolean }) {
                         components.push(<InputControl
                             key={filter.name}
                             title={filter.name}
+                            display_name={filter_display_name}
                             initialValue={blockControls[key]}
                             validate={filter.nullable ?
                                 (value) => value === undefined || Number.isInteger(Number(value)) :
@@ -103,6 +109,7 @@ export function ControlSection({show}: { show: boolean }) {
                         components.push(<InputControl
                             key={filter.name}
                             title={filter.name}
+                            display_name={filter_display_name}
                             initialValue={blockControls[key]}
                             validate={filter.nullable ?
                                 (value) => value === undefined || !isNaN(Number(value)) :
@@ -117,13 +124,16 @@ export function ControlSection({show}: { show: boolean }) {
                         components.push(<DropdownControl
                             key={filter.name}
                             title={filter.name}
+                            display_name={filter_display_name}
                             options={filter.options.map((option: any) => {return {label: option, value: option};})}
                             defaultValue={blockControls[key]}/>
                         );
                         break;
                     case "multiselect":
                         components.push(<MultiSelectControl
-                            key={filter.name} title={filter.name}
+                            key={filter.name}
+                            title={filter.name}
+                            display_name={filter_display_name}
                             options={filter.options.map((option: any) => {return {label: option, value: option};})}
                             defaultValues={blockControls[key]}/>
                         );
@@ -132,6 +142,7 @@ export function ControlSection({show}: { show: boolean }) {
                         components.push(<VerticalIntegerSliderControl
                             key={filter.name}
                             title={filter.name}
+                            display_name={filter_display_name}
                             min={filter.min}
                             max={filter.max}
                             step={1}
@@ -142,6 +153,7 @@ export function ControlSection({show}: { show: boolean }) {
                         components.push(<RangeControl
                             key={filter.name}
                             title={filter.name}
+                            display_name={filter_display_name}
                             range={[filter.min, filter.max]}
                             initial_range={[blockControls[key][0], blockControls[key][1]]}
                             step={1}/>
@@ -151,6 +163,7 @@ export function ControlSection({show}: { show: boolean }) {
                         components.push(<RangeControl
                             key={filter.name}
                             title={filter.name}
+                            display_name={filter_display_name}
                             range={[filter.min, filter.max]}
                             initial_range={[blockControls[key][0], blockControls[key][1]]}
                             step={filter.step}/>

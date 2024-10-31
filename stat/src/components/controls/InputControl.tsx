@@ -44,6 +44,7 @@ export const StyledControlError = styled.div`
 export function InputControl(
     {
         title,
+        display_name,
         initialValue,
         columnSpan = 1,
         rowSpan = 1,
@@ -54,6 +55,7 @@ export function InputControl(
     }:
     {
         title: string,
+        display_name: string,
         initialValue: string,
         columnSpan?: number,
         rowSpan?: number,
@@ -94,7 +96,7 @@ export function InputControl(
 
     return (
         <StyledControl $columnSpan={columnSpan} $rowSpan={rowSpan}>
-            <ControlTitle title={title} margin={'0'}/>
+            <ControlTitle title={display_name} margin={'0'}/>
             <StyledInputContainer>
                 <StyledInput id={`input-${title.toLowerCase()}`}
                              value={value ?? ""}
