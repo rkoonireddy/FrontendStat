@@ -428,6 +428,8 @@ export const getFrequency = (state: RootState) => state.pipeline.frequency;
 
 export const getBlocks = (state: RootState) => state.pipeline.blocks;
 
+export const getBlockById = (state: RootState, blockId: string) => state.pipeline.blocks.find(block => block.id === blockId);
+
 export const getAllNodes = createSelector(
     [getBlocks],
     (blocks) => createNodesFromBlocks(blocks)
