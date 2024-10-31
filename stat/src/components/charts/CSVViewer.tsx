@@ -12,13 +12,20 @@ import {updateCSVLoaderBlock} from "../../service/blockService";
 import {fetchFullBlock, getFrequency} from "../../redux/pipelineSlice";
 import {formatNumber} from "../../util/util";
 
-const StyledCSVTable = styled.table<{ $small?: boolean }>`
+const StyledTableContainer = styled.div`
+    height: fit-content;
+    width: fit-content;
+    max-width: 100%;
+    max-height: 100%;
+`;
+
+const StyledCSVTable = styled.table<{ $small?: boolean, $mini?: boolean }>`
     width: 100%;
     border-collapse: collapse;
     border-spacing: 0;
     margin-top: ${props => (props.$small ? '0' : '20px')};
     border: 1px solid #ddd;
-    font-size: ${props => (props.$small ? '0.6rem' : '1rem')};
+    font-size: ${props => (!props.$small ? '1rem' : (props.$mini ? '0.4rem': '0.6rem'))};
     max-height: 100%;
 `;
 
@@ -30,10 +37,10 @@ export const StyledTableHeader = styled.th<{ $isSelected: boolean }>`
     text-align: left;
 `;
 
-export const StyledTableCell = styled.td<{ $isSelected: boolean }>`
+export const StyledTableCell = styled.td<{ $isSelected: boolean, $mini?: boolean }>`
     border: 1px solid #00bfa6;
     color: ${props => (props.$isSelected ? '#ffffff' : '#808080')};
-    padding: 8px;
+    padding: ${props => (props.$mini ? '2px' : '8px')};
     background-color: ${props => (props.$isSelected ? '#3D3D3D' : '#adacac')};
 `;
 
@@ -53,7 +60,7 @@ const StyledFrequency = styled.div`
     color: white;
 `;
 
-export default function CSVViewer({blockId, small}: { blockId: string; small?: boolean }) {
+export default function CSVViewer({blockId, small, mini}: { blockId: string; small?: boolean, mini?: boolean }) {
     const dispatch = useAppDispatch();
     const rawData = useAppSelector(getData);
     const filteredDataChanged = useAppSelector(getFilteredDataChanged);
@@ -112,22 +119,22 @@ export default function CSVViewer({blockId, small}: { blockId: string; small?: b
     };
 
     return (
-        <div>
+        <StyledTableContainer>
             {data.length === 0 ? (
                 <div>No data available</div>
             ) : (
                 <>
                     {!small && <StyledFrequency>Data Frequency: {dataFrequency} Hz</StyledFrequency>}
-                    <StyledCSVTable $small={small}>
+                    <StyledCSVTable $small={small} $mini={mini}>
                         <thead>
                         <tr>
                             {columns.map(col => (
                                 <StyledTableHeader key={col} $isSelected={selectedColumns.includes(col)}>
-                                    <StyledCheckbox
+                                    {!mini && <StyledCheckbox
                                         type="checkbox"
                                         checked={selectedColumns.includes(col)}
                                         onChange={() => handleColumnChange(col)}
-                                    />
+                                    />}
                                     {col}
                                 </StyledTableHeader>
                             ))}
@@ -137,7 +144,7 @@ export default function CSVViewer({blockId, small}: { blockId: string; small?: b
                         {data.map((row, rowIndex) => (
                             <tr key={rowIndex}>
                                 {columns.map(col => (
-                                    <StyledTableCell key={col} $isSelected={selectedColumns.includes(col)}>
+                                    <StyledTableCell key={col} $isSelected={selectedColumns.includes(col)} $mini={mini}>
                                         {formatNumber(row[col])} {/* Use the formatting function */}
                                     </StyledTableCell>
                                 ))}
@@ -147,6 +154,6 @@ export default function CSVViewer({blockId, small}: { blockId: string; small?: b
                     </StyledCSVTable>
                 </>
             )}
-        </div>
+        </StyledTableContainer>
     );
 }

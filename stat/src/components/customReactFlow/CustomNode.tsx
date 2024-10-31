@@ -72,6 +72,7 @@ export const StyledNodeOutputContainer = styled.div`
     height: 30px;
     border-radius: 5px;
     background: linear-gradient(to bottom right, #3D3D3D 0%, #000000 100%);
+    color: #9e9d9d;
 
     &:hover {
         cursor: pointer;
@@ -80,10 +81,12 @@ export const StyledNodeOutputContainer = styled.div`
 
 export const StyledNodeOutputPopup = styled.div`
     position: absolute;
+    display: flex;
     top: -105px;
     left: -100px;
     width: 200px;
     height: 100px;
+    overflow-y: clip;
     background: linear-gradient(to bottom right, #3D3D3DDD 0%, #000000DD 100%);
     border-radius: 5px;
     z-index: 100;
@@ -95,10 +98,6 @@ const CustomNode = ({data}: CustomNodeProps) => {
     const activeNodeId = useAppSelector(getActiveBlockId);
     const block = useAppSelector(state => getBlockById(state, data.blockId));
     const [showOutputPopup, setShowOutputPopup] = useState(false);
-
-    useEffect(() => {
-        console.log("block", block);
-    }, [block]);
 
     return (
 
