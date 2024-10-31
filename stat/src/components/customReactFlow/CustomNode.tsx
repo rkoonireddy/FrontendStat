@@ -1,15 +1,17 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import styled from 'styled-components';
 import {Handle, Position} from '@xyflow/react';
 import {CustomNodeProps} from "../../types/nodeTypes";
 import {useAppDispatch, useAppSelector} from "../../hooks";
 import {
+    blockConnectedToPipeline,
     deleteBlockFromPipeline,
-    getActiveBlockId,
+    getActiveBlockId, getBlockById, getBlocks,
     getPipelineModel,
     setActiveBlockId
 } from "../../redux/pipelineSlice";
 import {ReactComponent as TrashSVG} from "../../assets/trash3-fill.svg";
+import {LineChart} from "../charts/LineChart";
 
 export const StyledNodeContainer = styled.div<{ $active?: boolean }>`
     padding: 5px;
@@ -60,10 +62,45 @@ export const StyledRunButton = styled.div`
     }
 `;
 
+export const StyledNodeOutputContainer = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    bottom: -40px;
+    right: -20px;
+    width: 50px;
+    height: 30px;
+    border-radius: 5px;
+    background: linear-gradient(to bottom right, #3D3D3D 0%, #000000 100%);
+    color: #9e9d9d;
+
+    &:hover {
+        cursor: pointer;
+    }
+`;
+
+export const StyledNodeOutputPopup = styled.div`
+    position: absolute;
+    display: flex;
+    top: -105px;
+    left: -100px;
+    width: 200px;
+    height: 100px;
+    overflow-y: clip;
+    background: linear-gradient(to bottom right, #3D3D3DDD 0%, #000000DD 100%);
+    border-radius: 5px;
+    z-index: 100;
+`;
+
 const CustomNode = ({data}: CustomNodeProps) => {
     const pipeline = useAppSelector(getPipelineModel);
     const dispatch = useAppDispatch();
     const activeNodeId = useAppSelector(getActiveBlockId);
+    const block = useAppSelector(state => getBlockById(state, data.blockId));
+    const [showOutputPopup, setShowOutputPopup] = useState(false);
+    const blockConnected = useAppSelector(state => blockConnectedToPipeline(state, data.blockId))
+
     return (
 
         <StyledNodeContainer $active={data.id === activeNodeId} onClick={() => dispatch(setActiveBlockId(data.id))}>
@@ -78,8 +115,18 @@ const CustomNode = ({data}: CustomNodeProps) => {
                              $small={data.label.length > 14}>{data.label}</StyledNodeLabel>
             <StyledNodeType>{data.type}</StyledNodeType>
             <Handle type="source" position={Position.Bottom}/>
+            {blockConnected && block && block?.output?.Dataframe?.data !== undefined &&
+                <StyledNodeOutputContainer onMouseEnter={() => setShowOutputPopup(true)}
+                                           onMouseLeave={() => setShowOutputPopup(false)}>
+                    <LineChart block={block} small={true} mini={true}/>
+                    {showOutputPopup &&
+                        <StyledNodeOutputPopup>
+                            <LineChart block={block} small={true}/>
+                        </StyledNodeOutputPopup>}
+                </StyledNodeOutputContainer>}
         </StyledNodeContainer>
-    );
+    )
+        ;
 };
 
 export default CustomNode;
