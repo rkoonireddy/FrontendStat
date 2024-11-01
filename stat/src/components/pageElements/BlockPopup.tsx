@@ -115,7 +115,7 @@ export function BlockPopup({onCloseAction}: { onCloseAction: () => void }) {
 
     function addNewBlock() {
         if (blockType !== undefined && blockName !== undefined) {
-            dispatch(createNewBlock({blockType: blockType.type, blockName: blockName}));
+            dispatch(createNewBlock({blockType: blockType.name, blockName: blockName}));
             onCloseAction();
         }
     }
@@ -125,8 +125,12 @@ export function BlockPopup({onCloseAction}: { onCloseAction: () => void }) {
             <StyledCreateBlocksContainer>
                 <StyledBlockTypesContainer>
                     {blockTypes.map((type) => (
-                        <StyledBlockTypeSelector key={type.name} $selected={blockType === type}
-                                                 onClick={() => setBlockType(type)}>{type.name.replace("_", " ")}
+                        <StyledBlockTypeSelector
+                            key={type.name}
+                            $selected={blockType === type}
+                            onClick={() => setBlockType(type)}
+                        >
+                            {type.name.replace("_", " ")}
                         </StyledBlockTypeSelector>
                     ))}
                 </StyledBlockTypesContainer>
