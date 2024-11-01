@@ -5,7 +5,7 @@ import {
     StyledNodeContainer,
     StyledNodeLabel,
     StyledNodeType,
-    StyledPopup,
+    StyledInfoPopup,
     StyledCloseInfoIcon,
     StyledNodeInfoIcon,
     StyledTag,
@@ -14,7 +14,7 @@ import {
 } from "./CustomNode"; 
 import {useAppDispatch, useAppSelector} from "../../hooks";
 import {ReactComponent as InfoSVG} from "../../assets/info-circle-fill.svg"
-import { ReactComponent as CloseSVG } from '../../assets/close-circle-svgrepo-com.svg';
+import { ReactComponent as CloseSVG } from '../../assets/x.svg';
 import {getActiveBlockId, getBlockById, setActiveBlockId} from "../../redux/pipelineSlice";
 import CSVViewer from "../charts/CSVViewer";
 import styled from "styled-components";
@@ -47,24 +47,24 @@ const CustomStartNode = ({data}: CustomNodeProps) => {
             <StyledNodeInfoIcon 
                 title={"More information"} 
                 onClick={(e) => {
-                    e.stopPropagation(); // Prevents closing due to parent clicks
-                    dispatch(setActiveBlockId(data.id)); // Set active block ID
-                    toggleInfo(); // Toggle the popup visibility
+                    e.stopPropagation();
+                    // dispatch(setActiveBlockId(data.id));
+                    toggleInfo();
                 }}
             >
                 <InfoSVG />
             </StyledNodeInfoIcon>
-            <StyledPopup $visible={isInfoVisible}>
+            <StyledInfoPopup $visible={isInfoVisible}>
                 <StyledCloseInfoIcon onClick={(e) => {
-                    e.stopPropagation(); // Prevents closing due to parent clicks
-                    setIsInfoVisible(false); // Close the info
+                    e.stopPropagation();
+                    setIsInfoVisible(false);
                 }}>
                     <CloseSVG />
                 </StyledCloseInfoIcon>
-                <p>{data.description}</p> {/* Displaying the node description */}
-            </StyledPopup>
+                <p>{data.description}</p>
+            </StyledInfoPopup>
             <StyledTag>
-                {data.tag} {/* Displaying the node tag */}
+                {data.tag}
             </StyledTag>
             <StyledNodeOutputContainer onMouseEnter={() => setShowOutputPopup(true)}
                                        onMouseLeave={() => setShowOutputPopup(false)}>

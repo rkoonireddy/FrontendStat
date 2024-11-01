@@ -93,63 +93,10 @@ function Flow() {
         }
     }, [nodes, edges, fitView, isDragging]);
 
-    const topologicalSort = (nodes: any[], edges: any[]) => {
-        const inDegree = new Map();
-        const adjList = new Map();
-        const noEdgeNodes = new Set(nodes.map(node => node.id));
-
-        // Initialize in-degree and adjacency list
-        nodes.forEach(node => {
-            inDegree.set(node.id, 0);
-            adjList.set(node.id, []);
-        });
-
-        // Populate in-degree and adjacency list
-        edges.forEach(edge => {
-            inDegree.set(edge.target, inDegree.get(edge.target) + 1);
-            adjList.get(edge.source).push(edge.target);
-            noEdgeNodes.delete(edge.source);
-            noEdgeNodes.delete(edge.target);
-        });
-
-        // Queue for nodes with zero in-degree
-        const queue: any[] = [];
-        inDegree.forEach((degree, node) => {
-            if (degree === 0) queue.push(node);
-        });
-
-        // Perform topological sort
-        const sortedNodes = [];
-        while (queue.length > 0) {
-            const node = queue.shift();
-            sortedNodes.push(node);
-
-            adjList.get(node).forEach((neighbor: any) => {
-                inDegree.set(neighbor, inDegree.get(neighbor) - 1);
-                if (inDegree.get(neighbor) === 0) queue.push(neighbor);
-            });
-        }
-
-        return {sortedNodes, noEdgeNodes: Array.from(noEdgeNodes)};
-    };
-
-    // const alignNodes = useCallback(async () => {
-    //     const { sortedNodes, noEdgeNodes } = topologicalSort(nodes, edges);
-    //     setNodes((nds) => nds.map((node) => {
-    //         const yPos = sortedNodes.includes(node.id)
-    //             ? sortedNodes.indexOf(node.id) * 150
-    //             : (sortedNodes.length + noEdgeNodes.indexOf(node.id)) * 150;
-    //         return {
-    //             ...node,
-    //             position: { x: 0, y: yPos },
-    //         };
-    //     }));
-    // }, [nodes]);
 
     const onConnect = useCallback(
         (connection: any) => {
             const edge = {...connection, type: 'custom-edge'};
-            console.log(edge);
 
             // Check if the edge already exists to avoid duplicates
             setEdges((eds) => {
@@ -162,7 +109,6 @@ function Flow() {
                             return addEdge(edge, eds);
                         })
                         .catch((err) => {
-                            // Err carries the error message, but it is already retrieved from pipelineSlice
                             return eds;
                         })
                 }
@@ -174,21 +120,19 @@ function Flow() {
 
     const onNodeDragStart = () => {
         setIsDragging(true);
-        setOnGraphChange(1); // Set graph change state
+        setOnGraphChange(1);
     };
 
     const onNodeDragStop = () => {
         setIsDragging(false);
-        setOnGraphChange(1); // Set graph change state
-        console.log("Node drag stopped. Current nodes:", nodes); // Log current nodes
-        onSave(); // Save graph when dragging stops
+        setOnGraphChange(1);
+        onSave();
     };
 
     // Save function
     const onSave = useCallback(() => {
         const flow = {nodes, edges};
         localStorage.setItem(flowKey, JSON.stringify(flow));
-        console.log("Pipeline flow saved.");
     }, [nodes, edges]);
 
     // Restore function
@@ -198,8 +142,7 @@ function Flow() {
             const {nodes: restoredNodes, edges: restoredEdges} = JSON.parse(flowString);
             setNodes(restoredNodes);
             setEdges(restoredEdges);
-            fitView(); // Adjust the view to fit the restored flow
-            console.log("Pipeline flow restored.");
+            fitView().then();
         } else {
             console.log("No saved flow found.");
         }
@@ -221,10 +164,6 @@ function Flow() {
             <Background/>
             <Controls/>
             <Panel position="top-right">
-                {/* <button onClick={alignNodes}>
-                    Align Nodes
-                </button> */}
-                {/* Save and Restore buttons */}
                 <button onClick={onSave}>
                     Save graph view
                 </button>
@@ -243,7 +182,7 @@ function Flow() {
                                 startingBlockId: getFirstKey(pipeline.block_dict) as string
                             }))
                                 .then(() => {
-                                    onRestore(); // Restore after running pipeline
+                                    onRestore();
                                 });
                             e.stopPropagation();
                         }}>

@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import {ReactComponent as STATIconSVG} from "../../assets/icon.svg";
-import {ReactComponent as MenuSVG} from "../../assets/menu.svg";
+import {ReactComponent as ExamplesSVG} from "../../assets/examples.svg";
 import {ReactComponent as PlusSVG} from "../../assets/plus-square.svg";
 import {useNavigate} from "react-router-dom";
 import {StepsSection} from "../sections/StepsSection";
@@ -19,28 +19,27 @@ import {getBlockTypes} from "../../service/blockService";
 import {Popup} from "../pageElements/Popup";
 import {Loading} from "../pageElements/Loading";
 import {ErrorPopup} from "../pageElements/ErrorPopup";
-// import { toHaveDescription } from "@testing-library/jest-dom/matchers";
 
 
 const StyledMainPage = styled.div`
-  position: relative;
-  display: grid;
-  grid-template-columns: 70px 500px calc(100vw - 570px);
-  background: linear-gradient(to bottom right, #3D3D3D 0%, #000000 100%);
+    position: relative;
+    display: grid;
+    grid-template-columns: 70px 500px calc(100vw - 570px);
+    background: linear-gradient(to bottom right, #3D3D3D 0%, #000000 100%);
 `;
 
 const StyledSideBar = styled.div`
-  width: 100%;
-  height: 100vh;
-  display: flex;
-  justify-content: space-between;
-  flex-direction: column;
-  align-items: center;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    align-items: center;
 
-  & svg:hover {
-    scale: 1.05;
-    cursor: pointer;
-  }
+    & svg:hover {
+        scale: 1.05;
+        cursor: pointer;
+    }
 `;
 
 
@@ -57,9 +56,14 @@ function MainPage() {
 
     useEffect(() => {
         getBlockTypes().then((types) => {
-            const bTypes = types.map((type) => ({label: type.name, value: type.name, description: type.description ?? "No description found", tag:"General"})); //modify tag code if we also get tag from backend with tag: type.tag ?? "General"}
+            const bTypes = types.map((type) => ({
+                label: type.name,
+                value: type.name,
+                description: type.description ?? "No description found",
+                tag: "General"
+            }));
             setBlockTypes(bTypes);
-            if(pipeline.id !== ""){
+            if (pipeline.id !== "") {
                 dispatch(updatePipeline({pipelineId: pipeline.id}));
             }
         });
@@ -78,7 +82,7 @@ function MainPage() {
 
     return (
         <StyledMainPage>
-            {loading && <Loading />}
+            {loading && <Loading/>}
             {<ErrorPopup/>}
             {showCreateBlockPopup &&
                 <Popup title={"Create Block"} onCloseAction={closePopup}>
@@ -88,21 +92,23 @@ function MainPage() {
                         id="typeDropdown"
                         placeholder="Block Type"
                         value={blockType}
-                        options={blockTypes.map((type) => ({ label: type.label.toUpperCase(), value: type.value }))}
-                        style={{ width: '200px' }}
+                        options={blockTypes.map((type) => ({label: type.label.toUpperCase(), value: type.value}))}
+                        style={{width: '200px'}}
                         onChange={(e) => {
                             console.log(e.target.value);
                             setBlockType(e.target.value);
                         }}
-                        className="p-inputtext-uppercase" // Custom CSS to transform placeholder text
+                        className="p-inputtext-uppercase"
                     />
                     <PrimaryButton text={"Create Block"} action={addNewBlock}/>
                 </Popup>}
             <StyledSideBar>
-                <STATIconSVG title = {"Home"} style={{width: "50px", height: "50px", margin: "10px"}} onClick={() => navigate("/")}/>
-                <PlusSVG title= {"Create a new block"} style={{width: "50px", height: "50px", margin: "10px", fill: "#73B5B4"}}
+                <STATIconSVG title={"Home"} style={{width: "50px", height: "50px", margin: "10px"}}
+                             onClick={() => navigate("/")}/>
+                <PlusSVG title={"Create a new block"}
+                         style={{width: "50px", height: "50px", margin: "10px", fill: "#73B5B4"}}
                          onClick={() => setShowCreateBlockPopup(!showCreateBlockPopup)}/>
-                <MenuSVG title = {"Examples"} style={{width: "50px", height: "50px", margin: "10px"}}/>
+                <ExamplesSVG title={"Examples"} style={{width: "50px", height: "50px", margin: "10px", fill: "#73B5B4"}}/>
             </StyledSideBar>
             <StepsSection/>
             {activeBlock && <VizSection block={activeBlock}/>}

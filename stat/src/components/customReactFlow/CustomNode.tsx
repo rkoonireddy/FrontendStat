@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import styled from 'styled-components';
 import {Handle, Position} from '@xyflow/react';
 import {CustomNodeProps} from "../../types/nodeTypes";
@@ -6,13 +6,13 @@ import {useAppDispatch, useAppSelector} from "../../hooks";
 import {
     blockConnectedToPipeline,
     deleteBlockFromPipeline,
-    getActiveBlockId, getBlockById, getBlocks,
+    getActiveBlockId, getBlockById,
     getPipelineModel,
     setActiveBlockId
 } from "../../redux/pipelineSlice";
 import {ReactComponent as TrashSVG} from "../../assets/trash3-fill.svg";
 import {ReactComponent as InfoSVG} from "../../assets/info-circle-fill.svg"
-import { ReactComponent as CloseSVG } from '../../assets/close-circle-svgrepo-com.svg';
+import { ReactComponent as CloseSVG } from '../../assets/x.svg';
 import {LineChart} from "../charts/LineChart";
 
 export const StyledNodeContainer = styled.div<{ $active?: boolean }>`
@@ -60,26 +60,13 @@ export const StyledDeleteButton = styled.div`
     }
 `;
 
-// export const StyledRunButton = styled.div`
-//     position: absolute;
-//     top: -1px;
-//     right: -1px;
-//     opacity: 0.25;
-
-//     &:hover {
-//         cursor: pointer;
-//         opacity: 0.8;
-//     }
-// `;
-
 export const StyledNodeInfoIcon = styled(InfoSVG)`
     position: absolute;
     top: 2px;
     left: 3px;
     width: 7px;
     height: 7px;
-    // opacity: 0.25;
-    color: 	#989898; //grey
+    color: 	#989898;
     &:hover {
         cursor: pointer;
         opacity: 0.8;
@@ -87,68 +74,55 @@ export const StyledNodeInfoIcon = styled(InfoSVG)`
     }
 `;    
 
-export const StyledPopup = styled.div<{ $visible: boolean }>`
-    position: overlay; 
-    top: 10px; // Overlay positioning
-    left: 50px; 
-    font-size: 0.5vw; // Adjust font size as necessary
-    background-color: #f5fffa;
-    color: black;
-    padding: 10px;
+export const StyledInfoPopup = styled.div<{ $visible: boolean }>`
+    position: absolute; 
+    top: 10px;
+    left: 0; 
+    font-size: 0.5vw;
+    background: linear-gradient(to bottom right, #3D3D3D 0%, #000000 100%);
+    color: #73B5B4;
+    padding: 2px 7px;
     border: 1px solid #ddd;
     border-radius: 4px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     z-index: 100;
-    width: 200px; 
-    max-height: 250px; // Set max height
-    overflow-y: auto; // Enable vertical scrolling
+    width: 150px; 
+    max-height: 250px;
+    overflow-y: auto;
     display: ${({ $visible }) => ($visible ? 'block' : 'none')};
-    transition: opacity 0.3s ease; 
-    opacity: ${({ $visible }) => ($visible ? 1 : 0)}; 
-    animation: ${({ $visible }) => ($visible ? 'fadeIn 0.3s' : 'none')};
 
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(-10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
 
-    /* Scrollbar styles for WebKit browsers */
     &::-webkit-scrollbar {
-        width: 8px; /* Width of the scrollbar */
+        width: 8px;
     }
 
     &::-webkit-scrollbar-track {
-        background: #f1f1f1; /* Color of the scrollbar track */
-        border-radius: 10px; /* Rounded corners */
+        background: #f1f1f1;
+        border-radius: 10px;
     }
 
     &::-webkit-scrollbar-thumb {
-        background: #888; /* Color of the scrollbar thumb */
-        border-radius: 10px; /* Rounded corners */
+        background: #888;
+        border-radius: 10px;
     }
 
     &::-webkit-scrollbar-thumb:hover {
-        background: #555; /* Darker color on hover */
+        background: #555;
     }
 `;
 
 export const StyledCloseInfoIcon = styled(CloseSVG)`
-    position: fixed; // Correct positioning
-    top: 25px; // Adjust position as needed
-    left: 190px; // Adjust position as needed
+    position: absolute;
+    top: 1px;
+    right: 1px;
     width: 10px;
     height: 10px;
     opacity: 0.5;
-    // z-index: 100; // Ensures the icon appears above other content
+    color: #ff0000;
+    
     &:hover {
-        cursor: pointer; // Shows a pointer cursor on hover
-        opacity: 0.8; // Increases opacity on hover for a visual effect
+        cursor: pointer;
+        opacity: 0.8;
     }
 `;
 
@@ -200,7 +174,7 @@ const CustomNode = ({data}: CustomNodeProps) => {
             <Handle type="target" position={Position.Top} />
             <StyledDeleteButton title={"Delete Block"} onClick={(e) => {
                 dispatch(deleteBlockFromPipeline({pipelineId: pipeline.id, blockId: data.id}));
-                e.stopPropagation(); // Prevents closing due to parent clicks
+                e.stopPropagation();
             }}>
                 <TrashSVG style={{width: "7px", height: "7px", color: "#ff0000"}}/>
             </StyledDeleteButton>
@@ -212,23 +186,22 @@ const CustomNode = ({data}: CustomNodeProps) => {
             <StyledNodeInfoIcon 
                 title={"More information"} 
                 onClick={(e) => {
-                    e.stopPropagation(); // Prevents closing due to parent clicks
-                    dispatch(setActiveBlockId(data.id)); // Set active block ID
-                    togglePopup(); // Toggle the popup visibility
+                    e.stopPropagation();
+                    // dispatch(setActiveBlockId(data.id));
+                    togglePopup();
                 }}
             >
                 <InfoSVG />
             </StyledNodeInfoIcon>
-            <StyledPopup $visible={isInfoVisible}>
+            <StyledInfoPopup $visible={isInfoVisible}>
                 <StyledCloseInfoIcon onClick={(e) => {
-                    e.stopPropagation(); // Prevents closing due to parent clicks
-                    setIsInfoVisible(false); // Close the popup
-                    dispatch(setActiveBlockId(data.id)); // Set active block ID
+                    e.stopPropagation();
+                    setIsInfoVisible(false);
                 }}>
                     <CloseSVG />
                 </StyledCloseInfoIcon>
-                {data.description}
-            </StyledPopup>
+                <p>{data.description}</p>
+            </StyledInfoPopup>
             <StyledTag>
             {data.tag}
             </StyledTag>
