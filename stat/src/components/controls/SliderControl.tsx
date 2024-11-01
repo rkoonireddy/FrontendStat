@@ -25,9 +25,9 @@ const StyledSliderValue = styled.div`
 `;
 
 
-export function VerticalIntegerSliderControl({title, display_name, min, max, step, start, columnSpan = 1, rowSpan = 1}: {
+export function VerticalIntegerSliderControl({title, displayName, min, max, step, start, columnSpan = 1, rowSpan = 1}: {
     title: string,
-    display_name: string,
+    displayName: string,
     min: number,
     max: number,
     step: number,
@@ -49,7 +49,7 @@ export function VerticalIntegerSliderControl({title, display_name, min, max, ste
 
     return (
         <StyledControl $columnSpan={columnSpan} $rowSpan={rowSpan}>
-            <ControlTitle title={display_name} />
+            <ControlTitle title={displayName} />
             <StyledSliderContainer>
                 <StyledSliderValue>{value}</StyledSliderValue>
                 <Slider min={min}

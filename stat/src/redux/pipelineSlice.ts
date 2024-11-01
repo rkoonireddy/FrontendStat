@@ -43,7 +43,7 @@ const initialState: IPipelineState = {
     pipelineModel: initialPipelineModel,
     blocks: [],
     activeBlockId: null,
-    frequency: 60,
+    frequency: 200,
     loading: false,
     errorStatus: false,
     errorMessage: null,
