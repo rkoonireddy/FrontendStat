@@ -446,7 +446,6 @@ export const getActiveBlock = (state: RootState) => {
 }
 
 export const getActiveBlockId = (state: RootState) => state.pipeline.activeBlockId;
-export const getActiveBlockDescription = (state: RootState) => state.pipeline.activeBlockId;
 
 export const getPipelineModel = (state: RootState) => state.pipeline.pipelineModel;
 

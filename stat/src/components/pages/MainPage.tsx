@@ -19,6 +19,7 @@ import {getBlockTypes} from "../../service/blockService";
 import {Popup} from "../pageElements/Popup";
 import {Loading} from "../pageElements/Loading";
 import {ErrorPopup} from "../pageElements/ErrorPopup";
+import { toHaveDescription } from "@testing-library/jest-dom/matchers";
 
 
 const StyledMainPage = styled.div`
@@ -56,7 +57,7 @@ function MainPage() {
 
     useEffect(() => {
         getBlockTypes().then((types) => {
-            const bTypes = types.map((type) => ({label: type.name, value: type.name}));
+            const bTypes = types.map((type) => ({label: type.name, value: type.name, description: type.description ?? "No description found", tag:"General"})); //modify tag code if we also get tag from backend with tag: type.tag ?? "General"}
             setBlockTypes(bTypes);
             if(pipeline.id !== ""){
                 dispatch(updatePipeline({pipelineId: pipeline.id}));
