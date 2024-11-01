@@ -46,19 +46,29 @@ export function ControlSection({show}: { show: boolean }) {
     const activeBlock = useAppSelector(getActiveBlock);
     const controls = useAppSelector(getControls);
     const [filterComponents, setFilterComponents] = useState<JSX.Element[]>([]);
-    const [blockFilters, setBlockFilters] = useState<{ [key: string]: string }>({});
     const dispatch = useAppDispatch();
     const [applyReady, setApplyReady] = useState(true);
 
     useEffect(() => {
         setFilterComponents([]);
+
+        console.log("activeBlock changed 1");
+
         if (activeBlock && activeBlock.filters && Object.keys(activeBlock.filters).length > 0) {
+            
+            console.log("activeBlock changed 2 with activeBlock:");
+            console.log(activeBlock);
+
             const components: JSX.Element[] = [];
             let blockControls: { [key: string]: any } = {};
             Object.entries(activeBlock.filters).forEach(([key, filter]) => {
 
+                console.log(`activeBlock filter key ${key}`);
+
                 // If the activeBlock has a value for field <key>, use it. Otherwise use the default from the filter or undefined if nothing is set
                 blockControls[key] = activeBlock[key as keyof typeof activeBlock] ?? filter.default;
+
+                console.log(`blockControls after setting value: ${blockControls[key]}`);
 
                 // If the filter provides a label, use it. Otherwise use the name
                 let filter_display_name = filter.label ?? filter.name;
@@ -105,6 +115,12 @@ export function ControlSection({show}: { show: boolean }) {
                         );
                         break;
                     case "input_float":
+
+                        console.log("input_float detected");
+                        console.log(`Using initial value ${blockControls[key]}`);
+                        console.log("The filter is");
+                        console.log(filter);
+
                         components.push(<InputControl
                             key={filter.name}
                             title={filter.name}
@@ -174,7 +190,6 @@ export function ControlSection({show}: { show: boolean }) {
             });
             setFilterComponents(components);
             dispatch(addControl({blockId: activeBlock.id, filters: blockControls}));
-            setBlockFilters(blockControls);
         }
     }, [activeBlock]);
 
