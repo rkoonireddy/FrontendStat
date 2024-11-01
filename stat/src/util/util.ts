@@ -27,9 +27,7 @@ export function createNodesFromBlocks(blocks: BlockModel[]) {
         return {
             id: block.id,
             type: "customNode",
-            description: block.descr,
-            tag: block.tag ? block.tag : "General",
-            data: { id: block.id, label: block.name, type: block.type, description: block.descr, tag: block.tag},
+            data: { id: block.id, label: block.name, type: block.type, blockId: block.id },
             position: { x: 225, y: y },
             ...(y === 0 && { type: "customStartNode" })
         };
