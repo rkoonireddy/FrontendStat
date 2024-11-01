@@ -133,18 +133,18 @@ function Flow() {
         return {sortedNodes, noEdgeNodes: Array.from(noEdgeNodes)};
     };
 
-    const alignNodes = useCallback(async () => {
-        const {sortedNodes, noEdgeNodes} = topologicalSort(nodes, edges);
-        setNodes((nds) => nds.map((node) => {
-            const yPos = sortedNodes.includes(node.id)
-                ? sortedNodes.indexOf(node.id) * 150
-                : (sortedNodes.length + noEdgeNodes.indexOf(node.id)) * 150;
-            return {
-                ...node,
-                position: {x: 0, y: yPos},
-            };
-        }));
-    }, [nodes, edges, setNodes, fitView]);
+    // const alignNodes = useCallback(async () => {
+    //     const { sortedNodes, noEdgeNodes } = topologicalSort(nodes, edges);
+    //     setNodes((nds) => nds.map((node) => {
+    //         const yPos = sortedNodes.includes(node.id)
+    //             ? sortedNodes.indexOf(node.id) * 150
+    //             : (sortedNodes.length + noEdgeNodes.indexOf(node.id)) * 150;
+    //         return {
+    //             ...node,
+    //             position: { x: 0, y: yPos },
+    //         };
+    //     }));
+    // }, [nodes]);
 
     const onConnect = useCallback(
         (connection: any) => {
@@ -221,9 +221,9 @@ function Flow() {
             <Background/>
             <Controls/>
             <Panel position="top-right">
-                <button onClick={alignNodes}>
+                {/* <button onClick={alignNodes}>
                     Align Nodes
-                </button>
+                </button> */}
                 {/* Save and Restore buttons */}
                 <button onClick={onSave}>
                     Save graph view
