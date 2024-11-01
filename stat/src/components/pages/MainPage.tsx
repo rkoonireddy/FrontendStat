@@ -19,6 +19,7 @@ import {getBlockTypes} from "../../service/blockService";
 import {Popup} from "../pageElements/Popup";
 import {Loading} from "../pageElements/Loading";
 import {ErrorPopup} from "../pageElements/ErrorPopup";
+import {BlockPopup} from "../pageElements/BlockPopup";
 
 
 const StyledMainPage = styled.div`
@@ -46,35 +47,8 @@ const StyledSideBar = styled.div`
 function MainPage() {
     const loading = useAppSelector(getLoading);
     const navigate = useNavigate();
-    const dispatch = useAppDispatch();
     const [showCreateBlockPopup, setShowCreateBlockPopup] = useState(false);
-    const pipeline = useAppSelector(getPipelineModel);
     const activeBlock = useAppSelector(getActiveBlock);
-    const [blockTypes, setBlockTypes] = useState<{ label: string, value: string }[]>([]);
-    const [blockType, setBlockType] = useState<string>()
-    const [blockName, setBlockName] = useState<string>()
-
-    useEffect(() => {
-        getBlockTypes().then((types) => {
-            const bTypes = types.map((type) => ({
-                label: type.name,
-                value: type.name,
-                description: type.description ?? "No description found",
-                tag: "General"
-            }));
-            setBlockTypes(bTypes);
-            if (pipeline.id !== "") {
-                dispatch(updatePipeline({pipelineId: pipeline.id}));
-            }
-        });
-    }, []);
-
-    function addNewBlock() {
-        if (blockType !== undefined && blockName !== undefined) {
-            dispatch(createNewBlock({blockType: blockType, blockName: blockName}));
-            setShowCreateBlockPopup(false);
-        }
-    }
 
     function closePopup() {
         setShowCreateBlockPopup(false);
@@ -85,23 +59,7 @@ function MainPage() {
             {loading && <Loading/>}
             {<ErrorPopup/>}
             {showCreateBlockPopup &&
-                <Popup title={"Create Block"} onCloseAction={closePopup}>
-                    <StyledInput $largeText={true} $width={"200px"} type="text" placeholder="Block Name" maxLength={18}
-                                 onChange={(e) => setBlockName(e.target.value)}/>
-                    <Dropdown
-                        id="typeDropdown"
-                        placeholder="Block Type"
-                        value={blockType}
-                        options={blockTypes.map((type) => ({label: type.label.toUpperCase(), value: type.value}))}
-                        style={{width: '200px'}}
-                        onChange={(e) => {
-                            console.log(e.target.value);
-                            setBlockType(e.target.value);
-                        }}
-                        className="p-inputtext-uppercase"
-                    />
-                    <PrimaryButton text={"Create Block"} action={addNewBlock}/>
-                </Popup>}
+                <BlockPopup onCloseAction={closePopup}/>}
             <StyledSideBar>
                 <STATIconSVG title={"Home"} style={{width: "50px", height: "50px", margin: "10px"}}
                              onClick={() => navigate("/")}/>
