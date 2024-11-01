@@ -3,8 +3,7 @@ import {Handle, Position} from '@xyflow/react';
 import {CustomNodeProps} from "../../types/nodeTypes";
 import {
     StyledNodeContainer,
-    StyledNodeLabel, StyledNodeOutputContainer,
-    StyledNodeOutputPopup,
+    StyledNodeLabel,
     StyledNodeType,
     StyledPopup,
     StyledCloseInfoIcon,
@@ -14,6 +13,8 @@ import {
     StyledNodeOutputPopup
 } from "./CustomNode"; 
 import {useAppDispatch, useAppSelector} from "../../hooks";
+import {ReactComponent as InfoSVG} from "../../assets/info-circle-fill.svg"
+import { ReactComponent as CloseSVG } from '../../assets/close-circle-svgrepo-com.svg';
 import {getActiveBlockId, getBlockById, setActiveBlockId} from "../../redux/pipelineSlice";
 import CSVViewer from "../charts/CSVViewer";
 import styled from "styled-components";
