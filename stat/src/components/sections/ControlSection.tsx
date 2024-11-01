@@ -51,21 +51,13 @@ export function ControlSection({show}: { show: boolean }) {
 
     useEffect(() => {
         setFilterComponents([]);
-
-        console.log("activeBlock changed 1");
-
         if (activeBlock && activeBlock.filters && Object.keys(activeBlock.filters).length > 0) {
-            
-            console.log("activeBlock changed 2 with activeBlock:");
-            console.log(activeBlock);
-
             const components: JSX.Element[] = [];
             let blockControls: { [key: string]: any } = {};
             Object.entries(activeBlock.filters).forEach(([key, filter]) => {
 
-                // To force rerendering, generate truly unique key as combination of block id and filter name
+                // To force rerender, generate truly unique key as combination of block id and filter name
                 let unique_key = `${activeBlock.id}-${filter.name}`;
-                console.log(`unique key: ${unique_key}`);
 
                 // If the activeBlock has a value for field <key>, use it. Otherwise use the default from the filter or undefined if nothing is set
                 blockControls[key] = activeBlock[key as keyof typeof activeBlock] ?? filter.default;
@@ -115,12 +107,6 @@ export function ControlSection({show}: { show: boolean }) {
                         );
                         break;
                     case "input_float":
-
-                        // console.log("input_float detected");
-                        // console.log(`Using initial value ${blockControls[key]}`);
-                        // console.log("The filter is");
-                        // console.log(filter);
-
                         components.push(<InputControl
                             key={unique_key}
                             title={filter.name}
