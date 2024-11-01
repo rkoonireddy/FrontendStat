@@ -126,14 +126,14 @@ export function BlockPopup({onCloseAction}: { onCloseAction: () => void }) {
                 <StyledBlockTypesContainer>
                     {blockTypes.map((type) => (
                         <StyledBlockTypeSelector key={type.name} $selected={blockType === type}
-                                                 onClick={() => setBlockType(type)}>{type.name}
+                                                 onClick={() => setBlockType(type)}>{type.name.replace("_", " ")}
                         </StyledBlockTypeSelector>
                     ))}
                 </StyledBlockTypesContainer>
                 <StyledBlockTypeContainer>
                     {blockType ?
                         <>
-                            <StyledBlockTypeTitle>{blockType.name}</StyledBlockTypeTitle>
+                            <StyledBlockTypeTitle>{blockType.name.replace("_", " ")}</StyledBlockTypeTitle>
                             <StyledBlockTypeContent>
                                 <StyledBlockTypeDescription>{blockType.description}</StyledBlockTypeDescription>
                                 <StyledBlockTypeImages> </StyledBlockTypeImages>
