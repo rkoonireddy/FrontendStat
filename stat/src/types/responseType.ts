@@ -40,8 +40,6 @@ export type FilterModel = {
 export type BlockModel = {
     id: string;
     name: string;
-    descr: string;
-    tag: string;
     type: string;
     config_params: {
         historyVisible: boolean,

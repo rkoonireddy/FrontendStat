@@ -21,7 +21,6 @@ interface IPipelineState {
     pipelineModel: PipelineModel
     blocks: BlockModel[]
     activeBlockId: string | null
-    description: string|null
     frequency: number
     loading: boolean,
     errorStatus: boolean,
@@ -44,7 +43,6 @@ const initialState: IPipelineState = {
     pipelineModel: initialPipelineModel,
     blocks: [],
     activeBlockId: null,
-    description: null,
     frequency: 60,
     loading: false,
     errorStatus: false,

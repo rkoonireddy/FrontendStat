@@ -42,17 +42,15 @@ export function MultiSelectControl({ title, display_name, options, placeHolder =
     }
 
     return (
-        <StyledControl $columnSpan={columnSpan} $rowSpan={rowSpan}> 
-            <ControlTitle title={title.toUpperCase()} margin={'0'} />
-            <MultiSelect id="multiSelect"
-                        value={selectedOptions}
-                        options={options.map(option => ({
-                            ...option,
-                            label: option.label.toUpperCase() // Transform labels to uppercase
-                        }))}
-                        placeholder={placeHolder.toUpperCase()} // Uppercase the placeholder
-                        style={{ width: width + "px", textTransform: 'uppercase' }} // Inline style for uppercase
-                        onChange={(e) => updateOptions(e.value)} />
+        <StyledControl $columnSpan={columnSpan} $rowSpan={rowSpan}>
+            <ControlTitle title={display_name} margin={'0'} />
+            <MultiSelect id={"multiSelect"}
+                         value={selectedOptions}
+                         options={options}
+                         placeholder={placeHolder}
+                         style={{ width: width + "px" }}
+                         onChange={(e) => updateOptions(e.value)} />
+
         </StyledControl>
     );
 }
