@@ -157,10 +157,10 @@ export const StyledNodeOutputContainer = styled.div`
     justify-content: center;
     align-items: center;
     position: absolute;
-    bottom: -40px;
-    right: -20px;
-    width: 50px;
-    height: 30px;
+    bottom: -30px;
+    right: -10px;
+    width: 40px;
+    height: 20px;
     border-radius: 5px;
     background: linear-gradient(to bottom right, #3D3D3D 0%, #000000 100%);
     color: #9e9d9d;
@@ -184,7 +184,7 @@ export const StyledNodeOutputPopup = styled.div`
 `;
 
 const CustomNode = ({data}: CustomNodeProps) => {
-    const [isPopupVisible, setPopupVisible] = useState(false);
+    const [isInfoVisible, setIsInfoVisible] = useState(false);
     const pipeline = useAppSelector(getPipelineModel);
     const dispatch = useAppDispatch();
     const activeNodeId = useAppSelector(getActiveBlockId);
@@ -192,7 +192,7 @@ const CustomNode = ({data}: CustomNodeProps) => {
     const [showOutputPopup, setShowOutputPopup] = useState(false);
     const blockConnected = useAppSelector(state => blockConnectedToPipeline(state, data.blockId))
     const togglePopup = () => {
-        setPopupVisible(prev => !prev);
+        setIsInfoVisible(prev => !prev);
     };
 
     return (
@@ -219,10 +219,10 @@ const CustomNode = ({data}: CustomNodeProps) => {
             >
                 <InfoSVG />
             </StyledNodeInfoIcon>
-            <StyledPopup $visible={isPopupVisible}>
+            <StyledPopup $visible={isInfoVisible}>
                 <StyledCloseInfoIcon onClick={(e) => {
                     e.stopPropagation(); // Prevents closing due to parent clicks
-                    setPopupVisible(false); // Close the popup
+                    setIsInfoVisible(false); // Close the popup
                     dispatch(setActiveBlockId(data.id)); // Set active block ID
                 }}>
                     <CloseSVG />

@@ -10,7 +10,8 @@ import {
     StyledNodeInfoIcon,
     StyledTag,
     StyledNodeOutputContainer,
-    StyledNodeOutputPopup} from "./CustomNode"; 
+    StyledNodeOutputPopup
+} from "./CustomNode"; 
 import {useAppDispatch, useAppSelector} from "../../hooks";
 import {ReactComponent as InfoSVG} from "../../assets/info-circle-fill.svg"
 import { ReactComponent as CloseSVG } from '../../assets/close-circle-svgrepo-com.svg';
@@ -27,14 +28,14 @@ export const StyledNodeOutputPopupStart = styled(StyledNodeOutputPopup)`
 
 
 const CustomStartNode = ({data}: CustomNodeProps) => {
-    const [isPopupVisible, setPopupVisible] = useState(false);
+    const [isInfoVisible, setIsInfoVisible] = useState(false);
     const dispatch = useAppDispatch();
     const activeNodeId = useAppSelector(getActiveBlockId);
     const block = useAppSelector(state => getBlockById(state, data.blockId));
     const [showOutputPopup, setShowOutputPopup] = useState(false);
 
-    const togglePopup = () => {
-        setPopupVisible(prev => !prev);
+    const toggleInfo = () => {
+        setIsInfoVisible(prev => !prev);
     };
     
 
@@ -48,15 +49,15 @@ const CustomStartNode = ({data}: CustomNodeProps) => {
                 onClick={(e) => {
                     e.stopPropagation(); // Prevents closing due to parent clicks
                     dispatch(setActiveBlockId(data.id)); // Set active block ID
-                    togglePopup(); // Toggle the popup visibility
+                    toggleInfo(); // Toggle the popup visibility
                 }}
             >
                 <InfoSVG />
             </StyledNodeInfoIcon>
-            <StyledPopup $visible={isPopupVisible}>
+            <StyledPopup $visible={isInfoVisible}>
                 <StyledCloseInfoIcon onClick={(e) => {
                     e.stopPropagation(); // Prevents closing due to parent clicks
-                    setPopupVisible(false); // Close the popup
+                    setIsInfoVisible(false); // Close the info
                 }}>
                     <CloseSVG />
                 </StyledCloseInfoIcon>
@@ -69,7 +70,7 @@ const CustomStartNode = ({data}: CustomNodeProps) => {
                                        onMouseLeave={() => setShowOutputPopup(false)}>
                 {block &&
                     <>
-                        CSV
+                        Table
                         {showOutputPopup &&
                             <StyledNodeOutputPopupStart>
                                 <CSVViewer blockId={block.id} small={true} mini={true}/>

@@ -19,13 +19,13 @@ import {getBlockTypes} from "../../service/blockService";
 import {Popup} from "../pageElements/Popup";
 import {Loading} from "../pageElements/Loading";
 import {ErrorPopup} from "../pageElements/ErrorPopup";
-import { toHaveDescription } from "@testing-library/jest-dom/matchers";
+// import { toHaveDescription } from "@testing-library/jest-dom/matchers";
 
 
 const StyledMainPage = styled.div`
   position: relative;
   display: grid;
-  grid-template-columns: 70px 560px calc(100vw - 570px);
+  grid-template-columns: 70px 500px calc(100vw - 570px);
   background: linear-gradient(to bottom right, #3D3D3D 0%, #000000 100%);
 `;
 
@@ -91,8 +91,8 @@ function MainPage() {
                         options={blockTypes.map((type) => ({ label: type.label.toUpperCase(), value: type.value }))}
                         style={{ width: '200px' }}
                         onChange={(e) => {
-                            console.log(e.value);
-                            setBlockType(e.value);
+                            console.log(e.target.value);
+                            setBlockType(e.target.value);
                         }}
                         className="p-inputtext-uppercase" // Custom CSS to transform placeholder text
                     />
