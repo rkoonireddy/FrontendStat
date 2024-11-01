@@ -33,3 +33,8 @@ body {
 .p-slider .p-slider-handle {
     margin-left: -0.7rem;
 }
+
+/* to ensure upper case notation everywhere */
+#typeDropdown::placeholder {
+    text-transform: uppercase;
+}
