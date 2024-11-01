@@ -63,12 +63,12 @@ export function ControlSection({show}: { show: boolean }) {
             let blockControls: { [key: string]: any } = {};
             Object.entries(activeBlock.filters).forEach(([key, filter]) => {
 
-                console.log(`activeBlock filter key ${key}`);
+                // To force rerendering, generate truly unique key as combination of block id and filter name
+                let unique_key = `${activeBlock.id}-${filter.name}`;
+                console.log(`unique key: ${unique_key}`);
 
                 // If the activeBlock has a value for field <key>, use it. Otherwise use the default from the filter or undefined if nothing is set
                 blockControls[key] = activeBlock[key as keyof typeof activeBlock] ?? filter.default;
-
-                console.log(`blockControls after setting value: ${blockControls[key]}`);
 
                 // If the filter provides a label, use it. Otherwise use the name
                 let filter_display_name = filter.label ?? filter.name;
@@ -76,7 +76,7 @@ export function ControlSection({show}: { show: boolean }) {
                 switch (filter.filter_type) {
                     case "boolean":
                         components.push(<FilterControl
-                            key={filter.name}
+                            key={unique_key}
                             title={filter.name}
                             displayName={filter_display_name}
                             onLabel={"On"}
@@ -86,7 +86,7 @@ export function ControlSection({show}: { show: boolean }) {
                         break;
                     case "input_str":
                         components.push(<InputControl
-                            key={filter.name}
+                            key={unique_key}
                             title={filter.name}
                             displayName={filter_display_name}
                             initialValue={blockControls[key]}
@@ -101,7 +101,7 @@ export function ControlSection({show}: { show: boolean }) {
                         break;
                     case "input_int":
                         components.push(<InputControl
-                            key={filter.name}
+                            key={unique_key}
                             title={filter.name}
                             displayName={filter_display_name}
                             initialValue={blockControls[key]}
@@ -116,13 +116,13 @@ export function ControlSection({show}: { show: boolean }) {
                         break;
                     case "input_float":
 
-                        console.log("input_float detected");
-                        console.log(`Using initial value ${blockControls[key]}`);
-                        console.log("The filter is");
-                        console.log(filter);
+                        // console.log("input_float detected");
+                        // console.log(`Using initial value ${blockControls[key]}`);
+                        // console.log("The filter is");
+                        // console.log(filter);
 
                         components.push(<InputControl
-                            key={filter.name}
+                            key={unique_key}
                             title={filter.name}
                             displayName={filter_display_name}
                             initialValue={blockControls[key]}
@@ -137,7 +137,7 @@ export function ControlSection({show}: { show: boolean }) {
                         break;
                     case "singleselect":
                         components.push(<DropdownControl
-                            key={filter.name}
+                            key={unique_key}
                             title={filter.name}
                             displayName={filter_display_name}
                             options={filter.options.map((option: any) => {return {label: option, value: option};})}
@@ -146,7 +146,7 @@ export function ControlSection({show}: { show: boolean }) {
                         break;
                     case "multiselect":
                         components.push(<MultiSelectControl
-                            key={filter.name}
+                            key={unique_key}
                             title={filter.name}
                             displayName={filter_display_name}
                             options={filter.options.map((option: any) => {return {label: option, value: option};})}
@@ -155,7 +155,7 @@ export function ControlSection({show}: { show: boolean }) {
                         break;
                     case "slider":
                         components.push(<VerticalIntegerSliderControl
-                            key={filter.name}
+                            key={unique_key}
                             title={filter.name}
                             displayName={filter_display_name}
                             min={filter.min}
@@ -166,7 +166,7 @@ export function ControlSection({show}: { show: boolean }) {
                         break;
                     case "range_int":
                         components.push(<RangeControl
-                            key={filter.name}
+                            key={unique_key}
                             title={filter.name}
                             displayName={filter_display_name}
                             range={[filter.min, filter.max]}
@@ -176,7 +176,7 @@ export function ControlSection({show}: { show: boolean }) {
                         break;
                     case "range_float":
                         components.push(<RangeControl
-                            key={filter.name}
+                            key={unique_key}
                             title={filter.name}
                             displayName={filter_display_name}
                             range={[filter.min, filter.max]}
