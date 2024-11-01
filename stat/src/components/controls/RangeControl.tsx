@@ -28,8 +28,9 @@ const StyledRangeValue = styled.div<{$left: boolean}>`
 `;
 
 
-export function RangeControl({title, range, initial_range, step, columnSpan = 2, rowSpan = 1}: {
+export function RangeControl({title, display_name, range, initial_range, step, columnSpan = 2, rowSpan = 1}: {
     title: string,
+    display_name: string,
     range: [number, number],
     step: number,
     initial_range: [number, number],
@@ -55,7 +56,7 @@ export function RangeControl({title, range, initial_range, step, columnSpan = 2,
 
     return (
         <StyledControl $columnSpan={columnSpan} $rowSpan={rowSpan}>
-            <ControlTitle title={title} margin={'0'}/>
+            <ControlTitle title={display_name} margin={'0'}/>
             <StyledRangeContainer>
                 <StyledRangeValue $left={true}>{value[0]}</StyledRangeValue>
                 <Slider value={value}

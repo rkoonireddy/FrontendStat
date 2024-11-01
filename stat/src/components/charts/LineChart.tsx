@@ -22,7 +22,7 @@ const DEFAULT_COLORS = [
     "#D55E00", // redu
 ];
 
-export function LineChart({ block, small = false }: { block: BlockModel, small?: boolean }) {
+export function LineChart({ block, small = false, mini = false }: { block: BlockModel, small?: boolean, mini?: boolean }) {
     const pipeline = useAppSelector(getPipeline);
     const [chartData, setChartData] = useState<DataPoint[][]>([]);
     const [legendLabels, setLegendLabels] = useState<string[]>([]);
@@ -72,7 +72,11 @@ export function LineChart({ block, small = false }: { block: BlockModel, small?:
 
         let margin = { top: 20, right: 10, bottom: 50, left: 50 };
         if (small) {
-            margin = { top: 10, right: 10, bottom: 25, left: 25 };
+            if(mini) {
+                margin = { top: 2, right: 2, bottom: 2, left: 2 };
+            } else {
+                margin = {top: 10, right: 10, bottom: 25, left: 25};
+            }
         }
         const width = dimensions.width - margin.left - margin.right;
         const height = dimensions.height - margin.top - margin.bottom;
@@ -92,8 +96,8 @@ export function LineChart({ block, small = false }: { block: BlockModel, small?:
 
         // Axes
         const xAxis = axisBottom(xScale)
-            .ticks(6)
-            .tickFormat((d) => `${d}`);
+            .ticks(small ? 3 : 6)
+            .tickFormat(mini ? () => "" : (d) => `${d}`);
 
         svg.select<SVGGElement>(".x-axis")
             .attr("transform", `translate(${margin.left}, ${height + margin.top})`)
@@ -101,11 +105,12 @@ export function LineChart({ block, small = false }: { block: BlockModel, small?:
             .call(xAxis)
             .selectAll("path, line")
             .style("stroke", "white")
-            .style("stroke-width", "2px");
+            .style("stroke-width", small ? "1px" : "2px");
+
 
         const yAxis = axisLeft(yScale)
-            .ticks(5)
-            .tickFormat((d) => `${d}`);
+            .ticks(small ? 2 : 6)
+            .tickFormat(mini ? () => "" : (d) => `${d}`);
 
         svg.select<SVGGElement>(".y-axis")
             .attr("transform", `translate(${margin.left}, ${margin.top})`)
@@ -113,7 +118,7 @@ export function LineChart({ block, small = false }: { block: BlockModel, small?:
             .call(yAxis)
             .selectAll("path, line")
             .style("stroke", "white")
-            .style("stroke-width", "2px");
+            .style("stroke-width", small ? "1px" : "2px");
 
         // Line generator
         const myLine = line<{ x: number, y: number | null }>()
@@ -131,7 +136,7 @@ export function LineChart({ block, small = false }: { block: BlockModel, small?:
             .attr("fill", "none")
             .attr("stroke", (d, i) => (i === selectedLineIndex ? DEFAULT_COLORS[i % DEFAULT_COLORS.length] : DEFAULT_COLORS[i % DEFAULT_COLORS.length])) // Use default colors
             .attr("stroke-opacity", (d, i) => (selectedLineIndex !== null  && i !== selectedLineIndex ? 0.4 : 1)) // Set opacity based on selection
-            .attr("stroke-width", "2px")
+            .attr("stroke-width", small || mini ? "1px" : "2px")
             .attr("transform", `translate(${margin.left}, ${margin.top})`)
             .style("cursor", "pointer") // Hand cursor on graph lines
             .on("click", (event, d) => {
@@ -159,7 +164,19 @@ export function LineChart({ block, small = false }: { block: BlockModel, small?:
         //         .style("visibility", (d) => (d.y === null || d.y === undefined) ? "visible" : "hidden"); // Hide if data is present
         // });
 
-        if (!small) {
+        if(small || mini) {
+            svg.select<SVGGElement>(".x-axis")
+                .selectAll("text")
+                .style("font-size", "7px")
+                .style("font-weight", "lighter");
+
+            svg.select<SVGGElement>(".y-axis")
+                .selectAll("text")
+                .style("font-size", "7px")
+                .style("font-weight", "lighter");
+        }
+
+        if (!small && !mini) {
             // X-axis label (white text)
             svg.select(".x-axis-label")
                 .data([null])
@@ -226,7 +243,7 @@ export function LineChart({ block, small = false }: { block: BlockModel, small?:
                 <text className="y-axis-label" />
             </svg>
         ) : (
-            <div style={{ color: "#ffffff", alignContent: "center"}}>Please run the pipeline to visualize your data !</div>
+            <div style={{ color: "#ffffff", alignContent: "center", scale: small ? '0.5' : '1'}}> {small ? 'Run Pipeline' : 'Please run the pipeline to visualize your data !'}</div>
         )
     );
 }

@@ -1,3 +1,5 @@
+import {BlockModel} from "./responseType";
+
 export interface CustomNodeProps {
     data: {
         id: string;
@@ -5,5 +7,6 @@ export interface CustomNodeProps {
         type: string;
         description: string;
         tag:string;
+        blockId: string;
     };
 }

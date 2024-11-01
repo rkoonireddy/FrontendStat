@@ -5,8 +5,9 @@ import { ControlTitle } from "./ControlTitle";
 import {useAppDispatch, useAppSelector} from "../../hooks";
 import {getActiveBlock, updateControl} from "../../redux/pipelineSlice";
 
-export function MultiSelectControl({ title, options, placeHolder = "Select...", columnSpan = 1, rowSpan = 1, defaultValues = null}: {
+export function MultiSelectControl({ title, display_name, options, placeHolder = "Select...", columnSpan = 1, rowSpan = 1, defaultValues = null}: {
     title: string,
+    display_name: string,
     options: { label: string, value: string }[],
     placeHolder?: string,
     columnSpan?: number,

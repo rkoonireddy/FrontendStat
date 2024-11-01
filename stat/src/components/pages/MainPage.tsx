@@ -25,7 +25,7 @@ import { toHaveDescription } from "@testing-library/jest-dom/matchers";
 const StyledMainPage = styled.div`
   position: relative;
   display: grid;
-  grid-template-columns: 70px 560px 1fr; //made to make the graph view bigger and better interface view adjusted to 560px from 500px
+  grid-template-columns: 70px 560px calc(100vw - 570px);
   background: linear-gradient(to bottom right, #3D3D3D 0%, #000000 100%);
 `;
 
