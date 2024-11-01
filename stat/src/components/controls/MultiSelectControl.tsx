@@ -5,9 +5,9 @@ import { ControlTitle } from "./ControlTitle";
 import {useAppDispatch, useAppSelector} from "../../hooks";
 import {getActiveBlock, updateControl} from "../../redux/pipelineSlice";
 
-export function MultiSelectControl({ title, display_name, options, placeHolder = "Select...", columnSpan = 1, rowSpan = 1, defaultValues = null}: {
+export function MultiSelectControl({ title, displayName, options, placeHolder = "Select...", columnSpan = 1, rowSpan = 1, defaultValues = null}: {
     title: string,
-    display_name: string,
+    displayName: string,
     options: { label: string, value: string }[],
     placeHolder?: string,
     columnSpan?: number,
@@ -21,37 +21,35 @@ export function MultiSelectControl({ title, display_name, options, placeHolder =
     const width = 150 * columnSpan;
 
     useEffect(() => {
-        // Set any default values if configured by the filter
         if (defaultValues) {
             setSelectedOptions(defaultValues);
         }
-        // Only update the controls in the redux store if our block is the currently active block
+
         if(activeBlock) {
             dispatch(updateControl({blockId: activeBlock.id, filter: {key: title, value: selectedOptions}}));
         }
     }, [defaultValues]);
 
     function updateOptions(value: string[]) {
-        // If our block is the active block, update the control in the redux store
+
         if(activeBlock) {
             dispatch(updateControl({blockId: activeBlock.id, filter: {key: title, value: value}}));
         }
 
-        // set the currently selected values
         setSelectedOptions(value);
     }
 
     return (
         <StyledControl $columnSpan={columnSpan} $rowSpan={rowSpan}> 
-            <ControlTitle title={title.toUpperCase()} margin={'0'} />
+            <ControlTitle title={displayName.toUpperCase()} margin={'0'} />
             <MultiSelect id="multiSelect"
                         value={selectedOptions}
                         options={options.map(option => ({
                             ...option,
-                            label: option.label.toUpperCase() // Transform labels to uppercase
+                            label: option.label.toUpperCase()
                         }))}
-                        placeholder={placeHolder.toUpperCase()} // Uppercase the placeholder
-                        style={{ width: width + "px", textTransform: 'uppercase' }} // Inline style for uppercase
+                        placeholder={placeHolder.toUpperCase()}
+                        style={{ width: width + "px", textTransform: 'uppercase' }}
                         onChange={(e) => updateOptions(e.value)} />
         </StyledControl>
     );

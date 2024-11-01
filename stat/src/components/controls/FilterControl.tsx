@@ -5,9 +5,9 @@ import {ControlTitle} from "./ControlTitle";
 import {getActiveBlock, updateControl} from "../../redux/pipelineSlice";
 import {useAppDispatch, useAppSelector} from "../../hooks";
 
-export function FilterControl({title, display_name, onLabel, offLabel, value, columnSpan = 1, rowSpan = 1}: {
+export function FilterControl({title, displayName, onLabel, offLabel, value, columnSpan = 1, rowSpan = 1}: {
     title: string,
-    display_name: string,
+    displayName: string,
     onLabel: string,
     offLabel: string,
     value: boolean,
@@ -42,7 +42,7 @@ export function FilterControl({title, display_name, onLabel, offLabel, value, co
 
     return (
         <StyledControl $columnSpan={columnSpan} $rowSpan={rowSpan}>
-            <ControlTitle title={display_name} />
+            <ControlTitle title={displayName} />
             <InputSwitch id={"input switch"}
                          checked={filterValue}
                          name={label}
