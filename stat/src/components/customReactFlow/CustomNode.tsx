@@ -13,7 +13,6 @@ import {
 import {ReactComponent as TrashSVG} from "../../assets/trash3-fill.svg";
 import {ReactComponent as InfoSVG} from "../../assets/info-circle-fill.svg"
 import { ReactComponent as CloseSVG } from '../../assets/close-circle-svgrepo-com.svg';
-import {useState} from 'react';
 import {LineChart} from "../charts/LineChart";
 
 export const StyledNodeContainer = styled.div<{ $active?: boolean }>`
@@ -192,8 +191,6 @@ const CustomNode = ({data}: CustomNodeProps) => {
     const block = useAppSelector(state => getBlockById(state, data.blockId));
     const [showOutputPopup, setShowOutputPopup] = useState(false);
     const blockConnected = useAppSelector(state => blockConnectedToPipeline(state, data.blockId))
-
-    return (
     const togglePopup = () => {
         setPopupVisible(prev => !prev);
     };

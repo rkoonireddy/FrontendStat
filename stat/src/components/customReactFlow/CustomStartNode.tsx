@@ -12,10 +12,8 @@ import {
     StyledNodeOutputContainer,
     StyledNodeOutputPopup} from "./CustomNode"; 
 import {useAppDispatch, useAppSelector} from "../../hooks";
-import {getActiveBlockId, setActiveBlockId} from "../../redux/pipelineSlice";
 import {ReactComponent as InfoSVG} from "../../assets/info-circle-fill.svg"
 import { ReactComponent as CloseSVG } from '../../assets/close-circle-svgrepo-com.svg';
-import {useAppDispatch, useAppSelector} from "../../hooks";
 import {getActiveBlockId, getBlockById, setActiveBlockId} from "../../redux/pipelineSlice";
 import CSVViewer from "../charts/CSVViewer";
 import styled from "styled-components";
