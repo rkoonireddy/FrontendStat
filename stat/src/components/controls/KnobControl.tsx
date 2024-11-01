@@ -15,8 +15,9 @@ const StyledButtonControls = styled.div`
   margin-top: -15px;
 `;
 
-export function KnobControl({title, min, max, step, start, columnSpan = 1, rowSpan = 1}: {
+export function KnobControl({title, displayName, min, max, step, start, columnSpan = 1, rowSpan = 1}: {
     title: string,
+    displayName: string,
     min: number,
     max: number,
     step: number,
@@ -44,7 +45,7 @@ export function KnobControl({title, min, max, step, start, columnSpan = 1, rowSp
 
     return (
         <StyledControl $columnSpan={columnSpan} $rowSpan={rowSpan}>
-            <ControlTitle title={title} />
+            <ControlTitle title={displayName} />
             <Knob value={value}
                   onChange={(e) => setValue(e.value)}
                   min={min}

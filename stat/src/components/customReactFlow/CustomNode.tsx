@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import styled from 'styled-components';
 import {Handle, Position} from '@xyflow/react';
 import {CustomNodeProps} from "../../types/nodeTypes";
@@ -6,11 +6,13 @@ import {useAppDispatch, useAppSelector} from "../../hooks";
 import {
     blockConnectedToPipeline,
     deleteBlockFromPipeline,
-    getActiveBlockId, getBlockById, getBlocks,
+    getActiveBlockId, getBlockById,
     getPipelineModel,
     setActiveBlockId
 } from "../../redux/pipelineSlice";
 import {ReactComponent as TrashSVG} from "../../assets/trash3-fill.svg";
+import {ReactComponent as InfoSVG} from "../../assets/info-circle-fill.svg"
+import { ReactComponent as CloseSVG } from '../../assets/x.svg';
 import {LineChart} from "../charts/LineChart";
 
 export const StyledNodeContainer = styled.div<{ $active?: boolean }>`
@@ -38,6 +40,14 @@ export const StyledNodeType = styled.div`
     color: #888;
 `;
 
+export const StyledTag = styled.div`
+    font-size: 5px;
+    position: fixed;
+    bottom: -4px;
+    left: 3px;
+    color: #888;
+`;
+
 export const StyledDeleteButton = styled.div`
     position: absolute;
     top: -5px;
@@ -50,12 +60,66 @@ export const StyledDeleteButton = styled.div`
     }
 `;
 
-export const StyledRunButton = styled.div`
+export const StyledNodeInfoIcon = styled(InfoSVG)`
     position: absolute;
-    top: -1px;
-    right: -1px;
-    opacity: 0.25;
+    top: 2px;
+    left: 3px;
+    width: 7px;
+    height: 7px;
+    color: 	#989898;
+    &:hover {
+        cursor: pointer;
+        opacity: 0.8;
+        color: #0056b3; 
+    }
+`;    
 
+export const StyledInfoPopup = styled.div<{ $visible: boolean }>`
+    position: absolute; 
+    top: 10px;
+    left: 0; 
+    font-size: 0.5vw;
+    background: linear-gradient(to bottom right, #3D3D3D 0%, #000000 100%);
+    color: #73B5B4;
+    padding: 2px 7px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 100;
+    width: 150px; 
+    max-height: 250px;
+    overflow-y: auto;
+    display: ${({ $visible }) => ($visible ? 'block' : 'none')};
+
+
+    &::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 10px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+`;
+
+export const StyledCloseInfoIcon = styled(CloseSVG)`
+    position: absolute;
+    top: 1px;
+    right: 1px;
+    width: 10px;
+    height: 10px;
+    opacity: 0.5;
+    color: #ff0000;
+    
     &:hover {
         cursor: pointer;
         opacity: 0.8;
@@ -67,10 +131,10 @@ export const StyledNodeOutputContainer = styled.div`
     justify-content: center;
     align-items: center;
     position: absolute;
-    bottom: -40px;
-    right: -20px;
-    width: 50px;
-    height: 30px;
+    bottom: -30px;
+    right: -10px;
+    width: 40px;
+    height: 20px;
     border-radius: 5px;
     background: linear-gradient(to bottom right, #3D3D3D 0%, #000000 100%);
     color: #9e9d9d;
@@ -94,26 +158,53 @@ export const StyledNodeOutputPopup = styled.div`
 `;
 
 const CustomNode = ({data}: CustomNodeProps) => {
+    const [isInfoVisible, setIsInfoVisible] = useState(false);
     const pipeline = useAppSelector(getPipelineModel);
     const dispatch = useAppDispatch();
     const activeNodeId = useAppSelector(getActiveBlockId);
     const block = useAppSelector(state => getBlockById(state, data.blockId));
     const [showOutputPopup, setShowOutputPopup] = useState(false);
     const blockConnected = useAppSelector(state => blockConnectedToPipeline(state, data.blockId))
+    const togglePopup = () => {
+        setIsInfoVisible(prev => !prev);
+    };
 
     return (
-
         <StyledNodeContainer $active={data.id === activeNodeId} onClick={() => dispatch(setActiveBlockId(data.id))}>
-            <Handle type="target" position={Position.Top}/>
+            <Handle type="target" position={Position.Top} />
             <StyledDeleteButton title={"Delete Block"} onClick={(e) => {
                 dispatch(deleteBlockFromPipeline({pipelineId: pipeline.id, blockId: data.id}));
                 e.stopPropagation();
             }}>
                 <TrashSVG style={{width: "7px", height: "7px", color: "#ff0000"}}/>
             </StyledDeleteButton>
-            <StyledNodeLabel $active={data.id === activeNodeId}
-                             $small={data.label.length > 14}>{data.label}</StyledNodeLabel>
+            <StyledNodeLabel $active={data.id === activeNodeId} $small={data.label.length > 14}>
+                {data.label}
+            </StyledNodeLabel>
             <StyledNodeType>{data.type}</StyledNodeType>
+            <Handle type="source" position={Position.Bottom} />
+            <StyledNodeInfoIcon 
+                title={"More information"} 
+                onClick={(e) => {
+                    e.stopPropagation();
+                    // dispatch(setActiveBlockId(data.id));
+                    togglePopup();
+                }}
+            >
+                <InfoSVG />
+            </StyledNodeInfoIcon>
+            <StyledInfoPopup $visible={isInfoVisible}>
+                <StyledCloseInfoIcon onClick={(e) => {
+                    e.stopPropagation();
+                    setIsInfoVisible(false);
+                }}>
+                    <CloseSVG />
+                </StyledCloseInfoIcon>
+                <p>{data.description}</p>
+            </StyledInfoPopup>
+            <StyledTag>
+            {data.tag}
+            </StyledTag>
             <Handle type="source" position={Position.Bottom}/>
             {blockConnected && block && block?.output?.Dataframe?.data !== undefined &&
                 <StyledNodeOutputContainer onMouseEnter={() => setShowOutputPopup(true)}
