@@ -9,7 +9,15 @@ import { BlockModel } from "../../types/responseType";
 // Color-blind friendly colors
 const DEFAULT_COLORS = [
     "#00bfa6",
-    "#ff5733",
+    // "#ff5733",
+    '#e41a1c',
+    '#4daf4a',
+    '#984ea3',
+    '#ff7f00',
+    '#ffff33',
+    '#a65628',
+    '#f781bf',
+    '#999999',
     "#E69F00", // orange
     "#0072B2", // blue
     "#CC79A7", // pink
@@ -33,7 +41,7 @@ export function LineChart({ block, small = false, mini = false }: { block: Block
             const data = convertToDataPoints(block.output.Dataframe.data);
             setChartData(data);
 
-            // Extract column names from the second column of data, skipping the first column
+            // extract column names from the second column of data, skipping the first column
             const columnNames = block.output.Dataframe.data.map((column: any) => column.name).slice(1); // Start from the second name
             setLegendLabels(columnNames);
         } else {
