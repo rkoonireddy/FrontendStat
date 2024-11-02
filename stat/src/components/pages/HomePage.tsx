@@ -9,12 +9,14 @@ import {
     resetPipelineData,
     createNewBlock,
     createNewPipeline,
-    setFileFrequency
+    setFileFrequency,
+    updatePipeline,
 } from "../../redux/pipelineSlice";
 import {Popup} from "../pageElements/Popup";
 import {StyledInput, StyledUnit} from "../controls/InputControl";
 import {PreviewTable} from "../tables/PreviewTable";
 import {checkFileValidity, preProcessCSVData} from "../../util/fileUtil";
+import { ErrorPopup } from "../pageElements/ErrorPopup";
 
 const StyledHomeContainer = styled.div`
   width: 100vw;
@@ -161,6 +163,7 @@ export default function HomePage() {
     const [frequency, setFrequency] = useState(0);
     const [isFileUploadOpen, setIsFileUploadOpen] = useState(false);
     const [isFilePreviewOpen, setIsFilePreviewOpen] = useState(false);
+    const [pipelineLoad, setPipelineLoad] = useState("");
 
     const handleFileUpload = (frequency: number) => {
         setFrequency(frequency);
@@ -187,6 +190,21 @@ export default function HomePage() {
         navigate('/main');
     };
     
+    function handlePipelineInput(value: string) {
+        setPipelineLoad(value.trim());
+    }
+
+    function handlePipelineLoad() {
+        // First try to fetch pipeline data to check if pipeline ID exists
+        if (pipelineLoad !== "") {
+            dispatch(updatePipeline({pipelineId: pipelineLoad}));
+        }
+
+        // If it exists, clear existing data
+
+        // Then load the pipeline data
+
+    }
     
     
 
@@ -202,6 +220,7 @@ export default function HomePage() {
             <StyledHeader>
                 <img src={logoNoBg} alt="Logo"/>
             </StyledHeader>
+            <ErrorPopup/>
             <StyledHomeContentContainer>
                 <StyledContentContainer>
                     <p>
@@ -220,6 +239,8 @@ export default function HomePage() {
                     <StyledButtonContainer>
                         <PrimaryButton text={"Upload Sample"} action={() => setIsFileUploadOpen(true)}/>
                         {dataExists ? <PrimaryButton text={"Resume"} action={() => navigate('/main')}/> : null}
+                        <PrimaryButton text={"Load Pipeline"} action={() => handlePipelineLoad()} disabled={pipelineLoad===""}/>
+                        <StyledInput $width={"500px"} $margin={'auto'} onChange={(e) => handlePipelineInput(e.target.value)} placeholder="Enter pipeline ID"/>
                     </StyledButtonContainer>
                 </StyledContentContainer>
             </StyledHomeContentContainer>
