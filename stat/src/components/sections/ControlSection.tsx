@@ -46,7 +46,6 @@ export function ControlSection({show}: { show: boolean }) {
     const activeBlock = useAppSelector(getActiveBlock);
     const controls = useAppSelector(getControls);
     const [filterComponents, setFilterComponents] = useState<JSX.Element[]>([]);
-    const [blockFilters, setBlockFilters] = useState<{ [key: string]: string }>({});
     const dispatch = useAppDispatch();
     const [applyReady, setApplyReady] = useState(true);
 
@@ -57,6 +56,9 @@ export function ControlSection({show}: { show: boolean }) {
             let blockControls: { [key: string]: any } = {};
             Object.entries(activeBlock.filters).forEach(([key, filter]) => {
 
+                // To force rerender, generate truly unique key as combination of block id and filter name
+                let unique_key = `${activeBlock.id}-${filter.name}`;
+
                 // If the activeBlock has a value for field <key>, use it. Otherwise use the default from the filter or undefined if nothing is set
                 blockControls[key] = activeBlock[key as keyof typeof activeBlock] ?? filter.default;
 
@@ -66,7 +68,7 @@ export function ControlSection({show}: { show: boolean }) {
                 switch (filter.filter_type) {
                     case "boolean":
                         components.push(<FilterControl
-                            key={filter.name}
+                            key={unique_key}
                             title={filter.name}
                             displayName={filter_display_name}
                             onLabel={"On"}
@@ -76,7 +78,7 @@ export function ControlSection({show}: { show: boolean }) {
                         break;
                     case "input_str":
                         components.push(<InputControl
-                            key={filter.name}
+                            key={unique_key}
                             title={filter.name}
                             displayName={filter_display_name}
                             initialValue={blockControls[key]}
@@ -91,7 +93,7 @@ export function ControlSection({show}: { show: boolean }) {
                         break;
                     case "input_int":
                         components.push(<InputControl
-                            key={filter.name}
+                            key={unique_key}
                             title={filter.name}
                             displayName={filter_display_name}
                             initialValue={blockControls[key]}
@@ -106,7 +108,7 @@ export function ControlSection({show}: { show: boolean }) {
                         break;
                     case "input_float":
                         components.push(<InputControl
-                            key={filter.name}
+                            key={unique_key}
                             title={filter.name}
                             displayName={filter_display_name}
                             initialValue={blockControls[key]}
@@ -121,7 +123,7 @@ export function ControlSection({show}: { show: boolean }) {
                         break;
                     case "singleselect":
                         components.push(<DropdownControl
-                            key={filter.name}
+                            key={unique_key}
                             title={filter.name}
                             displayName={filter_display_name}
                             options={filter.options.map((option: any) => {return {label: option, value: option};})}
@@ -130,7 +132,7 @@ export function ControlSection({show}: { show: boolean }) {
                         break;
                     case "multiselect":
                         components.push(<MultiSelectControl
-                            key={filter.name}
+                            key={unique_key}
                             title={filter.name}
                             displayName={filter_display_name}
                             options={filter.options.map((option: any) => {return {label: option, value: option};})}
@@ -139,7 +141,7 @@ export function ControlSection({show}: { show: boolean }) {
                         break;
                     case "slider":
                         components.push(<VerticalIntegerSliderControl
-                            key={filter.name}
+                            key={unique_key}
                             title={filter.name}
                             displayName={filter_display_name}
                             min={filter.min}
@@ -150,7 +152,7 @@ export function ControlSection({show}: { show: boolean }) {
                         break;
                     case "range_int":
                         components.push(<RangeControl
-                            key={filter.name}
+                            key={unique_key}
                             title={filter.name}
                             displayName={filter_display_name}
                             range={[filter.min, filter.max]}
@@ -160,7 +162,7 @@ export function ControlSection({show}: { show: boolean }) {
                         break;
                     case "range_float":
                         components.push(<RangeControl
-                            key={filter.name}
+                            key={unique_key}
                             title={filter.name}
                             displayName={filter_display_name}
                             range={[filter.min, filter.max]}
@@ -174,7 +176,6 @@ export function ControlSection({show}: { show: boolean }) {
             });
             setFilterComponents(components);
             dispatch(addControl({blockId: activeBlock.id, filters: blockControls}));
-            setBlockFilters(blockControls);
         }
     }, [activeBlock]);
 
