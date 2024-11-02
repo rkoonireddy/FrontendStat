@@ -1,6 +1,10 @@
 
 export type DataPoint = {x: number, y: number};
 
+//for line chart
+export type DataDocument = {[key: string]: number | null;}
+
+
 export type PipelineStep = {
     id: string,
     name: string,
