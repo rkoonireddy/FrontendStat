@@ -109,11 +109,11 @@ export function LineChart({ block, small = false, mini = false }: LineChartProps
             .nice();
 
         const xAxis = axisBottom(xScale)
-            .ticks(small ? 3 : 6)
+            .ticks(small ? 2 : 10)
             .tickFormat(mini ? () => "" : (d) => `${d}`);
 
         const yAxis = axisLeft(yScale)
-            .ticks(small ? 2 : 6)
+            .ticks(small ? 2 : 10)
             .tickFormat(mini ? () => "" : (d) => `${d}`);
 
         const zoomBehavior: ZoomBehavior<SVGSVGElement, unknown> = zoom<SVGSVGElement, unknown>()
@@ -182,7 +182,8 @@ export function LineChart({ block, small = false, mini = false }: LineChartProps
                 .style("cursor", "pointer")
                 .attr("transform", `translate(${margin.left}, ${margin.top})`)
                 .attr("stroke", DEFAULT_COLORS[lineIndex % DEFAULT_COLORS.length])
-                .attr("stroke-opacity", selectedLineIndex === null || selectedLineIndex === lineIndex ? 1 : 0.4)
+                .attr("stroke-opacity", selectedLineIndex === null || selectedLineIndex === lineIndex ? 2 : 0.25)
+                .attr("stroke-width", selectedLineIndex === lineIndex ? "3px" : "1px")
                 .attr("stroke-width", small || mini ? "1px" : "2px")
                 .on("click", () => setSelectedLineIndex(selectedLineIndex === lineIndex ? null : lineIndex));
         });
@@ -212,7 +213,7 @@ export function LineChart({ block, small = false, mini = false }: LineChartProps
         .attr("x", width / 2 + margin.left)
         .attr("y", height + margin.top + 40)
         .style("fill", "white")
-        .text("Time");
+        .text("Time (as index)");
 
         svg.selectAll(".y-axis-label")
         .data([null])
@@ -229,7 +230,7 @@ export function LineChart({ block, small = false, mini = false }: LineChartProps
         
         legendLabels.forEach((label, lineIndex) => {
             legendGroup.append("foreignObject")
-                .attr("x", -80)
+                .attr("x", -140)
                 .attr("y", (lineIndex-0.5) * 20+5)
                 .attr("width", 20)
                 .attr("height", 20)
@@ -248,7 +249,7 @@ export function LineChart({ block, small = false, mini = false }: LineChartProps
                 });
 
             legendGroup.append("text")
-                .attr("x", -60)
+                .attr("x", -120)
                 .attr("y", lineIndex * 20+5)
                 .attr("dy", "0.35em")
                 .style("fill", DEFAULT_COLORS[lineIndex % DEFAULT_COLORS.length])
@@ -266,7 +267,7 @@ export function LineChart({ block, small = false, mini = false }: LineChartProps
         });
     }
 
-    }, [chartData, dimensions, legendLabels, selectedLineIndex]);
+    }, [chartData, dimensions, legendLabels, selectedLineIndex, mini, small]);
 
     const resetGraph = () => {
         if (svgRef.current) {
