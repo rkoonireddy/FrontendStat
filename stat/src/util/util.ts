@@ -1,4 +1,4 @@
-import {DataPoint, Pipeline, PipelineModel} from "../types/dataType";
+import {DataDocument, DataPoint, PipelineModel} from "../types/dataType";
 import {BlockModel} from "../types/responseType";
 
 export function getMinMax(data: DataPoint[][]): {x: {min: number, max: number}, y: {min: number, max: number}} {
@@ -56,6 +56,20 @@ export function convertToDataPoints(data: any[]): DataPoint[][] {
     const xValues = data[0].data.data;
     const yArray = data.slice(1);
     return yArray.map((yData: any) => yData.data.data.map((y: number, i: number) => ({x: xValues[i], y: y})));
+}
+
+export function convertToDataDocument(data: any[]): DataDocument[] {
+    if (!data.length || !data[0].data || !data[0].data.data) {
+        return [];
+    }
+
+    return data[0].data.data.map((_: any, rowIndex: number) => {
+        const rowObject: DataDocument = {};
+        data.forEach(column => {
+            rowObject[column.name] = column.data.data[rowIndex] as number | null;
+        });
+        return rowObject;
+    });
 }
 
 export function getFirstKey(dict: Record<string, any>): string | undefined {
