@@ -10,7 +10,7 @@ import {
     createNewBlock,
     createNewPipeline,
     setFileFrequency,
-    updatePipeline,
+    checkPipeline,
 } from "../../redux/pipelineSlice";
 import {Popup} from "../pageElements/Popup";
 import {StyledInput, StyledUnit} from "../controls/InputControl";
@@ -163,7 +163,7 @@ export default function HomePage() {
     const [frequency, setFrequency] = useState(0);
     const [isFileUploadOpen, setIsFileUploadOpen] = useState(false);
     const [isFilePreviewOpen, setIsFilePreviewOpen] = useState(false);
-    const [pipelineLoad, setPipelineLoad] = useState("");
+    const [pipelineLoad, setPipelineLoad] = useState<string>("");
 
     const handleFileUpload = (frequency: number) => {
         setFrequency(frequency);
@@ -197,15 +197,15 @@ export default function HomePage() {
     function handlePipelineLoad() {
         // First try to fetch pipeline data to check if pipeline ID exists
         if (pipelineLoad !== "") {
-            dispatch(updatePipeline({pipelineId: pipelineLoad}));
+            dispatch(checkPipeline(pipelineLoad));
         }
 
         // If it exists, clear existing data
+        
 
         // Then load the pipeline data
 
-    }
-    
+    } 
     
 
     function handleOnClose() {
