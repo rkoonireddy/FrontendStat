@@ -174,6 +174,18 @@ function Flow() {
             </Panel>
             <Panel position={"bottom-right"}>
                 <StyledToolbar>
+                    {pipelineExportableRunnable && activeBlock && activeBlock?.output?.Dataframe?.data !== undefined ?
+                        <StyledActionButton title={"Export Pipeline"} onClick={(e) => {
+                            dispatch(setLoading(true));
+                            dispatch(fetchExportPipeline({
+                                pipelineId: pipeline.id,
+                                startBlockId: blocks[0].id,
+                                endBlockId: activeBlockId ? activeBlockId : blocks[blocks.length - 1].id
+                            }));
+                            e.stopPropagation();
+                        }}>
+                            <ExportSVG style={{width: "35px", height: "35px", color: "#ffffff"}}/>
+                        </StyledActionButton> : <div style={{width: "35px", height: "35px"}}/>}
                     {pipelineExportableRunnable && <StyledActionButton title={"Run Pipeline"} onClick={(e) => {
                         onSave();
                         dispatch(setLoading(true));
@@ -188,23 +200,11 @@ function Flow() {
                     }}>
                         <RunSVG style={{width: "50px", height: "50px", color: "#00ff00"}}/>
                     </StyledActionButton>}
-                    {pipelineExportableRunnable && activeBlock && activeBlock?.output?.Dataframe?.data !== undefined ?
-                        <StyledActionButton title={"Export Pipeline"} onClick={(e) => {
-                            dispatch(setLoading(true));
-                            dispatch(fetchExportPipeline({
-                                pipelineId: pipeline.id,
-                                startBlockId: blocks[0].id,
-                                endBlockId: activeBlockId ? activeBlockId : blocks[blocks.length - 1].id
-                            }));
-                            e.stopPropagation();
-                        }}>
-                            <ExportSVG style={{width: "35px", height: "35px", color: "#ffffff"}}/>
-                        </StyledActionButton> : <div style={{width: "35px", height: "35px"}}/>}
                     <StyledActionButton title={"Copy Pipeline ID"} onClick={() => {
                         navigator.clipboard.writeText(pipeline.id);
                         alert("Pipeline ID copied to clipboard.");
                     }}>
-                        <CopySVG style={{width: "38px", height: "38px", fill: "#ffffff", margin: "10px"}}/>
+                        <CopySVG style={{width: "38px", height: "38px", fill: "#ffffff"}}/>
                     </StyledActionButton>
                 </StyledToolbar>
             </Panel>
