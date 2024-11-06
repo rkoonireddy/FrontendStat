@@ -11,12 +11,16 @@ import {
     createNewPipeline,
     setFileFrequency,
     checkPipeline,
+    updatePipeline,
+    fetchFullBlock,
 } from "../../redux/pipelineSlice";
+import { LoaderModel } from "../../types/responseType";
 import {Popup} from "../pageElements/Popup";
 import {StyledInput, StyledUnit} from "../controls/InputControl";
 import {PreviewTable} from "../tables/PreviewTable";
 import {checkFileValidity, preProcessCSVData} from "../../util/fileUtil";
 import { ErrorPopup } from "../pageElements/ErrorPopup";
+import { unwrapResult } from '@reduxjs/toolkit';
 
 const StyledHomeContainer = styled.div`
   width: 100vw;
@@ -61,7 +65,6 @@ const StyledButtonContainer = styled.div`
   display: flex;
 `;
 
-
 const StyledFrequencyInputContainer = styled.div`
   margin: auto;
   max-width: 150px;
@@ -81,7 +84,6 @@ const StyledFileUploadInfoSpan = styled.span`
     margin: 8px 0;
 `;
 
-
 function FileUpload({onClose, onUpload}: { onClose: () => void, onUpload: (frequency: number) => void}) {
     const [file, setFile] = useState<File | null>(null);
     const [frequency, setFrequency] = useState<number>(0);
@@ -98,7 +100,6 @@ function FileUpload({onClose, onUpload}: { onClose: () => void, onUpload: (frequ
         setFrequency(parseInt(event.target.value));
     }
 
-    
     const handleUpload = async () => {
         if (file && frequency) {
             const formData = new FormData();
@@ -185,7 +186,7 @@ export default function HomePage() {
         await dispatch(createNewPipeline());
         dispatch(setFileFrequency(frequency));
         dispatch(createNewBlock({ blockType: 'CSVStringLoader', blockName: 'Data loader' }));
-    
+
         // Route to /main
         navigate('/main');
     };
@@ -194,20 +195,67 @@ export default function HomePage() {
         setPipelineLoad(value.trim());
     }
 
-    function handlePipelineLoad() {
+    const handlePipelineLoad = async () => {
         // First try to fetch pipeline data to check if pipeline ID exists
-        if (pipelineLoad !== "") {
-            dispatch(checkPipeline(pipelineLoad));
+        try {
+            await dispatch(checkPipeline(pipelineLoad)).then(unwrapResult);
+        } catch (error) {
+            setPipelineLoad("");
+            return;
+        }
+        
+        // If it exists, clear existing data
+        dispatch(resetData());
+        dispatch(resetPipelineData());
+
+        // Then update the pipeline data, repopulate the redux store
+        const pipeline_reloaded = await dispatch(updatePipeline({pipelineId: pipelineLoad})).then(unwrapResult);
+        
+        // Then fetch the first block of the pipeline. It is expected to be a CSV loader block. Abort if it is not.
+        const loader_block_id = Object.keys(pipeline_reloaded.block_dict)[0];
+        const loader_block = await dispatch(fetchFullBlock(loader_block_id)).then(unwrapResult);
+        
+        // Cast loader_block to LoaderModel
+        const loader_block_casted = loader_block as LoaderModel;
+
+        if (!(loader_block_casted.type === "CSVStringLoader")) {
+            alert("The first block in the pipeline is not a CSV loader block! Loading is only supported if the first block is a CSV loader block.");
+            setPipelineLoad("");
+            return;
         }
 
-        // If it exists, clear existing data
-        
+        // Unfortunately we only have the frequency when we load the CSV data in Upload. Get it from the loader block.
+        // Set the frequency on file and redux store
+        if (loader_block_casted.freq_hz === undefined) {
+            alert("Frequency not found in the loader block!");
+            return;
+        } else {
+            dispatch(setFileFrequency(loader_block_casted.freq_hz));
+        }
 
-        // Then load the pipeline data
+        // Parse the csv_string field
+        if (loader_block_casted.csv_string === undefined) {
+            alert("csv_string not found in the loader block!");
+        }
+        const rows = loader_block_casted.csv_string.split('\n');
+        const headers = rows[0].split(',');
+        const data = rows.slice(1).map((row: string) => {
+            const values = row.split(',');
+            return headers.reduce((obj: { [key: string]: string }, header: string, index: number) => {
+                obj[header] = values[index];
+                return obj;
+            }, {});
+        });
 
+        const cleanedData = preProcessCSVData(data, headers);
+
+        // Now we can update the rawData in the redux store
+        dispatch(setRawData(cleanedData));
+
+        // Finally we route to /main
+        navigate('/main');
     } 
     
-
     function handleOnClose() {
         // Reset the previewData in the redux store
         dispatch(resetPreviewData());
@@ -240,7 +288,13 @@ export default function HomePage() {
                         <PrimaryButton text={"Upload Sample"} action={() => setIsFileUploadOpen(true)}/>
                         {dataExists ? <PrimaryButton text={"Resume"} action={() => navigate('/main')}/> : null}
                         <PrimaryButton text={"Load Pipeline"} action={() => handlePipelineLoad()} disabled={pipelineLoad===""}/>
-                        <StyledInput $width={"500px"} $margin={'auto'} onChange={(e) => handlePipelineInput(e.target.value)} placeholder="Enter pipeline ID"/>
+                        <StyledInput
+                            $width={"500px"}
+                            $margin={'auto'}
+                            value={pipelineLoad}
+                            onChange={(e) => handlePipelineInput(e.target.value)}
+                            placeholder="Enter pipeline ID"
+                        />
                     </StyledButtonContainer>
                 </StyledContentContainer>
             </StyledHomeContentContainer>
