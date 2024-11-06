@@ -56,8 +56,9 @@ export function PipelineHistorySection({show}: { show: boolean }) {
                                                 $active={block.id === activeBlockId}
                                                 onClick={() => dispatch(setActiveBlockId(block.id))}>
                         <div>{block.name}</div>
-                        {block.type === "CSVStringLoader" ? <CSVViewer blockId={block.id} small={true}/> :
-                            <LineChart block={block} small={true}/>}
+                        {/*block.type === "CSVStringLoader" ? <CSVViewer blockId={block.id} small={true}/> :
+                            <LineChart block={block} small={true}/>*/}
+                        <LineChart block={block} small={true}/>
                     </StyledHistoryItemContainer>
                 )
             })}

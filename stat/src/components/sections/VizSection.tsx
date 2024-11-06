@@ -96,7 +96,8 @@ export function VizSection({ block }: { block: BlockModel }) {
       )}
 
       <StyledChartContainer $controlsVisible={controlsVisible}>
-        {block.type === "CSVStringLoader" ? <CSVViewer blockId={block.id} /> : <LineChart block={block} />}
+        {/*block.type === "CSVStringLoader" ? <CSVViewer blockId={block.id} /> : <LineChart block={block} />*/}
+        <LineChart block={block}/>
       </StyledChartContainer>
 
       {controlsVisible && (

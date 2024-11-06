@@ -72,6 +72,21 @@ export function convertToDataDocument(data: any[]): DataDocument[] {
     });
 }
 
+export function convertRawDataToDataDocument(rawData: any[]): DataDocument[] {
+    if (!rawData.length) {
+        console.log("No Raw Data");
+        return [];
+    }
+    const columns = Object.keys(rawData[0]);
+    return rawData.map(row => {
+        const rowObject: DataDocument = {};
+        columns.forEach(column => {
+            rowObject[column] = parseFloat(formatNumber(row[column])) as number | null;
+        });
+        return rowObject;
+    });
+}
+
 export function getFirstKey(dict: Record<string, any>): string | undefined {
     const keys = Object.keys(dict);
     return keys.length > 0 ? keys[0] : undefined;
