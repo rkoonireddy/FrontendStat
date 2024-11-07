@@ -62,6 +62,12 @@ export type BlockModel = {
     filters: {[key: string]: FilterModel};
 };
 
+export type LoaderModel = BlockModel & {
+    freq_hz: number;
+    csv_string: string;
+    header: boolean;
+}
+
 export type SettableField = {
     [key: string]: {
         title: string,
