@@ -28,9 +28,10 @@ interface LineChartProps {
     block: BlockModel;
     small?: boolean;
     mini?: boolean;
+    dataLoader?: boolean;
 }
 
-export function LineChart({block, small = false, mini = false}: LineChartProps) {
+export function LineChart({block, small = false, mini = false, dataLoader = false}: LineChartProps) {
     const pipeline = useAppSelector(getPipeline);
     const rawData = useAppSelector(getData);
     const [chartData, setChartData] = useState<DataDocument[]>([]);
@@ -44,13 +45,17 @@ export function LineChart({block, small = false, mini = false}: LineChartProps) 
 
             const columnNames = Object.keys(dataArray[0] || {}).slice(1);
             setLegendLabels(columnNames);
-        } else {
-            console.log("Dataloader block, using raw data");
+        } else if (dataLoader && rawData.length > 0) {
+            //console.log("Dataloader block, using raw data");
             const dataArray = convertRawDataToDataDocument(rawData);
             setChartData(dataArray);
 
             const columnNames = Object.keys(dataArray[0] || {}).slice(1);
             setLegendLabels(columnNames);
+        }
+        else {
+            setChartData([]);
+            setLegendLabels([]);
         }
     }, [block, pipeline]);
 

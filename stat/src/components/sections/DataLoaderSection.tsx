@@ -40,7 +40,7 @@ export function DataLoaderSection({ block }: { block: BlockModel }) {
             <CSVViewer blockId={block.id} sample={4}/>
         </StyledStackedChartContainer>
         <StyledStackedChartContainer $height={70}>
-            <LineChart block={block}/>
+            <LineChart block={block} dataLoader={true}/>
         </StyledStackedChartContainer>
       </StyledDataLoaderSectionContainer>
     );

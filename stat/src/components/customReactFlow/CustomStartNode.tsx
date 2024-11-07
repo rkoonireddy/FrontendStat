@@ -16,7 +16,6 @@ import {useAppDispatch, useAppSelector} from "../../hooks";
 import {ReactComponent as InfoSVG} from "../../assets/info-circle-fill.svg"
 import { ReactComponent as CloseSVG } from '../../assets/x.svg';
 import {getActiveBlockId, getBlockById, setActiveBlockId} from "../../redux/pipelineSlice";
-import CSVViewer from "../charts/CSVViewer";
 import {LineChart} from "../charts/LineChart";
 import styled from "styled-components";
 
@@ -71,10 +70,10 @@ const CustomStartNode = ({data}: CustomNodeProps) => {
             { block &&
                 <StyledNodeOutputContainer onMouseEnter={() => setShowOutputPopup(true)}
                                            onMouseLeave={() => setShowOutputPopup(false)}>
-                    <LineChart block={block} small={true} mini={true}/>
+                    <LineChart block={block} small={true} mini={true} dataLoader={true}/>
                     {showOutputPopup &&
                         <StyledNodeOutputPopup>
-                            <LineChart block={block} small={true}/>
+                            <LineChart block={block} small={true} dataLoader={true}/>
                         </StyledNodeOutputPopup>}
                 </StyledNodeOutputContainer>}
 

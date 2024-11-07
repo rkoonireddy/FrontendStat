@@ -3,7 +3,6 @@ import {getActiveBlockId, getBlocks, setActiveBlockId} from "../../redux/pipelin
 import {useAppDispatch, useAppSelector} from "../../hooks";
 import {LineChart} from "../charts/LineChart";
 import React from "react";
-import CSVViewer from "../charts/CSVViewer";
 
 const StyledPipelineHistorySection = styled.div<{ $historyVisible: boolean }>`
     display: flex;
@@ -56,9 +55,7 @@ export function PipelineHistorySection({show}: { show: boolean }) {
                                                 $active={block.id === activeBlockId}
                                                 onClick={() => dispatch(setActiveBlockId(block.id))}>
                         <div>{block.name}</div>
-                        {/*block.type === "CSVStringLoader" ? <CSVViewer blockId={block.id} small={true}/> :
-                            <LineChart block={block} small={true}/>*/}
-                        <LineChart block={block} small={true}/>
+                        <LineChart block={block} small={true} dataLoader={block.type === "CSVStringLoader"}/>
                     </StyledHistoryItemContainer>
                 )
             })}
