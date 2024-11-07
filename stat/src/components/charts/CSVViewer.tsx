@@ -23,7 +23,7 @@ const StyledCSVTable = styled.table<{ $small?: boolean, $mini?: boolean }>`
     width: 100%;
     border-collapse: collapse;
     border-spacing: 0;
-    margin-top: ${props => (props.$small ? '0' : '20px')};
+    margin-top: ${props => (props.$small ? '0' : '10px')};
     border: 1px solid #ddd;
     font-size: ${props => (!props.$small ? '1rem' : (props.$mini ? '0.4rem': '0.6rem'))};
     max-height: 100%;
@@ -54,19 +54,19 @@ export const StyledCheckbox = styled.input`
 `;
 
 const StyledFrequency = styled.div`
-    margin-top: 20px;
-    text-align: center;
-    font-size: 1.25rem;
+    margin-top: 5px;
+    text-align: left;
+    font-size: 0.85rem;
     color: white;
 `;
 
-export default function CSVViewer({blockId, small, mini}: { blockId: string; small?: boolean, mini?: boolean }) {
+export default function CSVViewer({blockId, small, mini, sample = 20}: { blockId: string; small?: boolean, mini?: boolean, sample?: number }) {
     const dispatch = useAppDispatch();
     const rawData = useAppSelector(getData);
     const filteredDataChanged = useAppSelector(getFilteredDataChanged);
     const filteredDataCSVString = useAppSelector(getFilteredDataAsCSVString);
     const dataFrequency = useAppSelector(getFrequency);
-    const data = rawData.slice(0, 20);
+    const data = rawData.slice(0, sample);
     const columns = data.length > 0 ? Object.keys(data[0]) : [];
 
     const [selectedColumns, setSelectedColumns] = useState<string[]>(columns);

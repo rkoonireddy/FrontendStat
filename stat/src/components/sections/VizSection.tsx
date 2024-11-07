@@ -5,8 +5,8 @@ import { ReactComponent as DownSVG } from "../../assets/caret-down-fill.svg";
 import { ReactComponent as RightSVG } from "../../assets/caret-right-fill.svg";
 import { ReactComponent as UpSVG } from "../../assets/caret-up-fill.svg";
 import { PipelineHistorySection } from "./PipelineHistorySection";
+import { DataLoaderSection } from "./DataLoaderSection";
 import { LineChart } from "../charts/LineChart";
-import CSVViewer from "../charts/CSVViewer";
 import { useAppDispatch } from "../../hooks";
 import {
   setBlockControlsExpanded,
@@ -95,11 +95,12 @@ export function VizSection({ block }: { block: BlockModel }) {
         </>
       )}
 
-      <StyledChartContainer $controlsVisible={controlsVisible}>
-        {/*block.type === "CSVStringLoader" ? <CSVViewer blockId={block.id} /> : <LineChart block={block} />*/}
-        <LineChart block={block}/>
-      </StyledChartContainer>
-
+      {block.type === "CSVStringLoader" ?<DataLoaderSection block={block} /> :
+         <StyledChartContainer $controlsVisible={controlsVisible}>
+            <LineChart block={block} />
+          </StyledChartContainer>
+      }
+      
       {controlsVisible && (
         <>
           {controlsExpanded && (
