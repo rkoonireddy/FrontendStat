@@ -3,7 +3,9 @@ import {
     getFilteredDataAsCSVString,
     getFilteredDataChanged,
     setFilteredData,
-    setFilteredDataChanged
+    setFilteredDataChanged,
+    getRawDataColumns,
+    getFilteredDataColumns
 } from "../../redux/dataSlice";
 import styled from "styled-components";
 import {useState, useEffect} from "react";
@@ -67,9 +69,10 @@ export default function CSVViewer({blockId, small, mini, sample = 20}: { blockId
     const filteredDataCSVString = useAppSelector(getFilteredDataAsCSVString);
     const dataFrequency = useAppSelector(getFrequency);
     const data = rawData.slice(0, sample);
-    const columns = data.length > 0 ? Object.keys(data[0]) : [];
+    const columns = useAppSelector(getRawDataColumns);
+    const filteredColumns = useAppSelector(getFilteredDataColumns);
 
-    const [selectedColumns, setSelectedColumns] = useState<string[]>(columns);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(filteredColumns);
 
     function updateRawData() {
         if (rawData.length > 0) {

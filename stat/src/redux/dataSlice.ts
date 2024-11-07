@@ -8,14 +8,16 @@ interface IDataState {
     previewData: { [key: string]: string }[],
     rawData: { [key: string]: string; }[],
     filteredData: { [key: string]: string; }[],
-    filteredDataChanged: boolean
+    filteredDataChanged: boolean,
+    initialized: boolean
 }
 
 const initialState: IDataState = {
     previewData: [] as Array<{ [key: string]: string }>,
     rawData: [] as Array<{ [key: string]: string }>,
     filteredData: [] as Array<{ [key: string]: string }>,
-    filteredDataChanged: true
+    filteredDataChanged: true,
+    initialized: false
 }
 
 export const readData = createAsyncThunk("data/readData",
@@ -39,6 +41,7 @@ export const dataSlice = createSlice({
             state.rawData = [];
             state.filteredData = [];
             state.filteredDataChanged = false;
+            state.initialized = false;
         },
         resetPreviewData: (state) => {
             state.previewData = [];
@@ -55,10 +58,12 @@ export const dataSlice = createSlice({
         },
         setFilteredData: (state: {
             filteredData: { [key: string]: string; }[],
-            filteredDataChanged: boolean;
+            filteredDataChanged: boolean,
+            initialized: boolean;
         }, action: { payload: { [key: string]: string; }[]; }) => {
             state.filteredData = action.payload;
             state.filteredDataChanged = true;
+            state.initialized = true;
         },
         setFilteredDataChanged: (state: { filteredDataChanged: boolean; }, action: { payload: boolean; }) => {
             state.filteredDataChanged = action.payload;
@@ -101,6 +106,17 @@ export const rawDataExists = createSelector(
 export const getFilteredDataChanged = (state: RootState) => state.data.filteredDataChanged;
 
 export const getFilteredData = (state: RootState) => state.data.filteredData;
+
+export const getRawDataColumns = (state: RootState) => 
+    state.data.rawData.length > 0 ? Object.keys(state.data.rawData[0]) : [];
+
+// If the filtered data is not initialized, return the columns of the raw data
+export const getFilteredDataColumns = (state: RootState): string[] => {
+    if(state.data.initialized){
+        return state.data.filteredData.length > 0 ? Object.keys(state.data.filteredData[0]) : [];
+    }
+    return getRawDataColumns(state);
+};
 
 export const getFilteredDataAsCSVString = createSelector(
     getFilteredData,
