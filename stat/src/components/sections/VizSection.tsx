@@ -36,7 +36,7 @@ const StyledChartContainer = styled.div<{ $controlsVisible: boolean }>`
   margin: auto;
 `;
 
-const StyledShowHideControls = styled.div<{ $marginTop?: string; $isExpanded: boolean }>`
+export const StyledShowHideControls = styled.div<{ $marginTop?: string; $isExpanded: boolean }>`
   display: flex;
   align-items: center;
   background-color: ${(props) => (props.$isExpanded ? '#73b5b4' : '#73b5b4')};
