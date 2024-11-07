@@ -2,7 +2,8 @@ import styled from "styled-components";
 import { useEffect, useState } from "react";
 import { LineChart } from "../charts/LineChart";
 import CSVViewer from "../charts/CSVViewer";
-//import { useAppDispatch } from "../../hooks";
+import { useAppDispatch, useAppSelector } from "../../hooks";
+import { setTableExpanded, getTableExpanded } from "../../redux/pipelineSlice";
 import { BlockModel } from "../../types/responseType";
 import { StyledShowHideControls } from "./VizSection";
 import { ReactComponent as DownSVG } from "../../assets/caret-down-fill.svg";
@@ -32,18 +33,13 @@ const StyledStackedChartContainer = styled.div<{ $height: number }>`
 
 
 export function DataLoaderSection({ block }: { block: BlockModel }) {
-  //const dispatch = useAppDispatch();
-  const [tableExpanded, setTableExpanded] = useState<boolean>(false);
-
-  /*useEffect(() => {
-    setTableExpanded(block.config_params.controlsExpanded);
-  }, [block]);*/
+  const dispatch = useAppDispatch();
+  const tableExpanded = useAppSelector(getTableExpanded);
 
   return (
     <StyledDataLoaderSectionContainer id={"dataloader-section"}>
       {!tableExpanded && (
-        <StyledShowHideControls //onClick={() => dispatch(setTableExpanded(true))}
-          onClick={() => setTableExpanded(true)}
+        <StyledShowHideControls onClick={() => dispatch(setTableExpanded(true))}
           $isExpanded={tableExpanded}>
           <DownSVG style={{ width: "25px", height: "25px", color: "#ffffff" }} />
           <span style={{ color: "#ffffff" }}>Feature Selector</span>
@@ -55,9 +51,7 @@ export function DataLoaderSection({ block }: { block: BlockModel }) {
         </StyledStackedChartContainer>
       )}
       {tableExpanded && (
-        <StyledShowHideControls //onClick={() => dispatch(setTableExpanded(false))}
-          //$marginTop="10px" -> this will work only if the position is relative, not absolute
-          onClick={() => setTableExpanded(false)}
+        <StyledShowHideControls onClick={() => dispatch(setTableExpanded(false))}
           $isExpanded={tableExpanded}>
           <UpSVG style={{ width: "25px", height: "25px", color: "#ffffff" }} />
           <span style={{ color: "#ffffff" }}>Feature Selector</span>
