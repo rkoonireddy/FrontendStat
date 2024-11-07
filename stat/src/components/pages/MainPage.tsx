@@ -5,18 +5,9 @@ import {ReactComponent as PlusSVG} from "../../assets/plus-square.svg";
 import {useNavigate} from "react-router-dom";
 import {StepsSection} from "../sections/StepsSection";
 import {VizSection} from "../sections/VizSection";
-import {
-    createNewBlock,
-    getActiveBlock, getLoading,
-    getPipelineModel, updatePipeline
-} from "../../redux/pipelineSlice";
-import {useAppDispatch, useAppSelector} from "../../hooks";
-import {useEffect, useState} from "react";
-import {StyledInput} from "../controls/InputControl";
-import {Dropdown} from "primereact/dropdown";
-import {PrimaryButton} from "../buttons/PrimaryButton";
-import {getBlockTypes} from "../../service/blockService";
-import {Popup} from "../pageElements/Popup";
+import {getActiveBlock, getLoading} from "../../redux/pipelineSlice";
+import {useAppSelector} from "../../hooks";
+import {useState} from "react";
 import {Loading} from "../pageElements/Loading";
 import {ErrorPopup} from "../pageElements/ErrorPopup";
 import {BlockPopup} from "../pageElements/BlockPopup";

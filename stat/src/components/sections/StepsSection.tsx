@@ -23,7 +23,7 @@ import CustomStartNode from "../customReactFlow/CustomStartNode";
 import CustomEdge from "../customReactFlow/CustomEdge";
 import {ReactComponent as RunSVG} from "../../assets/run.svg";
 import {ReactComponent as ExportSVG} from "../../assets/filetype-py.svg";
-import {ReactComponent as CopySVG} from "../../assets/copy_id.svg";
+import {ReactComponent as CopySVG} from "../../assets/copy.svg";
 
 const NodeTypes = {customNode: CustomNode, customStartNode: CustomStartNode};
 const edgeTypes = {
@@ -204,7 +204,7 @@ function Flow() {
                         navigator.clipboard.writeText(pipeline.id);
                         alert("Pipeline ID copied to clipboard.");
                     }}>
-                        <CopySVG style={{width: "38px", height: "38px", fill: "#ffffff"}}/>
+                        <CopySVG style={{width: "35px", height: "35px", fill: "#ffffff"}}/>
                     </StyledActionButton>
                 </StyledToolbar>
             </Panel>
