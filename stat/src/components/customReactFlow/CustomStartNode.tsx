@@ -17,6 +17,7 @@ import {ReactComponent as InfoSVG} from "../../assets/info-circle-fill.svg"
 import { ReactComponent as CloseSVG } from '../../assets/x.svg';
 import {getActiveBlockId, getBlockById, setActiveBlockId} from "../../redux/pipelineSlice";
 import CSVViewer from "../charts/CSVViewer";
+import {LineChart} from "../charts/LineChart";
 import styled from "styled-components";
 
 
@@ -66,18 +67,17 @@ const CustomStartNode = ({data}: CustomNodeProps) => {
             <StyledTag>
                 {data.tag}
             </StyledTag>
-            <StyledNodeOutputContainer onMouseEnter={() => setShowOutputPopup(true)}
-                                       onMouseLeave={() => setShowOutputPopup(false)}>
-                {block &&
-                    <>
-                        Table
-                        {showOutputPopup &&
-                            <StyledNodeOutputPopupStart>
-                                <CSVViewer blockId={block.id} small={true} mini={true}/>
-                            </StyledNodeOutputPopupStart>}
-                    </>
-                }
-            </StyledNodeOutputContainer>
+            
+            { block &&
+                <StyledNodeOutputContainer onMouseEnter={() => setShowOutputPopup(true)}
+                                           onMouseLeave={() => setShowOutputPopup(false)}>
+                    <LineChart block={block} small={true} mini={true}/>
+                    {showOutputPopup &&
+                        <StyledNodeOutputPopup>
+                            <LineChart block={block} small={true}/>
+                        </StyledNodeOutputPopup>}
+                </StyledNodeOutputContainer>}
+
         </StyledNodeContainer>
     );
 };
