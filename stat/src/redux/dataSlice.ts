@@ -107,16 +107,21 @@ export const getFilteredDataChanged = (state: RootState) => state.data.filteredD
 
 export const getFilteredData = (state: RootState) => state.data.filteredData;
 
-export const getRawDataColumns = (state: RootState) => 
-    state.data.rawData.length > 0 ? Object.keys(state.data.rawData[0]) : [];
+export const getRawDataColumns = createSelector(
+    (state: RootState) => state.data.rawData,
+    (rawData) => rawData.length > 0 ? Object.keys(rawData[0]) : []
+);
 
 // If the filtered data is not initialized, return the columns of the raw data
-export const getFilteredDataColumns = (state: RootState): string[] => {
-    if(state.data.initialized){
-        return state.data.filteredData.length > 0 ? Object.keys(state.data.filteredData[0]) : [];
+export const getFilteredDataColumns = createSelector(
+    (state: RootState) => state.data,
+    (data) => {
+        if (data.initialized) {
+            return data.filteredData.length > 0 ? Object.keys(data.filteredData[0]) : [];
+        }
+        return data.rawData.length > 0 ? Object.keys(data.rawData[0]) : [];
     }
-    return getRawDataColumns(state);
-};
+);
 
 export const getFilteredDataAsCSVString = createSelector(
     getFilteredData,
