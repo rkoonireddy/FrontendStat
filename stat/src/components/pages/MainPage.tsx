@@ -17,6 +17,7 @@ const StyledMainPage = styled.div`
     position: relative;
     display: grid;
     grid-template-columns: 70px 500px calc(100vw - 570px);
+    align-items: flex-end;
     background: linear-gradient(to bottom right, #3D3D3D 0%, #000000 100%);
 `;
 
