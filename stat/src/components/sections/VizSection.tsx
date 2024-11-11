@@ -146,7 +146,6 @@ export function VizSection({ block }: { block: BlockModel }) {
         {isCompareMode ? (
           <>
             <CompareCharts />
-            <LineChart block={block} />
           </>
         ) : block.type === "CSVStringLoader" ? (
           <CSVViewer blockId={block.id} />
