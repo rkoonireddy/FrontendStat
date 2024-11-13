@@ -1,5 +1,4 @@
 import styled from "styled-components";
-import { useEffect, useState } from "react";
 import { LineChart } from "../charts/LineChart";
 import CSVViewer from "../charts/CSVViewer";
 import { useAppDispatch, useAppSelector } from "../../hooks";
