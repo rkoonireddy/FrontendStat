@@ -154,7 +154,7 @@ export function LineChart({block, small = false, mini = false}: LineChartProps) 
             .style("stroke", "white")
             .call(xAxis)
             .selectAll("path, line")
-            .style("stroke", "white")
+            .style("stroke", "black")
             .style("stroke-width", small ? "1px" : "2px");
 
         svg.select<SVGGElement>(".y-axis")
@@ -162,7 +162,7 @@ export function LineChart({block, small = false, mini = false}: LineChartProps) 
             .style("stroke", "white")
             .call(yAxis)
             .selectAll("path, line")
-            .style("stroke", "white")
+            .style("stroke", "black")
             .style("stroke-width", small ? "1px" : "2px");
 
         const lineGenerator = line<number | null>()

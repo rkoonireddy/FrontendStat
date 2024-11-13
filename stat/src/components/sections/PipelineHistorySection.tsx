@@ -3,7 +3,7 @@ import {getActiveBlockId, getBlocks, setActiveBlockId} from "../../redux/pipelin
 import {useAppDispatch, useAppSelector} from "../../hooks";
 import {LineChart} from "../charts/LineChart";
 import React from "react";
-import CSVViewer from "../charts/CSVViewer";
+import {HorizontalScrollContainer} from "../pageElements/HorizontalScrollContainer";
 
 const StyledPipelineHistorySection = styled.div<{ $historyVisible: boolean }>`
     display: flex;
@@ -24,7 +24,7 @@ const StyledPipelineHistorySection = styled.div<{ $historyVisible: boolean }>`
 
 const StyledHistoryItemContainer = styled.div<{ $historyVisible: boolean, $active: boolean }>`
     display: flex;
-    min-width: ${props => props.$historyVisible ? 'calc(23% - 10px)' : 'calc(13% - 10px)'};
+    min-width: ${props => props.$historyVisible ? 'calc(30% - 10px)' : 'calc(13% - 10px)'};
     height: calc(100% - 10px);
     margin: 5px;
     padding: 5px;
@@ -50,18 +50,21 @@ export function PipelineHistorySection({show}: { show: boolean }) {
 
     return (
         <StyledPipelineHistorySection $historyVisible={show}>
-            {blocks.map((block) => {
-                return (
-                    <StyledHistoryItemContainer key={block.id} $historyVisible={show}
-                                                $active={block.id === activeBlockId}
-                                                onClick={() => dispatch(setActiveBlockId(block.id))}>
-                        <div>{block.name}</div>
-                        {block.type === "CSVStringLoader" ? <CSVViewer blockId={block.id} small={true}/> :
-                            <LineChart block={block} small={true}/>}
-                    </StyledHistoryItemContainer>
-                )
-            })}
-
+            <HorizontalScrollContainer id={"pipeline-history"}>
+                {blocks.map((block) => {
+                    return (
+                        <>
+                            {block.type !== 'CSVStringLoader' ?
+                                <StyledHistoryItemContainer key={block.id} $historyVisible={show}
+                                                            $active={block.id === activeBlockId}
+                                                            onClick={() => dispatch(setActiveBlockId(block.id))}>
+                                    <div>{block.name}</div>
+                                    <LineChart block={block} small={true}/>
+                                </StyledHistoryItemContainer> : null}
+                        </>
+                    )
+                })}
+            </HorizontalScrollContainer>
         </StyledPipelineHistorySection>
     )
 }

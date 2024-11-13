@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import {useAppSelector} from "../../hooks";
 import {BlockModel} from "../../types/responseType";
 import styled from "styled-components";

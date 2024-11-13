@@ -6,7 +6,7 @@ import { ReactComponent as RightSVG } from "../../assets/caret-right-fill.svg";
 import { ReactComponent as UpSVG } from "../../assets/caret-up-fill.svg";
 import { PipelineHistorySection } from "./PipelineHistorySection";
 import { LineChart } from "../charts/LineChart";
-import { CompareCharts } from "../charts/CompareCharts";
+import { CompareCharts } from "./CompareCharts";
 import CSVViewer from "../charts/CSVViewer";
 import { useAppDispatch } from "../../hooks";
 import {
