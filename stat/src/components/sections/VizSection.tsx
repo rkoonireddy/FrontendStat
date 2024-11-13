@@ -62,25 +62,24 @@ const StyledToggleButton = styled.div`
   align-items: center;
   justify-content: center;
   margin: 10px auto;
-  padding: 5px;
-  border-radius: 20px;
   width: 200px;
   cursor: pointer;
+  border: 1px solid #73b5b4;
+    border-radius: 15px;
 `;
 
-const ToggleOption = styled.div<{ isSelected: boolean }>`
+const StyledToggleOption = styled.div<{ $isSelected: boolean }>`
   flex: 1;
   text-align: center;
   padding: 4px 10px;
-  border: 4px solid ${props => !props.isSelected ? '#73B5B4' : '#73B5B4'};
-  color: ${(props) => (props.isSelected ? "black": "#ffffff")};
-  background-color: ${(props) => (props.isSelected ? "#e0e0e0" : '#73b5b4')};
-  font-weight: ${(props) => (props.isSelected ? "bold" : "normal")};
-  border-radius: 0px;
+  color: ${(props) => (props.$isSelected ? "#73B5B4": "#ffffff")};
+  background: ${props => props.$isSelected ? '#eeede9' : 'linear-gradient(to bottom right, #3D3D3D 0%, #000000 100%)'};
+  font-weight: ${(props) => (props.$isSelected ? "bold" : "normal")};
   transition: background-color 0.3s, color 0.3s;
+  border-radius: 15px;
 
   &:hover {
-    background-color: ${(props) => (props.isSelected ? "#d0d0d0":'#73b5b4')};
+    background-color: ${(props) => (props.$isSelected ? "#d0d0d0":'#73b5b4')};
   }
 `;
 
@@ -128,18 +127,18 @@ export function VizSection({ block }: { block: BlockModel }) {
 
       <div style={{ display: "flex", alignContent: "flex-start", flexWrap: "wrap" }}>
         <StyledToggleButton>
-          <ToggleOption
-            isSelected={!isCompareMode}
+          <StyledToggleOption
+            $isSelected={!isCompareMode}
             onClick={() => setIsCompareMode(false)}
           >
             Visualize
-          </ToggleOption>
-          <ToggleOption
-            isSelected={isCompareMode}
+          </StyledToggleOption>
+          <StyledToggleOption
+            $isSelected={isCompareMode}
             onClick={() => setIsCompareMode(true)}
           >
             Compare
-          </ToggleOption>
+          </StyledToggleOption>
         </StyledToggleButton>
       </div>
 

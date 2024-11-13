@@ -67,7 +67,7 @@ export function CompareLineChart({selectedFilters}: CompareLineChartProps) {
         if (!svgRef.current || dimensions.width === 0 || dimensions.height === 0) return;
         const svg = d3.select(svgRef.current);
 
-        const margin = {top: 20, right: 10, bottom: 40, left: 70};
+        const margin = {top: 10, right: 10, bottom: 50, left: 70};
         const width = dimensions.width - margin.left - margin.right;
         const height = dimensions.height - margin.top - margin.bottom;
 

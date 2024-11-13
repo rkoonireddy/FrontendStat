@@ -12,8 +12,6 @@ const StyledBlocksContainer = styled.div`
     inset: 0;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
 `;
 
 const StyledBlockLineSelectorContainer = styled.div<{ borderColor: string }>`
