@@ -17,7 +17,7 @@ import { stat } from "fs";
 import {downloadPythonScript} from "../util/fileUtil";
 
 
-interface IPipelineState {
+export interface IPipelineState {
     pipelineModel: PipelineModel
     blocks: BlockModel[]
     activeBlockId: string | null
@@ -34,11 +34,11 @@ interface IPipelineState {
 }
 
 const initialPipelineModel: PipelineModel = {
+    id: '',
+    type: '',
     block_dict: {},
     edge_dict: {},
-    id: '',
-    type: ''
-}
+};
 
 const initialState: IPipelineState = {
     pipelineModel: initialPipelineModel,
@@ -59,6 +59,18 @@ export const createNewPipeline = createAsyncThunk<PipelineModel, void, { rejectV
             return await createPipeline();
         } catch (error) {
             return thunkAPI.rejectWithValue('Failed to create pipeline');
+        }
+    }
+);
+
+export const checkPipeline = createAsyncThunk<boolean, string, { rejectValue: string }>(
+    'pipeline/check',
+    async (pipelineId, thunkAPI) => {
+        try {
+            await fetchPipeline({pipelineId});
+            return true;
+        } catch (error) {
+            return thunkAPI.rejectWithValue('Failed to find pipeline in the database');
         }
     }
 );
@@ -319,6 +331,10 @@ export const pipelineSlice = createSlice({
         builder.addCase(createNewPipeline.rejected, (state, action) => {
             console.log(action.error.message);
             state.loading = false;
+            state.errorStatus = true;
+            state.errorMessage = String(action.payload);
+        });
+        builder.addCase(checkPipeline.rejected, (state, action) => {
             state.errorStatus = true;
             state.errorMessage = String(action.payload);
         });

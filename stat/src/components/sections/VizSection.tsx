@@ -7,6 +7,8 @@ import { ReactComponent as UpSVG } from "../../assets/caret-up-fill.svg";
 import { PipelineHistorySection } from "./PipelineHistorySection";
 import { DataLoaderSection } from "./DataLoaderSection";
 import { LineChart } from "../charts/LineChart";
+import { CompareCharts } from "./CompareCharts";
+import CSVViewer from "../charts/CSVViewer";
 import { useAppDispatch } from "../../hooks";
 import {
   setBlockControlsExpanded,
@@ -16,7 +18,7 @@ import { BlockModel } from "../../types/responseType";
 
 const StyledVizSectionContainer = styled.div`
   position: relative;
-  display: flex;
+  display: flex;  
   flex-direction: column;
   background-color: #ffffff08;
   height: calc(100vh - 15px);
@@ -28,12 +30,14 @@ const StyledChartContainer = styled.div<{ $controlsVisible: boolean }>`
   justify-content: center;
   background-color: #ffffff08;
   padding: 5px;
-  width: calc(100% - 20px);
+  width: calc(100% - 10px);
   height: ${(props) =>
     props.$controlsVisible ? 'calc(100% - 80px)' : 'calc(100% - 30px)'}; 
   border-radius: 15px;
   flex-grow: 1;
   margin: auto;
+  flex-direction: column;
+  position: relative;
 `;
 
 export const StyledShowHideControls = styled.div<{ $marginTop?: string; $isExpanded: boolean }>`
@@ -54,13 +58,40 @@ export const StyledShowHideControls = styled.div<{ $marginTop?: string; $isExpan
   }
 `;
 
+const StyledToggleButton = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 10px auto;
+  width: 200px;
+  cursor: pointer;
+  border: 1px solid #73b5b4;
+    border-radius: 15px;
+`;
+
+const StyledToggleOption = styled.div<{ $isSelected: boolean }>`
+  flex: 1;
+  text-align: center;
+  padding: 4px 10px;
+  color: ${(props) => (props.$isSelected ? "#73B5B4": "#ffffff")};
+  background: ${props => props.$isSelected ? '#eeede9' : 'linear-gradient(to bottom right, #3D3D3D 0%, #000000 100%)'};
+  font-weight: ${(props) => (props.$isSelected ? "bold" : "normal")};
+  transition: background-color 0.3s, color 0.3s;
+  border-radius: 15px;
+
+  &:hover {
+    background-color: ${(props) => (props.$isSelected ? "#d0d0d0":'#73b5b4')};
+  }
+`;
+
 export function VizSection({ block }: { block: BlockModel }) {
   const dispatch = useAppDispatch();
 
-  const [historyVisible, setHistoryVisible] = useState<boolean>(false);
-  const [historyExpanded, setHistoryExpanded] = useState<boolean>(false);
+  const [historyVisible, setHistoryVisible] = useState<boolean>(true);
+  const [historyExpanded, setHistoryExpanded] = useState<boolean>(true);
   const [controlsVisible, setControlsVisible] = useState<boolean>(false);
   const [controlsExpanded, setControlsExpanded] = useState<boolean>(false);
+  const [isCompareMode, setIsCompareMode] = useState(false);
 
   useEffect(() => {
     setHistoryVisible(block.config_params.historyVisible);
@@ -70,13 +101,13 @@ export function VizSection({ block }: { block: BlockModel }) {
   }, [block]);
 
   return (
-    <StyledVizSectionContainer id={"viz-section"}>
+    <StyledVizSectionContainer id="viz-section">
       {historyVisible && (
         <>
           {!historyExpanded && (
             <StyledShowHideControls 
               onClick={() => dispatch(setBlockHistoryExpanded(true))}
-              $isExpanded={historyExpanded} // Pass the state here
+              $isExpanded={historyExpanded}
             >
               <RightSVG style={{ width: "25px", height: "25px", color: "#ffffff" }} />
               <span style={{ color: "#ffffff" }}>View the pipeline history</span>
@@ -86,7 +117,7 @@ export function VizSection({ block }: { block: BlockModel }) {
           {historyExpanded && (
             <StyledShowHideControls 
               onClick={() => dispatch(setBlockHistoryExpanded(false))}
-              $isExpanded={historyExpanded} // Pass the state here
+              $isExpanded={historyExpanded}
             >
               <UpSVG style={{ width: "25px", height: "25px", color: "#ffffff" }} />
               <span style={{ color: "#ffffff" }}>Pipeline History</span>
@@ -95,18 +126,41 @@ export function VizSection({ block }: { block: BlockModel }) {
         </>
       )}
 
-      {block.type === "CSVStringLoader" ?<DataLoaderSection block={block} /> :
-         <StyledChartContainer $controlsVisible={controlsVisible}>
-            <LineChart block={block} />
-          </StyledChartContainer>
-      }
-      
+      <div style={{ display: "flex", alignContent: "flex-start", flexWrap: "wrap" }}>
+        <StyledToggleButton>
+          <StyledToggleOption
+            $isSelected={!isCompareMode}
+            onClick={() => setIsCompareMode(false)}
+          >
+            Visualize
+          </StyledToggleOption>
+          <StyledToggleOption
+            $isSelected={isCompareMode}
+            onClick={() => setIsCompareMode(true)}
+          >
+            Compare
+          </StyledToggleOption>
+        </StyledToggleButton>
+      </div>
+
+      <StyledChartContainer $controlsVisible={controlsVisible}>
+        {isCompareMode ? (
+          <>
+            <CompareCharts />
+          </>
+        ) : block.type === "CSVStringLoader" ? (
+          <CSVViewer blockId={block.id} />
+        ) : (
+          <LineChart block={block} />
+        )}
+      </StyledChartContainer>
+
       {controlsVisible && (
         <>
           {controlsExpanded && (
             <StyledShowHideControls 
               onClick={() => dispatch(setBlockControlsExpanded(false))}
-              $isExpanded={controlsExpanded} // Pass the state here
+              $isExpanded={controlsExpanded}
             >
               <DownSVG style={{ width: "25px", height: "25px", color: "#ffffff" }} />
               <span style={{ color: "#ffffff" }}>The controls</span>
@@ -116,7 +170,7 @@ export function VizSection({ block }: { block: BlockModel }) {
           {!controlsExpanded && (
             <StyledShowHideControls 
               onClick={() => dispatch(setBlockControlsExpanded(true))}
-              $isExpanded={controlsExpanded} // Pass the state here
+              $isExpanded={controlsExpanded}
             >
               <RightSVG style={{ width: "25px", height: "25px", color: "#ffffff" }} />
               <span style={{ color: "#ffffff" }}>View the controls</span>

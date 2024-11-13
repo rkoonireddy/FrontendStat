@@ -23,6 +23,7 @@ import CustomStartNode from "../customReactFlow/CustomStartNode";
 import CustomEdge from "../customReactFlow/CustomEdge";
 import {ReactComponent as RunSVG} from "../../assets/run.svg";
 import {ReactComponent as ExportSVG} from "../../assets/filetype-py.svg";
+import {ReactComponent as CopySVG} from "../../assets/copy.svg";
 
 const NodeTypes = {customNode: CustomNode, customStartNode: CustomStartNode};
 const edgeTypes = {
@@ -172,35 +173,40 @@ function Flow() {
                 </button>
             </Panel>
             <Panel position={"bottom-right"}>
-                {pipelineExportableRunnable &&
-                    <StyledToolbar>
-                        <StyledActionButton title={"Run Pipeline"} onClick={(e) => {
-                            onSave();
+                <StyledToolbar>
+                    {pipelineExportableRunnable && activeBlock && activeBlock?.output?.Dataframe?.data !== undefined ?
+                        <StyledActionButton title={"Export Pipeline"} onClick={(e) => {
                             dispatch(setLoading(true));
-                            dispatch(executePipeline({
+                            dispatch(fetchExportPipeline({
                                 pipelineId: pipeline.id,
-                                startingBlockId: getFirstKey(pipeline.block_dict) as string
-                            }))
-                                .then(() => {
-                                    onRestore();
-                                });
+                                startBlockId: blocks[0].id,
+                                endBlockId: activeBlockId ? activeBlockId : blocks[blocks.length - 1].id
+                            }));
                             e.stopPropagation();
                         }}>
-                            <RunSVG style={{width: "50px", height: "50px", color: "#00ff00"}}/>
-                        </StyledActionButton>
-                        {activeBlock && activeBlock?.output?.Dataframe?.data !== undefined ?
-                            <StyledActionButton title={"Export Pipeline"} onClick={(e) => {
-                                dispatch(setLoading(true));
-                                dispatch(fetchExportPipeline({
-                                    pipelineId: pipeline.id,
-                                    startBlockId: blocks[0].id,
-                                    endBlockId: activeBlockId ? activeBlockId : blocks[blocks.length - 1].id
-                                }));
-                                e.stopPropagation();
-                            }}>
-                                <ExportSVG style={{width: "35px", height: "35px", color: "#ffffff"}}/>
-                            </StyledActionButton> : <div style={{width: "35px", height: "35px"}}/>}
-                    </StyledToolbar>}
+                            <ExportSVG style={{width: "35px", height: "35px", color: "#ffffff"}}/>
+                        </StyledActionButton> : <div style={{width: "35px", height: "35px"}}/>}
+                    {pipelineExportableRunnable && <StyledActionButton title={"Run Pipeline"} onClick={(e) => {
+                        onSave();
+                        dispatch(setLoading(true));
+                        dispatch(executePipeline({
+                            pipelineId: pipeline.id,
+                            startingBlockId: getFirstKey(pipeline.block_dict) as string
+                        }))
+                            .then(() => {
+                                onRestore();
+                            });
+                        e.stopPropagation();
+                    }}>
+                        <RunSVG style={{width: "50px", height: "50px", color: "#00ff00"}}/>
+                    </StyledActionButton>}
+                    <StyledActionButton title={"Copy Pipeline ID"} onClick={() => {
+                        navigator.clipboard.writeText(pipeline.id);
+                        alert("Pipeline ID copied to clipboard.");
+                    }}>
+                        <CopySVG style={{width: "35px", height: "35px", fill: "#ffffff"}}/>
+                    </StyledActionButton>
+                </StyledToolbar>
             </Panel>
         </ReactFlow>
     );

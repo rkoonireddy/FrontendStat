@@ -12,7 +12,7 @@ import {
 } from "../../redux/pipelineSlice";
 import {ReactComponent as TrashSVG} from "../../assets/trash3-fill.svg";
 import {ReactComponent as InfoSVG} from "../../assets/info-circle-fill.svg"
-import { ReactComponent as CloseSVG } from '../../assets/x.svg';
+import {ReactComponent as CloseSVG} from '../../assets/x.svg';
 import {LineChart} from "../charts/LineChart";
 
 export const StyledNodeContainer = styled.div<{ $active?: boolean }>`
@@ -66,18 +66,19 @@ export const StyledNodeInfoIcon = styled(InfoSVG)`
     left: 3px;
     width: 7px;
     height: 7px;
-    color: 	#989898;
+    color: #989898;
+
     &:hover {
         cursor: pointer;
         opacity: 0.8;
-        color: #0056b3; 
+        color: #0056b3;
     }
-`;    
+`;
 
 export const StyledInfoPopup = styled.div<{ $visible: boolean }>`
-    position: absolute; 
+    position: absolute;
     top: 10px;
-    left: 0; 
+    left: 0;
     font-size: 0.5vw;
     background: linear-gradient(to bottom right, #3D3D3D 0%, #000000 100%);
     color: #73B5B4;
@@ -86,10 +87,10 @@ export const StyledInfoPopup = styled.div<{ $visible: boolean }>`
     border-radius: 4px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     z-index: 100;
-    width: 150px; 
+    width: 150px;
     max-height: 250px;
     overflow-y: auto;
-    display: ${({ $visible }) => ($visible ? 'block' : 'none')};
+    display: ${({$visible}) => ($visible ? 'block' : 'none')};
 
 
     &::-webkit-scrollbar {
@@ -119,7 +120,7 @@ export const StyledCloseInfoIcon = styled(CloseSVG)`
     height: 10px;
     opacity: 0.5;
     color: #ff0000;
-    
+
     &:hover {
         cursor: pointer;
         opacity: 0.8;
@@ -171,7 +172,7 @@ const CustomNode = ({data}: CustomNodeProps) => {
 
     return (
         <StyledNodeContainer $active={data.id === activeNodeId} onClick={() => dispatch(setActiveBlockId(data.id))}>
-            <Handle type="target" position={Position.Top} />
+            <Handle type="target" position={Position.Top}/>
             <StyledDeleteButton title={"Delete Block"} onClick={(e) => {
                 dispatch(deleteBlockFromPipeline({pipelineId: pipeline.id, blockId: data.id}));
                 e.stopPropagation();
@@ -182,28 +183,28 @@ const CustomNode = ({data}: CustomNodeProps) => {
                 {data.label}
             </StyledNodeLabel>
             <StyledNodeType>{data.type}</StyledNodeType>
-            <Handle type="source" position={Position.Bottom} />
-            <StyledNodeInfoIcon 
-                title={"More information"} 
+            <Handle type="source" position={Position.Bottom}/>
+            <StyledNodeInfoIcon
+                title={"More information"}
                 onClick={(e) => {
                     e.stopPropagation();
                     // dispatch(setActiveBlockId(data.id));
                     togglePopup();
                 }}
             >
-                <InfoSVG />
+                <InfoSVG/>
             </StyledNodeInfoIcon>
             <StyledInfoPopup $visible={isInfoVisible}>
                 <StyledCloseInfoIcon onClick={(e) => {
                     e.stopPropagation();
                     setIsInfoVisible(false);
                 }}>
-                    <CloseSVG />
+                    <CloseSVG/>
                 </StyledCloseInfoIcon>
                 <p>{data.description}</p>
             </StyledInfoPopup>
             <StyledTag>
-            {data.tag}
+                {data.tag}
             </StyledTag>
             <Handle type="source" position={Position.Bottom}/>
             {blockConnected && block && block?.output?.Dataframe?.data !== undefined &&
@@ -211,9 +212,9 @@ const CustomNode = ({data}: CustomNodeProps) => {
                                            onMouseLeave={() => setShowOutputPopup(false)}>
                     <LineChart block={block} small={true} mini={true}/>
                     {showOutputPopup &&
-                        <StyledNodeOutputPopup>
-                            <LineChart block={block} small={true}/>
-                        </StyledNodeOutputPopup>}
+                            <StyledNodeOutputPopup>
+                                <LineChart block={block} small={true}/>
+                            </StyledNodeOutputPopup>}
                 </StyledNodeOutputContainer>}
         </StyledNodeContainer>
     )

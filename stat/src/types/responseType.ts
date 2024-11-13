@@ -1,3 +1,5 @@
+import { ListFormat } from "typescript";
+
 export interface CreateBlockResponse {
     block_id: string;
 }
@@ -60,7 +62,14 @@ export type BlockModel = {
         some_other_metadata: string;
     };
     filters: {[key: string]: FilterModel};
+    cols_to_process: number[] | (number | string | null)[];
 };
+
+export type LoaderModel = BlockModel & {
+    freq_hz: number;
+    csv_string: string;
+    header: boolean;
+}
 
 export type SettableField = {
     [key: string]: {
