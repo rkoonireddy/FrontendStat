@@ -79,9 +79,10 @@ export function convertRawDataToDataDocument(rawData: any[]): DataDocument[] {
     }
     const columns = Object.keys(rawData[0]);
     return rawData.map(row => {
-        const rowObject: DataDocument = {};
+        const rowObject: DataDocument = {}; 
         columns.forEach(column => {
-            rowObject[column] = parseFloat(formatNumber(row[column])) as number | null;
+            const parsedValue = parseFloat(formatNumber(row[column]));
+            rowObject[column] = isNaN(parsedValue) ? null : parsedValue;
         });
         return rowObject;
     });

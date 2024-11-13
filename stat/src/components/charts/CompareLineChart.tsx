@@ -138,6 +138,7 @@ export function CompareLineChart({selectedFilters}: CompareLineChartProps) {
             .text("Amplitude");
 
         const lineGenerator = line<number | null>()
+            .defined((d) => d !== null)
             .x((_, index) => xScale(index))
             .y(d => yScale(d ?? 0))
             .curve(curveCardinal);
