@@ -35,7 +35,8 @@ const StyledChartContainer = styled.div<{ $controlsVisible: boolean }>`
   border-radius: 15px;
   flex-grow: 1;
   margin: auto;
-  flex-direction: column; /* This ensures CompareCharts stacks correctly inside */
+  flex-direction: column;
+  position: relative;
 `;
 
 const StyledShowHideControls = styled.div<{ $marginTop?: string; $isExpanded: boolean }>`

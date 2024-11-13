@@ -1,10 +1,12 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, {useRef, useEffect, useState} from 'react';
 import * as d3 from 'd3';
-import { scaleLinear, axisBottom, axisLeft, line, curveCardinal } from 'd3';
-import { useAppSelector } from "../../hooks";
-import { IPipelineState } from "../../redux/pipelineSlice";
-import { BlockModel } from "../../types/responseType";
-import { convertToDataDocument } from "../../util/util";
+import {scaleLinear, axisBottom, axisLeft, line, curveCardinal} from 'd3';
+import {useAppSelector} from "../../hooks";
+import {IPipelineState} from "../../redux/pipelineSlice";
+import {BlockModel} from "../../types/responseType";
+import {convertToDataDocument} from "../../util/util";
+import {COLOR_PALETTE} from "../../Theme";
+import styled from "styled-components";
 
 const LINE_PATTERNS = [
     "none", // Solid line
@@ -13,16 +15,23 @@ const LINE_PATTERNS = [
     "5,2,1,2" // Dash-dot line
 ];
 
+const StyledCompareChartContainer = styled.div`
+    display: flex;
+    justify-content: center;
+    width: calc(100% - 10px);
+    height: calc(100% - 90px);
+`;
+
 interface CompareLineChartProps {
     selectedFilters: { [blockId: string]: string[] };
 }
 
-export function CompareLineChart({ selectedFilters }: CompareLineChartProps) {
+export function CompareLineChart({selectedFilters}: CompareLineChartProps) {
     const pipeline = useAppSelector((state: { pipeline: IPipelineState }) => state.pipeline);
-    const { blocks } = pipeline;
+    const {blocks} = pipeline;
 
     const svgRef = useRef<SVGSVGElement | null>(null);
-    const margin = { top: 20, right: 0, bottom: 40, left: 70 };
+    const margin = {top: 20, right: 0, bottom: 40, left: 70};
     const width = 1200 - margin.left - margin.right;
     const height = 550 - margin.top - margin.bottom;
 
@@ -32,17 +41,17 @@ export function CompareLineChart({ selectedFilters }: CompareLineChartProps) {
         const block = blocks.find((b: BlockModel) => b.id === blockId);
         if (block?.output?.Dataframe?.data) {
             const dataArray = convertToDataDocument(block.output.Dataframe.data);
-            return { blockId, data: dataArray, columns: selectedCols };
+            return {blockId, data: dataArray, columns: selectedCols};
         }
-        return { blockId, data: [], columns: selectedCols };
+        return {blockId, data: [], columns: selectedCols};
     });
 
     useEffect(() => {
         const svg = d3.select(svgRef.current);
         svg.selectAll('*').remove();
 
-        const xValues = dataToPlot.flatMap(({ data }) => data.map((_, index) => index));
-        const yValues = dataToPlot.flatMap(({ data, columns }) =>
+        const xValues = dataToPlot.flatMap(({data}) => data.map((_, index) => index));
+        const yValues = dataToPlot.flatMap(({data, columns}) =>
             columns.flatMap((column: string) => data.map(row => row[column] ?? 0))
         );
 
@@ -112,7 +121,7 @@ export function CompareLineChart({ selectedFilters }: CompareLineChartProps) {
 
         const columnPatterns: { [columnName: string]: string } = {};
 
-        dataToPlot.forEach(({ blockId, data, columns }, blockIndex) => {
+        dataToPlot.forEach(({blockId, data, columns}, blockIndex) => {
             columns.forEach((column: string, colIndex: number) => {
                 if (!columnPatterns[column]) {
                     columnPatterns[column] = LINE_PATTERNS[colIndex % LINE_PATTERNS.length];
@@ -124,7 +133,7 @@ export function CompareLineChart({ selectedFilters }: CompareLineChartProps) {
                 svg.append("path")
                     .datum(lineData)
                     .attr("fill", "none")
-                    .attr("stroke", d3.schemeCategory10[blockIndex % d3.schemeCategory10.length]) // Block color
+                    .attr("stroke", COLOR_PALETTE[blockIndex % COLOR_PALETTE.length]) // Block color
                     .attr("stroke-width", 1.5)
                     .attr("transform", `translate(${margin.left}, ${margin.top})`)
                     .attr("d", lineGenerator as any)
@@ -137,6 +146,8 @@ export function CompareLineChart({ selectedFilters }: CompareLineChartProps) {
     }, [dataToPlot, margin.left, margin.top, width, height, selectedLineIndex]);
 
     return (
-        <svg ref={svgRef} width={width + margin.left + margin.right} height={height + margin.top + margin.bottom} />
+        <StyledCompareChartContainer>
+            <svg ref={svgRef} width="100%" height="100%" style={{display: 'block'}}/>
+        </StyledCompareChartContainer>
     );
 }

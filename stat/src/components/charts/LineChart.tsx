@@ -16,12 +16,8 @@ import {getPipeline} from "../../redux/pipelineSlice";
 import {BlockModel} from "../../types/responseType";
 import {DataDocument} from "../../types/dataType";
 import {convertToDataDocument} from "../../util/util";
+import {COLOR_PALETTE} from "../../Theme";
 
-
-// Viridis colors - color blind color palette
-const DEFAULT_COLORS = [
-    "#fde725", "#90d743", "#35b779", "#21918c", "#31688e", "#443983", "#440154"
-];
 
 interface LineChartProps {
     block: BlockModel;
@@ -131,7 +127,7 @@ export function LineChart({block, small = false, mini = false}: LineChartProps) 
                         .attr("class", `line line-${lineIndex}`)
                         .attr("d", lineGenerator)
                         .attr("fill", "none")
-                        .attr("stroke", DEFAULT_COLORS[lineIndex % DEFAULT_COLORS.length])
+                        .attr("stroke", COLOR_PALETTE[lineIndex % COLOR_PALETTE.length])
                         .attr("stroke-opacity", selectedLineIndex === null || selectedLineIndex === lineIndex ? 1 : 0.4)
                         .attr("stroke-width", small || mini ? "1px" : "1.5px");
                 });
@@ -185,7 +181,7 @@ export function LineChart({block, small = false, mini = false}: LineChartProps) 
                 .attr("fill", "none")
                 .style("cursor", "pointer")
                 .attr("transform", `translate(${margin.left}, ${margin.top})`)
-                .attr("stroke", DEFAULT_COLORS[lineIndex % DEFAULT_COLORS.length])
+                .attr("stroke", COLOR_PALETTE[lineIndex % COLOR_PALETTE.length])
                 .attr("stroke-opacity", selectedLineIndex === null || selectedLineIndex === lineIndex ? 1 : 0.25)
                 .attr("stroke-width", selectedLineIndex === lineIndex ? "3px" : "1px")
                 .attr("stroke-width", small || mini ? "1px" : "2px")
@@ -237,7 +233,7 @@ export function LineChart({block, small = false, mini = false}: LineChartProps) 
                     .attr("x", -120)
                     .attr("y", lineIndex * 20 + 5)
                     .attr("dy", "0.35em")
-                    .style("fill", DEFAULT_COLORS[lineIndex % DEFAULT_COLORS.length])
+                    .style("fill", COLOR_PALETTE[lineIndex % COLOR_PALETTE.length])
                     .style("cursor", "pointer")
                     .style("text-anchor", "start")
                     .text(label)
@@ -266,7 +262,7 @@ export function LineChart({block, small = false, mini = false}: LineChartProps) 
                 .attr("y", (d, i) => i * 20 + 5)
                 .attr("dy", "0.35em")
                 .attr("opacity", (d, i) => selectedLineIndex === i ? 1 : 0.25)
-                .style("fill", (d, i) => DEFAULT_COLORS[i % DEFAULT_COLORS.length])
+                .style("fill", (d, i) => COLOR_PALETTE[i % COLOR_PALETTE.length])
                 .style("cursor", "pointer")
                 .style("text-anchor", "start")
                 .text(d => d);
