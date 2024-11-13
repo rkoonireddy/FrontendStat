@@ -13,9 +13,10 @@ import {
 } from "d3";
 import {useAppSelector} from "../../hooks";
 import {getPipeline} from "../../redux/pipelineSlice";
+import {getData} from "../../redux/dataSlice";
 import {BlockModel} from "../../types/responseType";
 import {DataDocument} from "../../types/dataType";
-import {convertToDataDocument} from "../../util/util";
+import {convertRawDataToDataDocument, convertToDataDocument} from "../../util/util";
 import {COLOR_PALETTE} from "../../Theme";
 
 
@@ -23,10 +24,12 @@ interface LineChartProps {
     block: BlockModel;
     small?: boolean;
     mini?: boolean;
+    dataLoader?: boolean;
 }
 
-export function LineChart({block, small = false, mini = false}: LineChartProps) {
+export function LineChart({block, small = false, mini = false, dataLoader = false}: LineChartProps) {
     const pipeline = useAppSelector(getPipeline);
+    const rawData = useAppSelector(getData);
     const [chartData, setChartData] = useState<DataDocument[]>([]);
     const [legendLabels, setLegendLabels] = useState<string[]>([]);
     const [selectedLineIndex, setSelectedLineIndex] = useState<number | null>(0);
@@ -38,7 +41,15 @@ export function LineChart({block, small = false, mini = false}: LineChartProps) 
 
             const columnNames = Object.keys(dataArray[0] || {}).slice(1);
             setLegendLabels(columnNames);
-        } else {
+        } else if (dataLoader && rawData.length > 0) {
+            //console.log("Dataloader block, using raw data");
+            const dataArray = convertRawDataToDataDocument(rawData);
+            setChartData(dataArray);
+
+            const columnNames = Object.keys(dataArray[0] || {}).slice(1);
+            setLegendLabels(columnNames);
+        }
+        else {
             setChartData([]);
             setLegendLabels([]);
         }
@@ -287,6 +298,7 @@ export function LineChart({block, small = false, mini = false}: LineChartProps) 
                     </svg>
                 </div>
             ) : (
+                /*
                 <div style={{
                     color: "#ffffff",
                     alignContent: "center",
@@ -295,6 +307,19 @@ export function LineChart({block, small = false, mini = false}: LineChartProps) 
                 }}>
                     {small ? 'Run Pipeline' : 'Please run the pipeline to visualize your data!'}
                 </div>
+                */
+                <div style={{width: '100%', height: '100%'}}>
+                <svg
+                    ref={svgRef}
+                    width="100%"
+                    height="100%"
+                    style={{display: 'block'}}
+                >
+                    <g className="x-axis"/>
+                    <g className="y-axis"/>
+                    <g className="chart-group"/>
+                </svg>
+            </div>
             )}
         </div>
     );

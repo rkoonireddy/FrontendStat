@@ -25,6 +25,7 @@ export interface IPipelineState {
     loading: boolean,
     errorStatus: boolean,
     errorMessage: string | null,
+    tableExpanded: boolean,
     controls: {
         [blockId: string]: {
             [controlName: string]: any
@@ -47,6 +48,7 @@ const initialState: IPipelineState = {
     loading: false,
     errorStatus: false,
     errorMessage: null,
+    tableExpanded: true,
     controls: {}
 }
 
@@ -313,6 +315,9 @@ export const pipelineSlice = createSlice({
         clearError(state) {
             state.errorStatus = false;
             state.errorMessage = null;
+        },
+        setTableExpanded(state, action: PayloadAction<boolean>) {
+            state.tableExpanded = action.payload;
         }
     },
     extraReducers: builder => {
@@ -433,7 +438,8 @@ export const {
     setLoading,
     addControl,
     updateControl,
-    clearError
+    clearError,
+    setTableExpanded
 } = pipelineSlice.actions;
 
 export default pipelineSlice.reducer;
@@ -470,6 +476,8 @@ export const getPipelineExists = (state: RootState) => state.pipeline.pipelineMo
 export const getLoading = (state: RootState) => state.pipeline.loading;
 
 export const getControls = (state: RootState) => state.pipeline.controls;
+
+export const getTableExpanded = (state: RootState) => state.pipeline.tableExpanded;
 
 export const blockConnectedToPipeline = createSelector(
     [(state: RootState, blockId: string) => blockId, getPipelineModel],
