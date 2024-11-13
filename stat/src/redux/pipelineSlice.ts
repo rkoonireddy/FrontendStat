@@ -17,7 +17,7 @@ import { stat } from "fs";
 import {downloadPythonScript} from "../util/fileUtil";
 
 
-interface IPipelineState {
+export interface IPipelineState {
     pipelineModel: PipelineModel
     blocks: BlockModel[]
     activeBlockId: string | null
@@ -33,11 +33,11 @@ interface IPipelineState {
 }
 
 const initialPipelineModel: PipelineModel = {
+    id: '',
+    type: '',
     block_dict: {},
     edge_dict: {},
-    id: '',
-    type: ''
-}
+};
 
 const initialState: IPipelineState = {
     pipelineModel: initialPipelineModel,

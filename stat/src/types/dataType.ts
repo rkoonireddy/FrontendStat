@@ -1,4 +1,6 @@
 
+import { BlockModel } from './responseType';
+
 export type DataPoint = {x: number, y: number};
 
 //for line chart
@@ -24,9 +26,8 @@ export type Pipeline = {
 }
 
 export interface PipelineModel {
-    id: string,
-    block_dict: { [key: string]: string[] },
-    edge_dict: { [key: string]: string[] },
-    // edge_data_dict: { [key: string]: string },
-    type: string
+    id: string;
+    block_dict: { [key: string]: string[] };
+    edge_dict: { [key: string]: string[] };
+    type: string;
 }
