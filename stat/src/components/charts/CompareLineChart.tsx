@@ -30,10 +30,8 @@ export function CompareLineChart({selectedFilters}: CompareLineChartProps) {
     const pipeline = useAppSelector((state: { pipeline: IPipelineState }) => state.pipeline);
     const {blocks} = pipeline;
 
+    const [dimensions, setDimensions] = useState({width: 0, height: 0});
     const svgRef = useRef<SVGSVGElement | null>(null);
-    const margin = {top: 20, right: 0, bottom: 40, left: 70};
-    const width = 1200 - margin.left - margin.right;
-    const height = 550 - margin.top - margin.bottom;
 
     const [selectedLineIndex, setSelectedLineIndex] = useState<number | null>(null);
 
@@ -47,7 +45,32 @@ export function CompareLineChart({selectedFilters}: CompareLineChartProps) {
     });
 
     useEffect(() => {
+        const svgElement = svgRef.current;
+        if (!svgElement) return;
+
+        const resizeObserver = new ResizeObserver(entries => {
+            if (!entries || entries.length === 0) return;
+            const {width, height} = entries[0].contentRect;
+            setDimensions({width, height});
+        });
+
+        resizeObserver.observe(svgElement);
+
+        return () => {
+            if (resizeObserver && svgElement) {
+                resizeObserver.unobserve(svgElement);
+            }
+        };
+    }, [selectedFilters]);
+
+    useEffect(() => {
+        if (!svgRef.current || dimensions.width === 0 || dimensions.height === 0) return;
         const svg = d3.select(svgRef.current);
+
+        const margin = {top: 20, right: 10, bottom: 40, left: 70};
+        const width = dimensions.width - margin.left - margin.right;
+        const height = dimensions.height - margin.top - margin.bottom;
+
         svg.selectAll('*').remove();
 
         const xValues = dataToPlot.flatMap(({data}) => data.map((_, index) => index));
@@ -143,7 +166,7 @@ export function CompareLineChart({selectedFilters}: CompareLineChartProps) {
             });
         });
 
-    }, [dataToPlot, margin.left, margin.top, width, height, selectedLineIndex]);
+    }, [dataToPlot, selectedLineIndex]);
 
     return (
         <StyledCompareChartContainer>

@@ -1,9 +1,10 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {useAppSelector} from "../../hooks";
 import {BlockModel} from "../../types/responseType";
 import styled from "styled-components";
 import {CompareLineChart} from "../charts/CompareLineChart";
 import {COLOR_PALETTE} from "../../Theme";
+import {HorizontalScrollContainer} from "../pageElements/HorizontalScrollContainer";
 
 const StyledBlocksContainer = styled.div`
     position: absolute;
@@ -45,28 +46,6 @@ const StyledCheckboxContainer = styled.div`
     flex-wrap: wrap;
 `;
 
-const StyledBlocksWrapper = styled.div`
-    display: flex;
-    flex-wrap: nowrap;
-    gap: 10px;
-    justify-content: flex-start;
-    overflow-x: auto;
-    padding-bottom: 10px;
-    min-height: fit-content;
-    max-width: 100%;
-    
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    &::-webkit-scrollbar {
-        display: none;
-    }
-
-    &:hover {
-        overflow-y: hidden;
-        overflow-x: scroll;
-    }
-`;
-
 const StyledBlockIdLabel = styled(StyledLabel)`
     text-align: center;
     font-size: 1rem;
@@ -100,7 +79,7 @@ export function CompareCharts() {
         <StyledBlocksContainer>
             <StyledBlockIdLabel>Choose features on different blocks to compare</StyledBlockIdLabel>
             {filteredBlocks.length > 0 ? (
-                <StyledBlocksWrapper>
+                <HorizontalScrollContainer id={"compare-charts"}>
                     {filteredBlocks.map((block: BlockModel, index) => (
                         <StyledBlockLineSelectorContainer key={block.id}
                                                           borderColor={COLOR_PALETTE[index % COLOR_PALETTE.length]}>
@@ -119,7 +98,7 @@ export function CompareCharts() {
                             </StyledCheckboxContainer>
                         </StyledBlockLineSelectorContainer>
                     ))}
-                </StyledBlocksWrapper>
+                </HorizontalScrollContainer>
             ) : (
                 <div>No available data blocks to compare at this time.</div>
             )}
