@@ -116,7 +116,7 @@ export function LineChart({block, small = false, mini = false, dataLoader = fals
 
         const zoomBehavior: ZoomBehavior<SVGSVGElement, unknown> = zoom<SVGSVGElement, unknown>()
             .scaleExtent([1, 5])
-            .translateExtent([[1, 0], [width, height]])
+            .translateExtent([[margin.left, margin.top], [width + margin.right, height + margin.bottom]])
             .on("zoom", (event) => {
                 const newXScale = event.transform.rescaleX(xScale);
                 const newYScale = event.transform.rescaleY(yScale);
