@@ -40,17 +40,17 @@ const StyledChartContainer = styled.div<{ $controlsVisible: boolean }>`
     position: relative;
 `;
 
-export const StyledShowHideControls = styled.div<{ $marginTop?: string; $isExpanded: boolean }>`
-    display: flex;
-    align-items: center;
-    background-color: ${(props) => (props.$isExpanded ? '#73b5b4' : '#73b5b4')};
-    justify-content: center;
-    height: 25px;
-    opacity: ${(props) => (props.$isExpanded ? '0.25' : '0.8')};
-    margin-left: 10px;
-    width: calc(100% - 20px);
-    margin-top: ${(props) => (props.$marginTop ? props.$marginTop : '10px')};
-    position: ${(props) => (props.$marginTop ? 'absolute' : 'relative')};
+const StyledShowHideControls = styled.div<{ $marginTop?: string; $isExpanded: boolean }>`
+  display: flex;
+  align-items: center;
+  background-color: ${(props) => (props.$isExpanded ? '#73b5b4' : '#73b5b4')};
+  justify-content: center;
+  height: 25px;
+  opacity: ${(props) => (props.$isExpanded ? '0.25' : '0.8')};
+  margin-left: 10px;
+  width: calc(100% - 20px);
+  margin-top: ${(props) => (props.$marginTop ? props.$marginTop : '10px')};
+  position: ${(props) => (props.$marginTop ? 'absolute' : 'relative')};
 
     &:hover {
         cursor: pointer;
