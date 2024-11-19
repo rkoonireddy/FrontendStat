@@ -186,7 +186,7 @@ function Flow() {
                         }}>
                             <ExportSVG style={{width: "35px", height: "35px", color: "#ffffff"}}/>
                         </StyledActionButton> : <div style={{width: "35px", height: "35px"}}/>}
-                    {pipelineExportableRunnable && <StyledActionButton title={"Run Pipeline"} onClick={(e) => {
+                    {<StyledActionButton title={"Run Pipeline"} onClick={(e) => {
                         onSave();
                         dispatch(setLoading(true));
                         dispatch(executePipeline({
