@@ -15,7 +15,9 @@ import {
     getAllEdges,
     getAllNodes,
     getBlocks,
-    getPipeline, setLoading
+    getPipeline,
+    setLoading,
+    snoopPipelineColumns
 } from "../../redux/pipelineSlice";
 import {createEdges, createNodesFromBlocks, getFirstKey} from "../../util/util";
 import CustomNode from "../customReactFlow/CustomNode";
@@ -106,6 +108,10 @@ function Flow() {
                     dispatch(
                         connectTwoBlocks({fromBlockId: edge.source, toBlockId: edge.target, pipelineId: pipeline.id}))
                         .unwrap()
+                        .then(() => {
+                            // If edge creation is successful, first let the pipieline snoop the columns
+                            return dispatch(snoopPipelineColumns({pipelineId: pipeline.id})).unwrap();
+                        })
                         .then(() => {
                             return addEdge(edge, eds);
                         })
