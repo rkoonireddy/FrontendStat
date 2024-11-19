@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import { LineChart } from "../charts/LineChart";
 import CSVViewer from "../charts/CSVViewer";
+import DescriptiveStats from "../charts/DescriptiveStats";
 //import { useAppDispatch } from "../../hooks";
 import { BlockModel } from "../../types/responseType";
 
@@ -33,6 +34,7 @@ export function DataLoaderSection({ block }: { block: BlockModel }) {
       <StyledDataLoaderSectionContainer id={"dataloader-section"}>
         <StyledStackedChartContainer $height={30}>
             <CSVViewer blockId={block.id} sample={4}/>
+            <DescriptiveStats blockId={block.id} sample={4}/>
         </StyledStackedChartContainer>
         <StyledStackedChartContainer $height={70}>
             <LineChart block={block} dataLoader={true}/>

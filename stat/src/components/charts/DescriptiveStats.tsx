@@ -12,13 +12,12 @@ import {useState, useEffect} from "react";
 import {useAppDispatch, useAppSelector} from "../../hooks";
 import {updateCSVLoaderBlock} from "../../service/blockService";
 import {fetchFullBlock, getFrequency} from "../../redux/pipelineSlice";
-import {formatNumber} from "../../util/util";
 
 const StyledTableContainer = styled.div`
     height: fit-content;
     width: fit-content;
-    max-width: 100%;
-    max-height: 100%;
+    max-width: 95%;
+    max-height: 95%;
 `;
 
 const StyledCSVTable = styled.table<{ $small?: boolean, $mini?: boolean }>`
@@ -56,13 +55,13 @@ export const StyledCheckbox = styled.input`
 `;
 
 const StyledFrequency = styled.div`
-    margin-top: 5px;
-    text-align: left;
-    font-size: 0.85rem;
+    margin-top: 15px;
+    text-align: right;
+    font-size: 1.0rem;
     color: white;
 `;
 
-export default function CSVViewer({blockId, small, mini, sample = 20}: { blockId: string; small?: boolean, mini?: boolean, sample?: number }) {
+export default function DescriptiveStats({blockId, small, mini, sample = 20}: { blockId: string; small?: boolean, mini?: boolean, sample?: number }) {
     const dispatch = useAppDispatch();
     const rawData = useAppSelector(getData);
     const filteredDataChanged = useAppSelector(getFilteredDataChanged);
@@ -123,40 +122,13 @@ export default function CSVViewer({blockId, small, mini, sample = 20}: { blockId
 
     return (
         <StyledTableContainer>
-            {data.length === 0 ? (
-                <div>No data available</div>
-            ) : (
-                <>
-                    {/*!small && <StyledFrequency>Data Frequency: {dataFrequency} Hz</StyledFrequency>*/}
-                    <StyledCSVTable $small={small} $mini={mini}>
-                        <thead>
-                        <tr>
-                            {columns.map(col => (
-                                <StyledTableHeader key={col} $isSelected={selectedColumns.includes(col)}>
-                                    {!mini && !small && <StyledCheckbox
-                                        type="checkbox"
-                                        checked={selectedColumns.includes(col)}
-                                        onChange={() => handleColumnChange(col)}
-                                    />}
-                                    {col}
-                                </StyledTableHeader>
-                            ))}
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {data.map((row, rowIndex) => (
-                            <tr key={rowIndex}>
-                                {columns.map(col => (
-                                    <StyledTableCell key={col} $isSelected={selectedColumns.includes(col)} $mini={mini}>
-                                        {formatNumber(row[col])} {/* Use the formatting function */}
-                                    </StyledTableCell>
-                                ))}
-                            </tr>
-                        ))}
-                        </tbody>
-                    </StyledCSVTable>
-                </>
-            )}
+            <StyledFrequency>Data Frequency: {dataFrequency} Hz</StyledFrequency>
+            <StyledFrequency>Column: x has y datapoints</StyledFrequency>
+            <StyledFrequency>Mean: x Hz</StyledFrequency>
+            <StyledFrequency>Median: x Hz</StyledFrequency>
+            <StyledFrequency>Range: x Hz</StyledFrequency>
+            <StyledFrequency>Variance: x Hz</StyledFrequency>
+            <StyledFrequency>Standard Deviation: x Hz</StyledFrequency>
         </StyledTableContainer>
     );
 }
