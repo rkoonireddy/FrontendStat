@@ -28,10 +28,6 @@ const StyledStackedChartContainer = styled.div<{ $height: number }>`
 
 
 export function DataLoaderSection({ block }: { block: BlockModel }) {
-    //const dispatch = useAppDispatch();
-    useEffect(() => {
-        //dispatch();
-    }, [block]);
   
     return (
       <StyledDataLoaderSectionContainer id={"dataloader-section"}>
