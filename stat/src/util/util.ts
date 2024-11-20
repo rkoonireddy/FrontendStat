@@ -1,3 +1,4 @@
+import { quantile } from "d3";
 import {DataDocument, DataPoint, PipelineModel} from "../types/dataType";
 import {BlockModel} from "../types/responseType";
 
@@ -137,4 +138,14 @@ export function getVariance(data: (string | null)[]): number {
 
 export function getStandardDeviation(data: (string | null)[]): number {
     return Math.sqrt(getVariance(data));
+}
+
+export function getQuartiles(data: (string | null)[]): number[] {
+    const numericData = data.filter((value): value is string => value !== null).map(Number);
+    const sortedData = numericData.sort((a, b) => a - b);
+    return [
+        quantile(sortedData, 0.25) ?? 0,
+        quantile(sortedData, 0.5) ?? 0,
+        quantile(sortedData, 0.75) ?? 0
+    ];
 }
