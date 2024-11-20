@@ -62,7 +62,17 @@ const StyledFrequency = styled.div`
     color: white;
 `;
 
-export default function CSVViewer({blockId, small, mini, sample = 20}: { blockId: string; small?: boolean, mini?: boolean, sample?: number }) {
+interface CSVViewerProps {
+    blockId: string;
+    small?: boolean;
+    mini?: boolean;
+    sample?: number;
+    hoveredColumn: string | null;
+    setHoveredColumn: (column: string | null) => void;
+}
+
+
+const CSVViewer: React.FC<CSVViewerProps> = ({ blockId, small, mini, sample = 20, hoveredColumn, setHoveredColumn }) => {
     const dispatch = useAppDispatch();
     const rawData = useAppSelector(getData);
     const filteredDataChanged = useAppSelector(getFilteredDataChanged);
@@ -73,6 +83,7 @@ export default function CSVViewer({blockId, small, mini, sample = 20}: { blockId
     const filteredColumns = useAppSelector(getFilteredDataColumns);
 
     const [selectedColumns, setSelectedColumns] = useState<string[]>(filteredColumns);
+    
 
     function updateRawData() {
         if (rawData.length > 0) {
@@ -132,7 +143,11 @@ export default function CSVViewer({blockId, small, mini, sample = 20}: { blockId
                         <thead>
                         <tr>
                             {columns.map(col => (
-                                <StyledTableHeader key={col} $isSelected={selectedColumns.includes(col)}>
+                                <StyledTableHeader key={col} 
+                                    $isSelected={selectedColumns.includes(col)}
+                                    onMouseEnter={() => setHoveredColumn(col)}
+                                    onMouseLeave={() => setHoveredColumn(null)}
+                                    >
                                     {!mini && !small && <StyledCheckbox
                                         type="checkbox"
                                         checked={selectedColumns.includes(col)}
@@ -160,3 +175,5 @@ export default function CSVViewer({blockId, small, mini, sample = 20}: { blockId
         </StyledTableContainer>
     );
 }
+
+export default CSVViewer;
