@@ -1,9 +1,8 @@
 import styled from "styled-components";
-import {StyledControl} from "../sections/ControlSection";
 import {useState} from "react";
-import {ControlTitle} from "./ControlTitle";
 import {useAppDispatch, useAppSelector} from "../../hooks";
 import {getActiveBlock, updateControl} from "../../redux/pipelineSlice";
+import {ControlContainer} from "./ControlContainer";
 
 const StyledInputContainer = styled.div`
     width: 100%;
@@ -45,6 +44,7 @@ export function InputControl(
     {
         title,
         displayName,
+        description,
         initialValue,
         columnSpan = 1,
         rowSpan = 1,
@@ -56,6 +56,7 @@ export function InputControl(
     {
         title: string,
         displayName: string,
+        description: string,
         initialValue: string,
         columnSpan?: number,
         rowSpan?: number,
@@ -95,8 +96,7 @@ export function InputControl(
     }
 
     return (
-        <StyledControl $columnSpan={columnSpan} $rowSpan={rowSpan}>
-            <ControlTitle title={displayName} margin={'0'}/>
+        <ControlContainer displayName={displayName} description={description} columnSpan={columnSpan} rowSpan={rowSpan}>
             <StyledInputContainer>
                 <StyledInput id={`input-${title.toLowerCase()}`}
                              value={value ?? ""}
@@ -105,6 +105,6 @@ export function InputControl(
                 $valid={isValid}/>
             </StyledInputContainer>
             {!isValid && <StyledControlError>{invalidMessage}</StyledControlError>}
-        </StyledControl>
+        </ControlContainer>
     );
 }

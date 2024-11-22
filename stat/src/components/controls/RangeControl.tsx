@@ -1,10 +1,9 @@
 import styled from "styled-components";
 import {useState} from "react";
 import {Slider} from "primereact/slider";
-import {StyledControl} from "../sections/ControlSection";
-import {ControlTitle} from "./ControlTitle";
 import {useAppDispatch, useAppSelector} from "../../hooks";
 import {getActiveBlock, updateControl} from "../../redux/pipelineSlice";
+import {ControlContainer} from "./ControlContainer";
 
 const StyledRangeContainer = styled.div`
   position: relative;
@@ -28,9 +27,10 @@ const StyledRangeValue = styled.div<{$left: boolean}>`
 `;
 
 
-export function RangeControl({title, displayName, range, initial_range, step, columnSpan = 2, rowSpan = 1}: {
+export function RangeControl({title, displayName, description, range, initial_range, step, columnSpan = 2, rowSpan = 1}: {
     title: string,
     displayName: string,
+    description: string,
     range: [number, number],
     step: number,
     initial_range: [number, number],
@@ -55,8 +55,7 @@ export function RangeControl({title, displayName, range, initial_range, step, co
     }
 
     return (
-        <StyledControl $columnSpan={columnSpan} $rowSpan={rowSpan}>
-            <ControlTitle title={displayName} margin={'0'}/>
+        <ControlContainer displayName={displayName} description={description} columnSpan={columnSpan} rowSpan={rowSpan}>
             <StyledRangeContainer>
                 <StyledRangeValue $left={true}>{value[0]}</StyledRangeValue>
                 <Slider value={value}
@@ -70,6 +69,6 @@ export function RangeControl({title, displayName, range, initial_range, step, co
                 />
                 <StyledRangeValue $left={false}>{value[1]}</StyledRangeValue>
             </StyledRangeContainer>
-        </StyledControl>
+        </ControlContainer>
     )
 }

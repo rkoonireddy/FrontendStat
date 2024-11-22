@@ -1,10 +1,9 @@
 import styled from "styled-components";
 import {useState} from "react";
 import {Slider} from "primereact/slider";
-import {StyledControl} from "../sections/ControlSection";
-import {ControlTitle} from "./ControlTitle";
 import {useAppDispatch, useAppSelector} from "../../hooks";
 import {getActiveBlock, updateControl} from "../../redux/pipelineSlice";
+import {ControlContainer} from "./ControlContainer";
 
 const StyledSliderContainer = styled.div`
   position: relative;
@@ -25,9 +24,10 @@ const StyledSliderValue = styled.div`
 `;
 
 
-export function VerticalIntegerSliderControl({title, displayName, min, max, step, start, columnSpan = 1, rowSpan = 1}: {
+export function VerticalIntegerSliderControl({title, displayName, description, min, max, step, start, columnSpan = 1, rowSpan = 1}: {
     title: string,
     displayName: string,
+    description: string,
     min: number,
     max: number,
     step: number,
@@ -48,8 +48,7 @@ export function VerticalIntegerSliderControl({title, displayName, min, max, step
     }
 
     return (
-        <StyledControl $columnSpan={columnSpan} $rowSpan={rowSpan}>
-            <ControlTitle title={displayName} />
+        <ControlContainer displayName={displayName} description={description} columnSpan={columnSpan} rowSpan={rowSpan}>
             <StyledSliderContainer>
                 <StyledSliderValue>{value}</StyledSliderValue>
                 <Slider min={min}
@@ -60,6 +59,6 @@ export function VerticalIntegerSliderControl({title, displayName, min, max, step
                         style={{height: height + "px", margin: "10px 0"}}
                         onChange={(e) => handleChange(e.value)}/>
             </StyledSliderContainer>
-        </StyledControl>
+        </ControlContainer>
     )
 }

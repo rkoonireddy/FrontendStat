@@ -2,22 +2,22 @@ import {useState} from "react";
 import {Knob} from "primereact/knob";
 import {MinusButton} from "../buttons/MinusButton";
 import {PlusButton} from "../buttons/PlusButton";
-import {StyledControl} from "../sections/ControlSection";
 import styled from "styled-components";
-import {ControlTitle} from "./ControlTitle";
+import {ControlContainer} from "./ControlContainer";
 
 
 const StyledButtonControls = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  padding: 0 5px 5px 5px;
-  margin-top: -15px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 0 5px 5px 5px;
+    margin-top: -15px;
 `;
 
-export function KnobControl({title, displayName, min, max, step, start, columnSpan = 1, rowSpan = 1}: {
+export function KnobControl({title, displayName, description, min, max, step, start, columnSpan = 1, rowSpan = 1}: {
     title: string,
     displayName: string,
+    description: string,
     min: number,
     max: number,
     step: number,
@@ -44,8 +44,7 @@ export function KnobControl({title, displayName, min, max, step, start, columnSp
     }
 
     return (
-        <StyledControl $columnSpan={columnSpan} $rowSpan={rowSpan}>
-            <ControlTitle title={displayName} />
+        <ControlContainer displayName={displayName} description={description} columnSpan={columnSpan} rowSpan={rowSpan}>
             <Knob value={value}
                   onChange={(e) => setValue(e.value)}
                   min={min}
@@ -60,6 +59,6 @@ export function KnobControl({title, displayName, min, max, step, start, columnSp
                 <MinusButton action={() => subtract()}/>
                 <PlusButton action={() => add()}/>
             </StyledButtonControls>
-        </StyledControl>
+        </ControlContainer>
     )
 }
