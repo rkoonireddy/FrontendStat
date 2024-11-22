@@ -155,7 +155,9 @@ export function LineChart({block, small = false, mini = false, dataLoader = fals
             }
         };
 
-        svg.call(zoomBehavior);
+        if (!small && !mini) {
+            svg.call(zoomBehavior);
+        }
         svg.on("dblclick.zoom", null);
         svg.on("dblclick", resetGraph);
 
