@@ -1,11 +1,11 @@
-import {getData} from "../../redux/dataSlice";
+import { getData, getFilteredDataColumns, getRawDataColumns } from "../../redux/dataSlice";
 import * as d3 from "d3";
 import styled from "styled-components";
-import {useState, useEffect, useRef} from "react";
-import {useAppDispatch, useAppSelector} from "../../hooks";
-import {updateCSVLoaderBlock} from "../../service/blockService";
-import {fetchFullBlock, getFrequency} from "../../redux/pipelineSlice";
-import {getMean, getMedian, getRange, formatNumber, getVariance, getStandardDeviation, getQuartiles} from "../../util/util";
+import { useState, useEffect, useRef } from "react";
+import { useAppDispatch, useAppSelector } from "../../hooks";
+import { updateCSVLoaderBlock } from "../../service/blockService";
+import { fetchFullBlock, getFrequency } from "../../redux/pipelineSlice";
+import { getMean, getMedian, getQuartiles } from "../../util/util";
 
 const StyledTableContainer = styled.div`
     height: fit-content;
@@ -14,23 +14,18 @@ const StyledTableContainer = styled.div`
     max-height: 95%;
 `;
 
-export const StyledTableHeader = styled.th<{ $isSelected: boolean }>`
+const StyledTableHeader = styled.th<{ $isSelected: boolean }>`
     background-color: ${props => (props.$isSelected ? '#3D3D3D' : '#adacac')};
     color: ${props => (props.$isSelected ? '#00bfa6' : '#808080')};
     border: 1px solid #00bfa6;
     padding: 8px;
     text-align: left;
 `;
-
-export const StyledTableCell = styled.td<{ $isSelected: boolean, $mini?: boolean }>`
+export const StyledTableCell = styled.td<{ $isSelected: boolean}>`
     border: 1px solid #00bfa6;
     color: ${props => (props.$isSelected ? '#ffffff' : '#808080')};
-    padding: ${props => (props.$mini ? '2px' : '8px')};
+    padding: 8px;
     background-color: ${props => (props.$isSelected ? '#3D3D3D' : '#adacac')};
-`;
-
-export const StyledFilterContainer = styled.div`
-    margin-bottom: 20px;
 `;
 
 export const StyledCheckbox = styled.input`
@@ -38,24 +33,24 @@ export const StyledCheckbox = styled.input`
     color: white;
 `;
 
-const StyledFrequency = styled.div`
-    margin-top: 15px;
-    text-align: right;
-    font-size: 1.0rem;
-    color: white;
+const StyledCSVTable = styled.table<{ $small?: boolean, $mini?: boolean }>`
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+    margin-top: ${props => (props.$small ? '0' : '10px')};
+    border: 1px solid #ddd;
+    font-size: ${props => (!props.$small ? '1rem' : (props.$mini ? '0.4rem' : '0.6rem'))};
+    max-height: 100%;
 `;
 
-export default function BoxPlot({blockId, hoveredColumn}: { blockId: string; hoveredColumn: string | null }) {
-    //const dispatch = useAppDispatch();
+export default function BoxPlot({ hoveredColumn }: { hoveredColumn: string | null }) {
     const rawData = useAppSelector(getData);
-    const dataFrequency = useAppSelector(getFrequency);
-    const columnLength = rawData.map(row => row[hoveredColumn as string]).filter((value): value is string => value !== null).length;
     const mean = getMean(rawData.map(row => row[hoveredColumn as string]));
     const median = getMedian(rawData.map(row => row[hoveredColumn as string]));
-    const range = getRange(rawData.map(row => row[hoveredColumn as string]));
-    const variance = getVariance(rawData.map(row => row[hoveredColumn as string]));
-    const stdev = getStandardDeviation(rawData.map(row => row[hoveredColumn as string]));
     const quartiles = getQuartiles(rawData.map(row => row[hoveredColumn as string]));
+    const filteredColumns = useAppSelector(getFilteredDataColumns);
+    const [selectedColumns, setSelectedColumns] = useState<string[]>(filteredColumns);
+    const columns = useAppSelector(getRawDataColumns);
 
     const svgRef = useRef<SVGSVGElement | null>(null);
     const columnData = rawData
@@ -63,6 +58,13 @@ export default function BoxPlot({blockId, hoveredColumn}: { blockId: string; hov
         .filter((value): value is string => value !== null && !isNaN(Number(value)))
         .map(value => Number(value));
 
+    const handleColumnChange = (column: string) => {
+        setSelectedColumns(prevSelectedColumns =>
+            prevSelectedColumns.includes(column)
+                ? prevSelectedColumns.filter(col => col !== column)
+                : [...prevSelectedColumns, column]
+        );
+    };
 
     useEffect(() => {
         if (svgRef.current) {
@@ -122,7 +124,7 @@ export default function BoxPlot({blockId, hoveredColumn}: { blockId: string; hov
                 .attr("y1", y(d3.max(columnData) as number))
                 .attr("y2", y(d3.max(columnData) as number))
                 .attr("stroke", "#7eb0d5");
-            
+
             svg.append("g") // Add x-axis instances
                 .attr("transform", `translate(0,${height - margin.bottom})`)
                 .call(d3.axisBottom(x).ticks(1))
@@ -139,18 +141,41 @@ export default function BoxPlot({blockId, hoveredColumn}: { blockId: string; hov
         }
     }, [columnData, hoveredColumn]);
 
+    /*return (
+        <StyledTableContainer>
+                <svg ref={svgRef} width={150} height={200}></svg>
+        </StyledTableContainer>
+    );*/
     return (
         <StyledTableContainer>
-            <div>
-                <svg ref={svgRef} width={150} height={200}></svg>
-            </div>
-            <StyledFrequency>Data Frequency: {dataFrequency} Hz</StyledFrequency>
-            <StyledFrequency>Column: {hoveredColumn} has {columnLength} observations</StyledFrequency>
-            <StyledFrequency>Mean: {formatNumber(mean)}</StyledFrequency>
-            <StyledFrequency>Median: {formatNumber(median)}</StyledFrequency>
-            <StyledFrequency>Range: {formatNumber(range)}</StyledFrequency>
-            <StyledFrequency>Variance: {formatNumber(variance)}</StyledFrequency>
-            <StyledFrequency>Standard Deviation: {formatNumber(stdev)}</StyledFrequency>
+            <StyledCSVTable $small={false} $mini={false}>
+                <thead>
+                    <tr>
+                        {columns.map(col => (
+                            <StyledTableHeader key={col}
+                                $isSelected={selectedColumns.includes(col)}
+                            /*onMouseEnter={() => setHoveredColumn(col)}
+                            onMouseLeave={() => setHoveredColumn(null)}*/
+                            >
+                                <StyledCheckbox
+                                    type="checkbox"
+                                    checked={selectedColumns.includes(col)}
+                                    onChange={() => handleColumnChange(col)}
+                                />
+                                {col}
+                            </StyledTableHeader>
+                        ))}
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        {columns.map(col => (
+                            <StyledTableCell key={col} $isSelected={selectedColumns.includes(col)}>
+                                <svg ref={svgRef} width={150} height={200}></svg>
+                            </StyledTableCell>))}
+                    </tr>
+                </tbody>
+            </StyledCSVTable>
         </StyledTableContainer>
     );
 }
