@@ -45,7 +45,7 @@ const StyledFrequency = styled.div`
     color: white;
 `;
 
-export default function DescriptiveStats({blockId, hoveredColumn}: { blockId: string; hoveredColumn: string | null }) {
+export default function BoxPlot({blockId, hoveredColumn}: { blockId: string; hoveredColumn: string | null }) {
     //const dispatch = useAppDispatch();
     const rawData = useAppSelector(getData);
     const dataFrequency = useAppSelector(getFrequency);

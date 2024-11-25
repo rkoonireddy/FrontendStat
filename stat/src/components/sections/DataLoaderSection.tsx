@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { LineChart } from "../charts/LineChart";
 import CSVViewer from "../charts/CSVViewer";
-import DescriptiveStats from "../charts/DescriptiveStats";
+import BoxPlot from "../charts/BoxPlot";
 //import { useAppDispatch } from "../../hooks";
 import { BlockModel } from "../../types/responseType";
 import {useState, useEffect} from "react";
@@ -36,7 +36,7 @@ export function DataLoaderSection({ block }: { block: BlockModel }) {
       <StyledDataLoaderSectionContainer id={"dataloader-section"}>
         <StyledStackedChartContainer $height={30}>
             <CSVViewer blockId={block.id} sample={4} hoveredColumn={hoveredColumn} setHoveredColumn={setHoveredColumn}/>
-            <DescriptiveStats blockId={block.id} hoveredColumn={hoveredColumn}/>
+            <BoxPlot blockId={block.id} hoveredColumn={hoveredColumn}/>
         </StyledStackedChartContainer>
         <StyledStackedChartContainer $height={70}>
             <LineChart block={block} dataLoader={true}/>
