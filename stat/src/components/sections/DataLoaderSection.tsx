@@ -2,6 +2,7 @@ import styled from "styled-components";
 import { LineChart } from "../charts/LineChart";
 import CSVViewer from "../charts/CSVViewer";
 import BoxPlot from "../charts/BoxPlot";
+import DescriptiveStatistics from "../charts/DescriptiveStatistics";
 //import { useAppDispatch } from "../../hooks";
 import { BlockModel } from "../../types/responseType";
 import {useState, useEffect} from "react";
@@ -37,7 +38,7 @@ const StyledButton = styled.button`
   color: white;
   border: none;
   border-radius: 5px;
-  padding: 10px 20px;
+  padding: 10px 10px;
   cursor: pointer;
   margin: 10px;
   &:hover {
@@ -46,7 +47,7 @@ const StyledButton = styled.button`
 `;
 
 export function DataLoaderSection({ block }: { block: BlockModel }) {
-  const [hoveredColumn, setHoveredColumn] = useState<string | null>(null);
+  const [hoveredColumn, setHoveredColumn] = useState<string | null>('timestamp');
   const [view, setView] = useState<'CSVViewer' | 'BoxPlot'>('BoxPlot');
 
   const toggleView = () => {
@@ -64,6 +65,7 @@ export function DataLoaderSection({ block }: { block: BlockModel }) {
           ) : (
             <BoxPlot blockId={block.id}/>
           )}
+        <DescriptiveStatistics column={hoveredColumn} />
       </SelectorContainer>
         <StyledStackedChartContainer $height={70} style={{ backgroundColor: '#ffffff08' }}>
           <LineChart block={block} dataLoader={true} />

@@ -4,18 +4,14 @@ import {useAppSelector} from "../../hooks";
 import {getFrequency} from "../../redux/pipelineSlice";
 import {getMean, getMedian, getRange, formatNumber, getVariance, getStandardDeviation} from "../../util/util";
 
-const StyledTableContainer = styled.div`
-    height: fit-content;
-    width: fit-content;
-    max-width: 95%;
-    max-height: 95%;
-`;
-
-const StyledFrequency = styled.div`
-    margin-top: 15px;
-    text-align: right;
-    font-size: 1.0rem;
-    color: white;
+export const StyledTableCell = styled.td<{}>`
+    display: table-cell;
+    border: 0px solid #00bfa6;
+    border-radius: 5px;
+    color:  white;
+    padding: 5px;
+    background-color: #3D3D3D;
+    font-size: 1.1rem;
 `;
 
 export default function BoxPlot({column}: {column: string | null }) {
@@ -30,14 +26,35 @@ export default function BoxPlot({column}: {column: string | null }) {
     const stdev = getStandardDeviation(rawData.map(row => row[column as string]));
 
     return (
-        <StyledTableContainer>
-            <StyledFrequency>Data Frequency: {dataFrequency} Hz</StyledFrequency>
-            <StyledFrequency>Column: {column} has {columnLength} observations</StyledFrequency>
-            <StyledFrequency>Mean: {formatNumber(mean)}</StyledFrequency>
-            <StyledFrequency>Median: {formatNumber(median)}</StyledFrequency>
-            <StyledFrequency>Range: {formatNumber(range)}</StyledFrequency>
-            <StyledFrequency>Variance: {formatNumber(variance)}</StyledFrequency>
-            <StyledFrequency>Standard Deviation: {formatNumber(stdev)}</StyledFrequency>
-        </StyledTableContainer>
+        <tbody>
+            <tr>
+                <StyledTableCell>Data Frequency:</StyledTableCell>
+                <StyledTableCell>{dataFrequency} Hz</StyledTableCell>
+            </tr>
+            <tr>
+                <StyledTableCell>{column} observations:</StyledTableCell>
+                <StyledTableCell>{columnLength}</StyledTableCell>
+            </tr>
+            <tr>
+                <StyledTableCell>Mean</StyledTableCell>
+                <StyledTableCell>{formatNumber(mean)}</StyledTableCell>
+            </tr>
+            <tr>
+                <StyledTableCell>Median</StyledTableCell>
+                <StyledTableCell>{formatNumber(median)}</StyledTableCell>
+            </tr>
+            <tr>
+                <StyledTableCell>Range</StyledTableCell>
+                <StyledTableCell>{formatNumber(range)}</StyledTableCell>
+            </tr>
+            <tr>
+                <StyledTableCell>Variance</StyledTableCell>
+                <StyledTableCell>{formatNumber(variance)}</StyledTableCell>
+            </tr>
+            <tr>
+                <StyledTableCell>Standard Deviation</StyledTableCell>
+                <StyledTableCell>{formatNumber(stdev)}</StyledTableCell>
+            </tr>
+        </tbody>
     );
 }
