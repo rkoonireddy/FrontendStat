@@ -67,12 +67,11 @@ interface CSVViewerProps {
     small?: boolean;
     mini?: boolean;
     sample?: number;
-    hoveredColumn: string | null;
     setHoveredColumn: (column: string | null) => void;
 }
 
 
-const CSVViewer: React.FC<CSVViewerProps> = ({ blockId, small, mini, sample = 20, hoveredColumn, setHoveredColumn }) => {
+const CSVViewer: React.FC<CSVViewerProps> = ({ blockId, small, mini, sample = 20, setHoveredColumn }) => {
     const dispatch = useAppDispatch();
     const rawData = useAppSelector(getData);
     const filteredDataChanged = useAppSelector(getFilteredDataChanged);

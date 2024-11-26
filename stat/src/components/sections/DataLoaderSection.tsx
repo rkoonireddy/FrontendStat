@@ -61,7 +61,7 @@ export function DataLoaderSection({ block }: { block: BlockModel }) {
           {view === 'CSVViewer' ? 'BoxPlot' : 'Table'}
         </StyledButton>
         {view === 'CSVViewer' ? (
-            <CSVViewer blockId={block.id} sample={5} hoveredColumn={hoveredColumn} setHoveredColumn={setHoveredColumn} />
+            <CSVViewer blockId={block.id} sample={5} setHoveredColumn={setHoveredColumn} />
           ) : (
             <BoxPlot blockId={block.id} setHoveredColumn={setHoveredColumn}/>
           )}
