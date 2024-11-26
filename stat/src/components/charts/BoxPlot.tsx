@@ -51,30 +51,24 @@ export default function BoxPlot() {
     const columns = useAppSelector(getRawDataColumns);
 
     useEffect(() => {
-        console.log("BoxPlot component mounted");
-        columns.forEach(col => {
-            drawBoxPlot(col);
-        });
+        columns.map(col => {drawBoxPlot(col)});
         return () => {
-            console.log("BoxPlot component unmounted");
+            //console.log("BoxPlot component unmounted");
         };
     }, []);
 
     const drawBoxPlot = (column: string) => {
-        console.log("Drawing box plot for column: ", column);
-        const container = d3.select(`#boxplot-container-${column}`);
-        //container.selectAll("*").remove(); // Clear previous content
-
+        const container = d3.select(`#boxplot-container-${column.replace('\r', '')}`);
+        container.selectAll("*").remove(); // Clear previous content
         const svg = container.append("svg")
             .attr("width", 150)
             .attr("height", 180);
-    
+
         const quartiles = getQuartiles(rawData.map(row => row[column]));
         const median = quartiles[1];
         const columnData = rawData.map(row => row[column])
             .filter((value): value is string => value !== null && !isNaN(Number(value)))
             .map(value => Number(value));
-        console.log("columnData: ", columnData);
         const width = 150;
         const height = 180;
         const margin = { top: 20, right: 10, bottom: 10, left: 40 };
@@ -129,15 +123,13 @@ export default function BoxPlot() {
             .attr("y2", y(d3.max(columnData) as number))
             .attr("stroke", "#7eb0d5");
 
-        console.log("g container: ", g.data());
         svg.append("g") // Add y-axis instances
             .attr("transform", `translate(${margin.left},0)`)
             .call(d3.axisLeft(y).ticks(5))
             .attr("stroke", "white")
             .selectAll("path")
             .attr("stroke", "black");
-        
-        console.log("svg container: ", svg.data());
+
     };
 
     const handleColumnChange = (column: string) => {
@@ -152,7 +144,7 @@ export default function BoxPlot() {
         <StyledTableContainer>
             <StyledCSVTable $small={false} $mini={false}>
                 <thead>
-                    <tr>
+                    { <tr>
                         {columns.map(col => (
                             <StyledTableHeader $isSelected={selectedColumns.includes(col)}>
                                 <StyledCheckbox
@@ -163,14 +155,15 @@ export default function BoxPlot() {
                                 {col}
                             </StyledTableHeader>
                         ))}
-                    </tr>
+                    </tr> }
                 </thead>
                 <tbody>
                     <tr>
                         {columns.map(col => (
-                            <StyledTableCell $isSelected={selectedColumns.includes(col)}>
-                                <div id={`boxplot-container-${col}`}></div>
-                            </StyledTableCell>))}
+                            <StyledTableCell  $isSelected={selectedColumns.includes(col)}>
+                                <div id={`boxplot-container-${col.replace('\r', '')}`}></div>
+                            </StyledTableCell>))
+                        }
                     </tr>
                 </tbody>
             </StyledCSVTable>
