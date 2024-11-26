@@ -6,6 +6,8 @@ import DescriptiveStatistics from "../charts/DescriptiveStatistics";
 //import { useAppDispatch } from "../../hooks";
 import { BlockModel } from "../../types/responseType";
 import {useState, useEffect} from "react";
+import BoxPlotImage from "../../assets/boxplot_icon.png";
+import TableImage from "../../assets/table_icon.png";
 
 
 const StyledDataLoaderSectionContainer = styled.div`
@@ -58,7 +60,9 @@ export function DataLoaderSection({ block }: { block: BlockModel }) {
       <StyledDataLoaderSectionContainer id={"dataloader-section"}>
       <SelectorContainer $height={30}>
         <StyledButton onClick={toggleView}>
-          {view === 'CSVViewer' ? 'BoxPlot' : 'Table'}
+          {view === 'CSVViewer' ? 
+          <img src={BoxPlotImage} alt="Box Plot" style={{width: '20px', height: '20px'}}/> :
+          <img src={TableImage} alt="Table" style={{width: '20px', height: '20px'}}/>}
         </StyledButton>
         {view === 'CSVViewer' ? (
             <CSVViewer blockId={block.id} sample={5} setHoveredColumn={setHoveredColumn} />

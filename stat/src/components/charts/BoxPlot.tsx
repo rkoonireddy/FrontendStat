@@ -28,8 +28,7 @@ const StyledTableHeader = styled.th<{ $isSelected: boolean }>`
 export const StyledTableCell = styled.td<{ $isSelected: boolean }>`
     border: 0px solid #00bfa6;
     color: ${props => (props.$isSelected ? '#ffffff' : '#808080')};
-    padding: 5px;
-    margin-left: 5px;
+    margin: 0px;
     background-color: ${props => (props.$isSelected ? '#3D3D3D' : '#adacac')};
     border-radius: 10px;
 `;
