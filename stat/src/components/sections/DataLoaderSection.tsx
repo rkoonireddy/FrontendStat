@@ -62,7 +62,7 @@ export function DataLoaderSection({ block }: { block: BlockModel }) {
         {view === 'CSVViewer' ? (
             <CSVViewer blockId={block.id} sample={5} hoveredColumn={hoveredColumn} setHoveredColumn={setHoveredColumn} />
           ) : (
-            <BoxPlot/>
+            <BoxPlot blockId={block.id}/>
           )}
       </SelectorContainer>
         <StyledStackedChartContainer $height={70} style={{ backgroundColor: '#ffffff08' }}>

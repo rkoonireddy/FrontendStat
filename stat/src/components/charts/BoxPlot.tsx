@@ -1,7 +1,8 @@
-import { getData, getFilteredDataColumns, getRawDataColumns } from "../../redux/dataSlice";
+import { getData, getFilteredDataColumns, getRawDataColumns, setFilteredData, 
+    getFilteredDataAsCSVString, getFilteredDataChanged, setFilteredDataChanged } from "../../redux/dataSlice";
 import * as d3 from "d3";
 import styled from "styled-components";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../hooks";
 import { updateCSVLoaderBlock } from "../../service/blockService";
 import { fetchFullBlock, getFrequency } from "../../redux/pipelineSlice";
@@ -43,14 +44,20 @@ const StyledCSVTable = styled.table<{ $small?: boolean, $mini?: boolean }>`
     max-height: 100%;
 `;
 
-export default function BoxPlot() {
+export default function BoxPlot({blockId}: {blockId: string}) {
+    const dispatch = useAppDispatch();
     const rawData = useAppSelector(getData);
-    //const mean = getMean(rawData.map(row => row[hoveredColumn as string]));
     const filteredColumns = useAppSelector(getFilteredDataColumns);
+    const filteredDataCSVString = useAppSelector(getFilteredDataAsCSVString);
+    const filteredDataChanged = useAppSelector(getFilteredDataChanged);
+    const dataFrequency = useAppSelector(getFrequency);
     const [selectedColumns, setSelectedColumns] = useState<string[]>(filteredColumns);
     const columns = useAppSelector(getRawDataColumns);
 
     useEffect(() => {
+        if (filteredDataCSVString == '') {
+            updateRawData();
+        }
         columns.map(col => {drawBoxPlot(col)});
         return () => {
             //console.log("BoxPlot component unmounted");
@@ -139,6 +146,38 @@ export default function BoxPlot() {
                 : [...prevSelectedColumns, column]
         );
     };
+
+    function updateRawData() {
+        if (rawData.length > 0) {
+            const filteredData = rawData.map(row =>
+                Object.fromEntries(Object.entries(row).filter(([key]) => selectedColumns.includes(key)))
+            );
+            dispatch(setFilteredData(filteredData));
+        }
+    }
+
+        // Update the csv loader block with the filtered data
+        useEffect(() => {
+            if (filteredDataChanged && blockId) {
+                dispatch(setFilteredDataChanged(false));
+                updateCSVLoaderBlock({
+                    blockId: blockId,
+                    frequency_hz: dataFrequency,
+                    csvString: filteredDataCSVString,
+                    header: true
+                }).then(r => {
+                    dispatch(fetchFullBlock(blockId));
+                });
+            }
+        }, [filteredDataCSVString, blockId]);
+    
+        // Update filtered data if column selection changes
+        useEffect(() => {
+            if (selectedColumns !== columns) {
+                updateRawData();
+            }
+    
+        }, [selectedColumns]);
 
     return (
         <StyledTableContainer>
