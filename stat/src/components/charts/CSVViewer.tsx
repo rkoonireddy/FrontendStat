@@ -8,11 +8,11 @@ import {
     getFilteredDataColumns
 } from "../../redux/dataSlice";
 import styled from "styled-components";
-import {useState, useEffect} from "react";
-import {useAppDispatch, useAppSelector} from "../../hooks";
-import {updateCSVLoaderBlock} from "../../service/blockService";
-import {fetchFullBlock, getFrequency} from "../../redux/pipelineSlice";
-import {formatNumber} from "../../util/util";
+import { useState, useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "../../hooks";
+import { updateCSVLoaderBlock } from "../../service/blockService";
+import { fetchFullBlock, getFrequency } from "../../redux/pipelineSlice";
+import { formatNumber } from "../../util/util";
 
 const StyledTableContainer = styled.div`
     height: fit-content;
@@ -27,7 +27,7 @@ const StyledCSVTable = styled.table<{ $small?: boolean, $mini?: boolean }>`
     border-spacing: 0;
     margin-top: ${props => (props.$small ? '0' : '10px')};
     border: 1px solid #ddd;
-    font-size: ${props => (!props.$small ? '1rem' : (props.$mini ? '0.4rem': '0.6rem'))};
+    font-size: ${props => (!props.$small ? '1rem' : (props.$mini ? '0.4rem' : '0.6rem'))};
     max-height: 100%;
 `;
 
@@ -82,7 +82,7 @@ const CSVViewer: React.FC<CSVViewerProps> = ({ blockId, small, mini, sample = 20
     const filteredColumns = useAppSelector(getFilteredDataColumns);
 
     const [selectedColumns, setSelectedColumns] = useState<string[]>(filteredColumns);
-    
+
 
     function updateRawData() {
         if (rawData.length > 0) {
@@ -140,33 +140,36 @@ const CSVViewer: React.FC<CSVViewerProps> = ({ blockId, small, mini, sample = 20
                     {/*!small && <StyledFrequency>Data Frequency: {dataFrequency} Hz</StyledFrequency>*/}
                     <StyledCSVTable $small={small} $mini={mini}>
                         <thead>
-                        <tr>
-                            {columns.map(col => (
-                                <StyledTableHeader key={col} 
-                                    $isSelected={selectedColumns.includes(col)}
-                                    onMouseEnter={() => setHoveredColumn(col)}
-                                    onMouseLeave={() => setHoveredColumn(null)}
-                                    >
-                                    {!mini && !small && <StyledCheckbox
-                                        type="checkbox"
-                                        checked={selectedColumns.includes(col)}
-                                        onChange={() => handleColumnChange(col)}
-                                    />}
-                                    {col}
-                                </StyledTableHeader>
-                            ))}
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {data.map((row, rowIndex) => (
-                            <tr key={rowIndex}>
+                            <tr>
                                 {columns.map(col => (
-                                    <StyledTableCell key={col} $isSelected={selectedColumns.includes(col)} $mini={mini}>
-                                        {formatNumber(row[col])} {/* Use the formatting function */}
-                                    </StyledTableCell>
+                                    <StyledTableHeader key={col}
+                                        $isSelected={selectedColumns.includes(col)}
+                                        onMouseEnter={() => setHoveredColumn(col)}
+                                        onMouseLeave={() => setHoveredColumn(null)}
+                                    >
+                                        {!mini && !small && <StyledCheckbox
+                                            type="checkbox"
+                                            checked={selectedColumns.includes(col)}
+                                            onChange={() => handleColumnChange(col)}
+                                        />}
+                                        {col}
+                                    </StyledTableHeader>
                                 ))}
                             </tr>
-                        ))}
+                        </thead>
+                        <tbody>
+                            {data.map((row, rowIndex) => (
+                                <tr key={rowIndex}>
+                                    {columns.map(col => (
+                                        <StyledTableCell key={col} $isSelected={selectedColumns.includes(col)} $mini={mini}
+                                            onMouseEnter={() => setHoveredColumn(col)}
+                                            onMouseLeave={() => setHoveredColumn(null)}
+                                        >
+                                            {formatNumber(row[col])} {/* Use the formatting function */}
+                                        </StyledTableCell>
+                                    ))}
+                                </tr>
+                            ))}
                         </tbody>
                     </StyledCSVTable>
                 </>

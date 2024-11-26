@@ -212,7 +212,10 @@ export default function BoxPlot({ blockId, setHoveredColumn }: { blockId: string
                 <tbody>
                     <tr>
                         {columns.map(col => (
-                            <StyledTableCell $isSelected={selectedColumns.includes(col)}>
+                            <StyledTableCell $isSelected={selectedColumns.includes(col)}
+                                onMouseEnter={() => setHoveredColumn(col)}
+                                onMouseLeave={() => setHoveredColumn(null)}
+                            >
                                 <div id={`boxplot-container-${col.replace('\r', '')}`}></div>
                             </StyledTableCell>))
                         }
