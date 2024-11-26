@@ -47,7 +47,7 @@ const StyledButton = styled.button`
 
 export function DataLoaderSection({ block }: { block: BlockModel }) {
   const [hoveredColumn, setHoveredColumn] = useState<string | null>(null);
-  const [view, setView] = useState<'CSVViewer' | 'BoxPlot'>('CSVViewer');
+  const [view, setView] = useState<'CSVViewer' | 'BoxPlot'>('BoxPlot');
 
   const toggleView = () => {
     setView((prevView) => (prevView === 'CSVViewer' ? 'BoxPlot' : 'CSVViewer'));
@@ -62,7 +62,7 @@ export function DataLoaderSection({ block }: { block: BlockModel }) {
         {view === 'CSVViewer' ? (
             <CSVViewer blockId={block.id} sample={5} hoveredColumn={hoveredColumn} setHoveredColumn={setHoveredColumn} />
           ) : (
-            <BoxPlot hoveredColumn={'ecg'} />
+            <BoxPlot/>
           )}
       </SelectorContainer>
         <StyledStackedChartContainer $height={70} style={{ backgroundColor: '#ffffff08' }}>
