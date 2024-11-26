@@ -1,8 +1,8 @@
-import {getData} from "../../redux/dataSlice";
+import { getData } from "../../redux/dataSlice";
 import styled from "styled-components";
-import {useAppSelector} from "../../hooks";
-import {getFrequency} from "../../redux/pipelineSlice";
-import {getMean, getMedian, getRange, formatNumber, getVariance, getStandardDeviation} from "../../util/util";
+import { useAppSelector } from "../../hooks";
+import { getFrequency } from "../../redux/pipelineSlice";
+import { getMean, getMedian, getRange, formatNumber, getVariance, getStandardDeviation } from "../../util/util";
 
 export const StyledTableCell = styled.td<{}>`
     display: table-cell;
@@ -14,7 +14,7 @@ export const StyledTableCell = styled.td<{}>`
     font-size: 1.1rem;
 `;
 
-export default function BoxPlot({column}: {column: string | null }) {
+export default function BoxPlot({ column }: { column: string | null }) {
     //const dispatch = useAppDispatch();
     const rawData = useAppSelector(getData);
     const dataFrequency = useAppSelector(getFrequency);
@@ -26,35 +26,41 @@ export default function BoxPlot({column}: {column: string | null }) {
     const stdev = getStandardDeviation(rawData.map(row => row[column as string]));
 
     return (
-        <tbody>
-            <tr>
-                <StyledTableCell>Data Frequency:</StyledTableCell>
-                <StyledTableCell>{dataFrequency} Hz</StyledTableCell>
-            </tr>
-            <tr>
-                <StyledTableCell>{column} observations:</StyledTableCell>
-                <StyledTableCell>{columnLength}</StyledTableCell>
-            </tr>
-            <tr>
-                <StyledTableCell>Mean</StyledTableCell>
-                <StyledTableCell>{formatNumber(mean)}</StyledTableCell>
-            </tr>
-            <tr>
-                <StyledTableCell>Median</StyledTableCell>
-                <StyledTableCell>{formatNumber(median)}</StyledTableCell>
-            </tr>
-            <tr>
-                <StyledTableCell>Range</StyledTableCell>
-                <StyledTableCell>{formatNumber(range)}</StyledTableCell>
-            </tr>
-            <tr>
-                <StyledTableCell>Variance</StyledTableCell>
-                <StyledTableCell>{formatNumber(variance)}</StyledTableCell>
-            </tr>
-            <tr>
-                <StyledTableCell>Standard Deviation</StyledTableCell>
-                <StyledTableCell>{formatNumber(stdev)}</StyledTableCell>
-            </tr>
-        </tbody>
+        <table>
+            <thead>
+                <tr>
+                    <StyledTableCell>Data Frequency:</StyledTableCell>
+                    <StyledTableCell>{dataFrequency} Hz</StyledTableCell>
+                </tr>
+            </thead>
+            {column == null ? <>hover over columns for descriptice statistics</> :
+                <tbody>
+                    <tr>
+                        <StyledTableCell>Observations:</StyledTableCell>
+                        <StyledTableCell>{columnLength}</StyledTableCell>
+                    </tr>
+                    <tr>
+                        <StyledTableCell>Mean</StyledTableCell>
+                        <StyledTableCell>{formatNumber(mean)}</StyledTableCell>
+                    </tr>
+                    <tr>
+                        <StyledTableCell>Median</StyledTableCell>
+                        <StyledTableCell>{formatNumber(median)}</StyledTableCell>
+                    </tr>
+                    <tr>
+                        <StyledTableCell>Range</StyledTableCell>
+                        <StyledTableCell>{formatNumber(range)}</StyledTableCell>
+                    </tr>
+                    <tr>
+                        <StyledTableCell>Variance</StyledTableCell>
+                        <StyledTableCell>{formatNumber(variance)}</StyledTableCell>
+                    </tr>
+                    <tr>
+                        <StyledTableCell>Standard Deviation</StyledTableCell>
+                        <StyledTableCell>{formatNumber(stdev)}</StyledTableCell>
+                    </tr>
+                </tbody>}
+        </table>
+
     );
 }

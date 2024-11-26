@@ -46,7 +46,7 @@ const StyledCSVTable = styled.table<{ $small?: boolean, $mini?: boolean }>`
     max-height: 100%;
 `;
 
-export default function BoxPlot({ blockId }: { blockId: string }) {
+export default function BoxPlot({ blockId, setHoveredColumn }: { blockId: string, setHoveredColumn: (column: string | null) => void }) {
     const dispatch = useAppDispatch();
     const rawData = useAppSelector(getData);
     const filteredColumns = useAppSelector(getFilteredDataColumns);
@@ -195,7 +195,10 @@ export default function BoxPlot({ blockId }: { blockId: string }) {
                 <thead>
                     {<tr>
                         {columns.map(col => (
-                            <StyledTableHeader $isSelected={selectedColumns.includes(col)}>
+                            <StyledTableHeader $isSelected={selectedColumns.includes(col)}
+                                onMouseEnter={() => setHoveredColumn(col)}
+                                onMouseLeave={() => setHoveredColumn(null)}
+                            >
                                 <StyledCheckbox
                                     type="checkbox"
                                     checked={selectedColumns.includes(col)}

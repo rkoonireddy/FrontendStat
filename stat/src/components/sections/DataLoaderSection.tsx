@@ -47,7 +47,7 @@ const StyledButton = styled.button`
 `;
 
 export function DataLoaderSection({ block }: { block: BlockModel }) {
-  const [hoveredColumn, setHoveredColumn] = useState<string | null>('timestamp');
+  const [hoveredColumn, setHoveredColumn] = useState<string | null>(null);
   const [view, setView] = useState<'CSVViewer' | 'BoxPlot'>('BoxPlot');
 
   const toggleView = () => {
@@ -63,7 +63,7 @@ export function DataLoaderSection({ block }: { block: BlockModel }) {
         {view === 'CSVViewer' ? (
             <CSVViewer blockId={block.id} sample={5} hoveredColumn={hoveredColumn} setHoveredColumn={setHoveredColumn} />
           ) : (
-            <BoxPlot blockId={block.id}/>
+            <BoxPlot blockId={block.id} setHoveredColumn={setHoveredColumn}/>
           )}
         <DescriptiveStatistics column={hoveredColumn} />
       </SelectorContainer>
