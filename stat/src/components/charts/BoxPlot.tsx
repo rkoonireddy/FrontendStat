@@ -1,12 +1,14 @@
-import { getData, getFilteredDataColumns, getRawDataColumns, setFilteredData, 
-    getFilteredDataAsCSVString, getFilteredDataChanged, setFilteredDataChanged } from "../../redux/dataSlice";
+import {
+    getData, getFilteredDataColumns, getRawDataColumns, setFilteredData,
+    getFilteredDataAsCSVString, getFilteredDataChanged, setFilteredDataChanged
+} from "../../redux/dataSlice";
 import * as d3 from "d3";
 import styled from "styled-components";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../hooks";
 import { updateCSVLoaderBlock } from "../../service/blockService";
 import { fetchFullBlock, getFrequency } from "../../redux/pipelineSlice";
-import { getMean, getMedian, getQuartiles } from "../../util/util";
+import { getQuartiles } from "../../util/util";
 
 const StyledTableContainer = styled.div`
     height: fit-content;
@@ -44,7 +46,7 @@ const StyledCSVTable = styled.table<{ $small?: boolean, $mini?: boolean }>`
     max-height: 100%;
 `;
 
-export default function BoxPlot({blockId}: {blockId: string}) {
+export default function BoxPlot({ blockId }: { blockId: string }) {
     const dispatch = useAppDispatch();
     const rawData = useAppSelector(getData);
     const filteredColumns = useAppSelector(getFilteredDataColumns);
@@ -58,7 +60,7 @@ export default function BoxPlot({blockId}: {blockId: string}) {
         if (filteredDataCSVString == '') {
             updateRawData();
         }
-        columns.map(col => {drawBoxPlot(col)});
+        columns.map(col => { drawBoxPlot(col) });
         return () => {
             //console.log("BoxPlot component unmounted");
         };
@@ -147,6 +149,14 @@ export default function BoxPlot({blockId}: {blockId: string}) {
         );
     };
 
+    // Update filtered data if column selection changes
+    useEffect(() => {
+        if (selectedColumns !== columns) {
+            updateRawData();
+        }
+
+    }, [selectedColumns]);
+
     function updateRawData() {
         if (rawData.length > 0) {
             const filteredData = rawData.map(row =>
@@ -156,34 +166,34 @@ export default function BoxPlot({blockId}: {blockId: string}) {
         }
     }
 
-        // Update the csv loader block with the filtered data
-        useEffect(() => {
-            if (filteredDataChanged && blockId) {
-                dispatch(setFilteredDataChanged(false));
-                updateCSVLoaderBlock({
-                    blockId: blockId,
-                    frequency_hz: dataFrequency,
-                    csvString: filteredDataCSVString,
-                    header: true
-                }).then(r => {
-                    dispatch(fetchFullBlock(blockId));
-                });
-            }
-        }, [filteredDataCSVString, blockId]);
-    
-        // Update filtered data if column selection changes
-        useEffect(() => {
-            if (selectedColumns !== columns) {
-                updateRawData();
-            }
-    
-        }, [selectedColumns]);
+    // Update the csv loader block with the filtered data
+    useEffect(() => {
+        if (filteredDataChanged && blockId) {
+            dispatch(setFilteredDataChanged(false));
+            updateCSVLoaderBlock({
+                blockId: blockId,
+                frequency_hz: dataFrequency,
+                csvString: filteredDataCSVString,
+                header: true
+            }).then(r => {
+                dispatch(fetchFullBlock(blockId));
+            });
+        }
+    }, [filteredDataCSVString, blockId]);
+
+    // Update filtered data if column selection changes
+    useEffect(() => {
+        if (selectedColumns !== columns) {
+            updateRawData();
+        }
+
+    }, [selectedColumns]);
 
     return (
         <StyledTableContainer>
             <StyledCSVTable $small={false} $mini={false}>
                 <thead>
-                    { <tr>
+                    {<tr>
                         {columns.map(col => (
                             <StyledTableHeader $isSelected={selectedColumns.includes(col)}>
                                 <StyledCheckbox
@@ -194,12 +204,12 @@ export default function BoxPlot({blockId}: {blockId: string}) {
                                 {col}
                             </StyledTableHeader>
                         ))}
-                    </tr> }
+                    </tr>}
                 </thead>
                 <tbody>
                     <tr>
                         {columns.map(col => (
-                            <StyledTableCell  $isSelected={selectedColumns.includes(col)}>
+                            <StyledTableCell $isSelected={selectedColumns.includes(col)}>
                                 <div id={`boxplot-container-${col.replace('\r', '')}`}></div>
                             </StyledTableCell>))
                         }
