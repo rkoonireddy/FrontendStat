@@ -5,8 +5,6 @@ import BoxPlot from "../charts/BoxPlot";
 import DescriptiveStatistics from "../charts/DescriptiveStatistics";
 import {BlockModel} from "../../types/responseType";
 import {useState} from "react";
-import BoxPlotImage from "../../assets/boxplot_icon.png";
-import TableImage from "../../assets/table_icon.png";
 import {ToggleButton} from "../pageElements/ToggleButton";
 
 
@@ -29,28 +27,14 @@ const StyledStackedChartContainer = styled.div<{ $height: number }>`
     justify-content: center;
     background-color: transparent;
     width: calc(100% - 0px);
-        // height: calc(${(props) => props.$height + '% - 0px'});
     border-radius: 10px;
     border: 2px solid #ffffff08;
     flex-grow: 1;
     margin: 2px;
     overflow: auto;
+    height: ${(props) => props.$height + '%'};
 `;
 
-const StyledButton = styled.button`
-    flex-basis: 5%;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    padding: 10px 10px;
-    cursor: pointer;
-    margin: 10px;
-
-    &:hover {
-        background-color: #0056b3;
-    }
-`;
 
 const StyledDataViewContainer = styled.div`
     display: flex;
@@ -80,12 +64,6 @@ export function DataLoaderSection({block}: { block: BlockModel }) {
             <StyledSelectorContainer $height={30}>
                 <ToggleButton option1={"Table view"} option2={"Stat view"} selection={statView}
                               onSelect={setStatView}/>
-
-                {/*<StyledButton onClick={toggleView}>*/}
-                {/*    {view === 'CSVViewer' ?*/}
-                {/*        <img src={BoxPlotImage} alt="Box Plot" style={{width: '20px', height: '20px'}}/> :*/}
-                {/*        <img src={TableImage} alt="Table" style={{width: '20px', height: '20px'}}/>}*/}
-                {/*</StyledButton>*/}
                 <StyledDataViewContainer>
                 <StyledMainElementContainer>
                     {!statView ? (

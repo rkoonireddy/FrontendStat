@@ -3,7 +3,6 @@ import {
     getFilteredDataAsCSVString, getFilteredDataChanged, setFilteredDataChanged
 } from "../../redux/dataSlice";
 import * as d3 from "d3";
-import styled from "styled-components";
 import { useState, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../hooks";
 import { updateCSVLoaderBlock } from "../../service/blockService";
@@ -11,16 +10,6 @@ import { fetchFullBlock, getFrequency } from "../../redux/pipelineSlice";
 import { getQuartiles } from "../../util/util";
 import {StyledTableCell, StyledTableContainer, StyledTableHeader, StyledCheckbox, StyledCSVTable} from "./CSVViewer";
 
-
-// const StyledCSVTable = styled.table<{ $small?: boolean, $mini?: boolean }>`
-//     width: 100%;
-//     border-collapse: collapse;
-//     border-spacing: 0;
-//     margin-top: ${props => (props.$small ? '0' : '0px')};
-//     border: 0px solid #ddd;
-//     font-size: ${props => (!props.$small ? '1rem' : (props.$mini ? '0.4rem' : '0.6rem'))};
-//     max-height: 100%;
-// `;
 
 export default function BoxPlot({ blockId, setHoveredColumn }: { blockId: string, setHoveredColumn: (column: string | null) => void }) {
     const dispatch = useAppDispatch();
@@ -38,7 +27,6 @@ export default function BoxPlot({ blockId, setHoveredColumn }: { blockId: string
         }
         columns.map(col => { drawBoxPlot(col) });
         return () => {
-            //console.log("BoxPlot component unmounted");
         };
     }, []);
 
@@ -173,7 +161,6 @@ export default function BoxPlot({ blockId, setHoveredColumn }: { blockId: string
                         {columns.map(col => (
                             <StyledTableHeader $isSelected={selectedColumns.includes(col)} $textAlign={'center'} $border={false}
                                 onMouseEnter={() => setHoveredColumn(col)}
-                                onMouseLeave={() => setHoveredColumn(null)}
                             >
                                 <StyledCheckbox
                                     type="checkbox"
@@ -190,7 +177,6 @@ export default function BoxPlot({ blockId, setHoveredColumn }: { blockId: string
                         {columns.map(col => (
                             <StyledTableCell $isSelected={selectedColumns.includes(col)} $border={false}
                                 onMouseEnter={() => setHoveredColumn(col)}
-                                onMouseLeave={() => setHoveredColumn(null)}
                             >
                                 <div id={`boxplot-container-${col.replace('\r', '')}`}></div>
                             </StyledTableCell>))

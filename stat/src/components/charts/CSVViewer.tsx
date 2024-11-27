@@ -137,7 +137,6 @@ const CSVViewer: React.FC<CSVViewerProps> = ({ blockId, small, mini, sample = 20
                 <div>No data available</div>
             ) : (
                 <>
-                    {/*!small && <StyledFrequency>Data Frequency: {dataFrequency} Hz</StyledFrequency>*/}
                     <StyledCSVTable $small={small} $mini={mini}>
                         <thead>
                             <tr>
@@ -145,7 +144,6 @@ const CSVViewer: React.FC<CSVViewerProps> = ({ blockId, small, mini, sample = 20
                                     <StyledTableHeader key={col}
                                         $isSelected={selectedColumns.includes(col)}
                                         onMouseEnter={() => setHoveredColumn(col)}
-                                        onMouseLeave={() => setHoveredColumn(null)}
                                     >
                                         {!mini && !small && <StyledCheckbox
                                             type="checkbox"
@@ -163,7 +161,6 @@ const CSVViewer: React.FC<CSVViewerProps> = ({ blockId, small, mini, sample = 20
                                     {columns.map(col => (
                                         <StyledTableCell key={col} $isSelected={selectedColumns.includes(col)} $mini={mini}
                                             onMouseEnter={() => setHoveredColumn(col)}
-                                            onMouseLeave={() => setHoveredColumn(null)}
                                         >
                                             {formatNumber(row[col])} {/* Use the formatting function */}
                                         </StyledTableCell>

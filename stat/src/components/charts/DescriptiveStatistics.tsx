@@ -4,7 +4,7 @@ import { useAppSelector } from "../../hooks";
 import { getFrequency } from "../../redux/pipelineSlice";
 import { getMean, getMedian, getRange, formatNumber, getVariance, getStandardDeviation } from "../../util/util";
 
-export const StyledTableCell = styled.td<{}>`
+const StyledTableCell = styled.td<{}>`
     display: table-cell;
     border: 0 solid #00bfa6;
     border-radius: 5px;
@@ -13,6 +13,14 @@ export const StyledTableCell = styled.td<{}>`
     background-color: #3D3D3D;
     font-size: 1.1rem;
 `;
+
+const StyledColumnHeader = styled.div`
+    font-size: 1.5rem;
+    width: 100%;
+    color: #00bfa6;
+    margin: 10px;
+`;
+
 
 export default function BoxPlot({ column }: { column: string | null }) {
     const rawData = useAppSelector(getData);
@@ -25,6 +33,8 @@ export default function BoxPlot({ column }: { column: string | null }) {
     const stdev = getStandardDeviation(rawData.map(row => row[column as string]));
 
     return (
+        <>
+            <StyledColumnHeader>{column}</StyledColumnHeader>
         <table>
             <thead>
                 <tr>
@@ -60,6 +70,6 @@ export default function BoxPlot({ column }: { column: string | null }) {
                     </tr>
                 </tbody>}
         </table>
-
+        </>
     );
 }
