@@ -155,7 +155,10 @@ const StyledBlockTypeCreationContainer = styled.div`
     display: flex;
     width: 100%;
     flex-direction: row;
-    margin: auto 10px 10px 10px;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    border-top: 5px solid #ffffff30;
 `;
 
 export function BlockPopup({onCloseAction}: { onCloseAction: () => void }) {
@@ -200,15 +203,11 @@ export function BlockPopup({onCloseAction}: { onCloseAction: () => void }) {
                         <>
                             <StyledBlockTypeTitle>{blockType.name.replace("_", " ")}</StyledBlockTypeTitle>
                             <StyledBlockTypeContent dangerouslySetInnerHTML={{ __html: blockType.description}}/>
-                                {/*<StyledBlockTypeDescription dangerouslySetInnerHTML={{ __html: blockType.description}}></StyledBlockTypeDescription>*/}
-                            {/*    <StyledBlockTypeDescription>Test</StyledBlockTypeDescription>*/}
-                            {/*    <StyledBlockTypeImages> </StyledBlockTypeImages>*/}
-                            {/*</StyledBlockTypeContent>*/}
                             <StyledBlockTypeCreationContainer>
-                                <StyledInput $largeText={true} $width={"200px"} type="text" placeholder="Block Name"
+                                <StyledInput $largeText={true} $width={"200px"} type="text" placeholder="Block Name" $margin={"0 auto"}
                                              maxLength={18}
                                              onChange={(e) => setBlockName(e.target.value)}/>
-                                <PrimaryButton text={"Create Block"} action={addNewBlock}/>
+                                <PrimaryButton text={"Create Block"} action={addNewBlock} disabled={!blockName}/>
                             </StyledBlockTypeCreationContainer>
                         </> : <div>Select a block type from the list</div>}
                 </StyledBlockTypeContainer>
