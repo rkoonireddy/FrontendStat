@@ -6,7 +6,7 @@ import { getMean, getMedian, getRange, formatNumber, getVariance, getStandardDev
 
 export const StyledTableCell = styled.td<{}>`
     display: table-cell;
-    border: 0px solid #00bfa6;
+    border: 0 solid #00bfa6;
     border-radius: 5px;
     color:  white;
     padding: 5px;
@@ -15,7 +15,6 @@ export const StyledTableCell = styled.td<{}>`
 `;
 
 export default function BoxPlot({ column }: { column: string | null }) {
-    //const dispatch = useAppDispatch();
     const rawData = useAppSelector(getData);
     const dataFrequency = useAppSelector(getFrequency);
     const columnLength = rawData.map(row => row[column as string]).filter((value): value is string => value !== null).length;

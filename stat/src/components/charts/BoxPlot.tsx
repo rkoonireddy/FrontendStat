@@ -9,44 +9,18 @@ import { useAppDispatch, useAppSelector } from "../../hooks";
 import { updateCSVLoaderBlock } from "../../service/blockService";
 import { fetchFullBlock, getFrequency } from "../../redux/pipelineSlice";
 import { getQuartiles } from "../../util/util";
+import {StyledTableCell, StyledTableContainer, StyledTableHeader, StyledCheckbox, StyledCSVTable} from "./CSVViewer";
 
-const StyledTableContainer = styled.div`
-    height: fit-content;
-    width: fit-content;
-    max-width: 95%;
-    max-height: 95%;
-`;
 
-const StyledTableHeader = styled.th<{ $isSelected: boolean }>`
-    
-    color: ${props => (props.$isSelected ? '#00bfa6' : '#808080')};
-    border: 0px solid #00bfa6;
-    border-radius: 5px;
-    padding: 8px;
-    text-align: center;
-`;
-export const StyledTableCell = styled.td<{ $isSelected: boolean }>`
-    border: 0px solid #00bfa6;
-    color: ${props => (props.$isSelected ? '#ffffff' : '#808080')};
-    margin: 0px;
-    background-color: ${props => (props.$isSelected ? '#3D3D3D' : '#adacac')};
-    border-radius: 10px;
-`;
-
-export const StyledCheckbox = styled.input`
-    margin-right: 10px;
-    color: white;
-`;
-
-const StyledCSVTable = styled.table<{ $small?: boolean, $mini?: boolean }>`
-    width: 100%;
-    border-collapse: collapse;
-    border-spacing: 0;
-    margin-top: ${props => (props.$small ? '0' : '0px')};
-    border: 0px solid #ddd;
-    font-size: ${props => (!props.$small ? '1rem' : (props.$mini ? '0.4rem' : '0.6rem'))};
-    max-height: 100%;
-`;
+// const StyledCSVTable = styled.table<{ $small?: boolean, $mini?: boolean }>`
+//     width: 100%;
+//     border-collapse: collapse;
+//     border-spacing: 0;
+//     margin-top: ${props => (props.$small ? '0' : '0px')};
+//     border: 0px solid #ddd;
+//     font-size: ${props => (!props.$small ? '1rem' : (props.$mini ? '0.4rem' : '0.6rem'))};
+//     max-height: 100%;
+// `;
 
 export default function BoxPlot({ blockId, setHoveredColumn }: { blockId: string, setHoveredColumn: (column: string | null) => void }) {
     const dispatch = useAppDispatch();
@@ -69,20 +43,20 @@ export default function BoxPlot({ blockId, setHoveredColumn }: { blockId: string
     }, []);
 
     const drawBoxPlot = (column: string) => {
+        const width = 150;
+        const height = 165;
         const container = d3.select(`#boxplot-container-${column.replace('\r', '')}`);
         container.selectAll("*").remove(); // Clear previous content
         const svg = container.append("svg")
-            .attr("width", 150)
-            .attr("height", 180);
+            .attr("width", width)
+            .attr("height", height);
 
         const quartiles = getQuartiles(rawData.map(row => row[column]));
         const median = quartiles[1];
         const columnData = rawData.map(row => row[column])
             .filter((value): value is string => value !== null && !isNaN(Number(value)))
             .map(value => Number(value));
-        const width = 150;
-        const height = 180;
-        const margin = { top: 20, right: 10, bottom: 10, left: 40 };
+        const margin = { top: 10, right: 10, bottom: 10, left: 40 };
 
         const x = d3.scaleBand()
             .domain([column])
@@ -193,11 +167,11 @@ export default function BoxPlot({ blockId, setHoveredColumn }: { blockId: string
 
     return (
         <StyledTableContainer>
-            <StyledCSVTable $small={false} $mini={false}>
+            <StyledCSVTable $small={false} $mini={false} $border={false}>
                 <thead>
                     {<tr>
                         {columns.map(col => (
-                            <StyledTableHeader $isSelected={selectedColumns.includes(col)}
+                            <StyledTableHeader $isSelected={selectedColumns.includes(col)} $textAlign={'center'} $border={false}
                                 onMouseEnter={() => setHoveredColumn(col)}
                                 onMouseLeave={() => setHoveredColumn(null)}
                             >
@@ -214,7 +188,7 @@ export default function BoxPlot({ blockId, setHoveredColumn }: { blockId: string
                 <tbody>
                     <tr>
                         {columns.map(col => (
-                            <StyledTableCell $isSelected={selectedColumns.includes(col)}
+                            <StyledTableCell $isSelected={selectedColumns.includes(col)} $border={false}
                                 onMouseEnter={() => setHoveredColumn(col)}
                                 onMouseLeave={() => setHoveredColumn(null)}
                             >

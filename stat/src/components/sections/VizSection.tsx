@@ -15,6 +15,7 @@ import {
 } from "../../redux/pipelineSlice";
 import {BlockModel} from "../../types/responseType";
 import {CompareCharts} from "./CompareCharts";
+import {ToggleButton} from "../pageElements/ToggleButton";
 
 const StyledVizSectionContainer = styled.div`
     position: relative;
@@ -128,20 +129,7 @@ export function VizSection({block}: { block: BlockModel }) {
 
             {block.type !== "CSVStringLoader" &&
                 <div style={{display: "flex", alignContent: "flex-start", flexWrap: "wrap"}}>
-                    <StyledToggleButton>
-                        <StyledToggleOption
-                            $isSelected={!isCompareMode}
-                            onClick={() => setIsCompareMode(false)}
-                        >
-                            Visualize
-                        </StyledToggleOption>
-                        <StyledToggleOption
-                            $isSelected={isCompareMode}
-                            onClick={() => setIsCompareMode(true)}
-                        >
-                            Compare
-                        </StyledToggleOption>
-                    </StyledToggleButton>
+                    <ToggleButton option1={"Visualize"} option2={"Compare"} selection={isCompareMode} onSelect={setIsCompareMode} />
                 </div>}
 
             <StyledChartContainer $controlsVisible={controlsVisible}>

@@ -14,33 +14,33 @@ import { updateCSVLoaderBlock } from "../../service/blockService";
 import { fetchFullBlock, getFrequency } from "../../redux/pipelineSlice";
 import { formatNumber } from "../../util/util";
 
-const StyledTableContainer = styled.div`
+export const StyledTableContainer = styled.div`
     height: fit-content;
     width: fit-content;
     max-width: 100%;
     max-height: 100%;
 `;
 
-const StyledCSVTable = styled.table<{ $small?: boolean, $mini?: boolean }>`
+export const StyledCSVTable = styled.table<{ $small?: boolean, $mini?: boolean, $border?: boolean }>`
     width: 100%;
     border-collapse: collapse;
     border-spacing: 0;
     margin-top: ${props => (props.$small ? '0' : '10px')};
-    border: 1px solid #ddd;
+    border: ${props => (props.$border === undefined ?  '1px solid #00bfa6' : '')};
     font-size: ${props => (!props.$small ? '1rem' : (props.$mini ? '0.4rem' : '0.6rem'))};
     max-height: 100%;
 `;
 
-export const StyledTableHeader = styled.th<{ $isSelected: boolean }>`
+export const StyledTableHeader = styled.th<{ $isSelected: boolean, $textAlign?: string, $border?: boolean }>`
     background-color: ${props => (props.$isSelected ? '#3D3D3D' : '#adacac')};
     color: ${props => (props.$isSelected ? '#00bfa6' : '#808080')};
-    border: 1px solid #00bfa6;
+    border: ${props => (props.$border === undefined ?  '1px solid #00bfa6' : '')};
     padding: 8px;
-    text-align: left;
+    text-align: ${props => (props.$textAlign ? props.$textAlign : 'left')};
 `;
 
-export const StyledTableCell = styled.td<{ $isSelected: boolean, $mini?: boolean }>`
-    border: 1px solid #00bfa6;
+export const StyledTableCell = styled.td<{ $isSelected: boolean, $mini?: boolean, $border?: boolean }>`
+    border: ${props => (props.$border === undefined ?  '1px solid #00bfa6' : '')};
     color: ${props => (props.$isSelected ? '#ffffff' : '#808080')};
     padding: ${props => (props.$mini ? '2px' : '8px')};
     background-color: ${props => (props.$isSelected ? '#3D3D3D' : '#adacac')};

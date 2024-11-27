@@ -43,9 +43,8 @@ export function LineChart({block, small = false, mini = false, dataLoader = fals
             const columnNames = Object.keys(dataArray[0] || {}).slice(1);
             setLegendLabels(columnNames);
         } else if (dataLoader && rawData.length > 0) {
-            //console.log("Dataloader block, using raw data");
-            const dataArray = convertRawDataToDataDocument(rawData);
-            //const dataArray = convertRawDataToDataDocument(filteredData);
+            // const dataArray = convertRawDataToDataDocument(rawData);
+            const dataArray = convertRawDataToDataDocument(filteredData);
             setChartData(dataArray);
 
             const columnNames = Object.keys(dataArray[0] || {}).slice(1);
