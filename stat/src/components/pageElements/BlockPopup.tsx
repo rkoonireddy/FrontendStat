@@ -73,12 +73,45 @@ const StyledBlockTypeContent = styled.div`
     justify-content: center;
     align-items: center;
     width: 100%;
+    
+    .description {
+        display: flex;
+        flex-direction: column;
+        height: 375px;
+        padding: 15px;
+        overflow-y: scroll;
+    }
+    
+    .description-title {
+        display: none;
+    }
+    
+    .description-normal {
+        max-width: 400px;
+        margin: 10px 0;
+    }
+    
+    
+    
+    .description-image {
+        margin: -25px 0 0 auto;
+        width: 200px;
+    }
+
+    
+    img {
+        width: 100%;
+        height: 100%;
+    }
+
 `;
 
 const StyledBlockTypeDescription = styled.div`
     font-size: 1rem;
     margin: 10px;
     width: 50%;
+    
+    
 `;
 
 const StyledBlockTypeImages = styled.div`
@@ -138,10 +171,11 @@ export function BlockPopup({onCloseAction}: { onCloseAction: () => void }) {
                     {blockType ?
                         <>
                             <StyledBlockTypeTitle>{blockType.name.replace("_", " ")}</StyledBlockTypeTitle>
-                            <StyledBlockTypeContent>
-                                <StyledBlockTypeDescription>{blockType.description}</StyledBlockTypeDescription>
-                                <StyledBlockTypeImages> </StyledBlockTypeImages>
-                            </StyledBlockTypeContent>
+                            <StyledBlockTypeContent dangerouslySetInnerHTML={{ __html: blockType.description}}/>
+                                {/*<StyledBlockTypeDescription dangerouslySetInnerHTML={{ __html: blockType.description}}></StyledBlockTypeDescription>*/}
+                            {/*    <StyledBlockTypeDescription>Test</StyledBlockTypeDescription>*/}
+                            {/*    <StyledBlockTypeImages> </StyledBlockTypeImages>*/}
+                            {/*</StyledBlockTypeContent>*/}
                             <StyledBlockTypeCreationContainer>
                                 <StyledInput $largeText={true} $width={"200px"} type="text" placeholder="Block Name"
                                              maxLength={18}
