@@ -63,7 +63,7 @@ const StyledBlockTypeContainer = styled.div`
 
 
 const StyledBlockTypeTitle = styled.div`
-    font-size: 1.5rem;
+    font-size: 2rem;
     margin: 10px;
 `;
 
@@ -77,51 +77,79 @@ const StyledBlockTypeContent = styled.div`
     .description {
         display: flex;
         flex-direction: column;
-        height: 375px;
+        height: 475px;
         padding: 15px;
+        font-family: 'Archivo', sans-serif;
+        font-size: 1.25rem;
         overflow-y: scroll;
+
+        ::-webkit-scrollbar {
+            display: none;
+        }
+
+        -ms-overflow-style: none;
+        scrollbar-width: none;
     }
     
     .description-title {
         display: none;
     }
     
+    .description-subtitle {
+        margin: 25px 0 10px 0;
+        font-size: 1.5rem;
+    }
+    
+    .description-main {
+        text-align: center;
+        margin-bottom: 10px;
+    }
+    
     .description-normal {
-        max-width: 400px;
+        margin: 10px 0;
+        display:flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .description-normal .description-image {
+        width: 50%;
+    }
+    
+    b {
+        color: #73B5B4;
+    }
+    
+    .description-list {
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
         margin: 10px 0;
     }
     
-    
-    
-    .description-image {
-        margin: -25px 0 0 auto;
-        width: 200px;
+    .description-list-item {
+        width: 50%;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
     }
-
+    
+    .description-list-item .text {
+        margin-bottom: 5px;
+    }
     
     img {
         width: 100%;
         height: 100%;
     }
-
-`;
-
-const StyledBlockTypeDescription = styled.div`
-    font-size: 1rem;
-    margin: 10px;
-    width: 50%;
     
-    
-`;
+    .description-link a {
+        font-style: italic;
+        color: #73B5B4;
+    }
 
-const StyledBlockTypeImages = styled.div`
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    width: 50%;
 `;
-
 
 const StyledBlockTypeCreationContainer = styled.div`
     display: flex;
@@ -154,7 +182,7 @@ export function BlockPopup({onCloseAction}: { onCloseAction: () => void }) {
     }
 
     return (
-        <Popup title={"Create Block"} onCloseAction={onCloseAction} noPadding={true}>
+        <Popup title={"Create Block"} onCloseAction={onCloseAction} noPadding={true} large={true}>
             <StyledCreateBlocksContainer>
                 <StyledBlockTypesContainer>
                     {blockTypes.map((type) => (

@@ -4,6 +4,13 @@
     url("./fonts/a-area-kilometer-50-font/AreaKilometer50-ow3xB.ttf") format('truetype');
 }
 
+@font-face {
+    font-family: 'Archivo';
+    src: url('./fonts/Archivo,Lato/Archivo/Archivo-VariableFont_wdth,wght.ttf') format('truetype');
+    font-weight: 100 900;
+    font-stretch: 50% 200%;
+}
+
 body {
     font-family: 'a Area Kilometer 50', sans-serif;
     margin: 0;
