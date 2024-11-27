@@ -8,39 +8,39 @@ import {
     getFilteredDataColumns
 } from "../../redux/dataSlice";
 import styled from "styled-components";
-import {useState, useEffect} from "react";
-import {useAppDispatch, useAppSelector} from "../../hooks";
-import {updateCSVLoaderBlock} from "../../service/blockService";
-import {fetchFullBlock, getFrequency} from "../../redux/pipelineSlice";
-import {formatNumber} from "../../util/util";
+import { useState, useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "../../hooks";
+import { updateCSVLoaderBlock } from "../../service/blockService";
+import { fetchFullBlock, getFrequency } from "../../redux/pipelineSlice";
+import { formatNumber } from "../../util/util";
 
-const StyledTableContainer = styled.div`
+export const StyledTableContainer = styled.div`
     height: fit-content;
     width: fit-content;
     max-width: 100%;
     max-height: 100%;
 `;
 
-const StyledCSVTable = styled.table<{ $small?: boolean, $mini?: boolean }>`
+export const StyledCSVTable = styled.table<{ $small?: boolean, $mini?: boolean, $border?: boolean }>`
     width: 100%;
     border-collapse: collapse;
     border-spacing: 0;
     margin-top: ${props => (props.$small ? '0' : '10px')};
-    border: 1px solid #ddd;
-    font-size: ${props => (!props.$small ? '1rem' : (props.$mini ? '0.4rem': '0.6rem'))};
+    border: ${props => (props.$border === undefined ?  '1px solid #00bfa6' : '')};
+    font-size: ${props => (!props.$small ? '1rem' : (props.$mini ? '0.4rem' : '0.6rem'))};
     max-height: 100%;
 `;
 
-export const StyledTableHeader = styled.th<{ $isSelected: boolean }>`
+export const StyledTableHeader = styled.th<{ $isSelected: boolean, $textAlign?: string, $border?: boolean }>`
     background-color: ${props => (props.$isSelected ? '#3D3D3D' : '#adacac')};
     color: ${props => (props.$isSelected ? '#00bfa6' : '#808080')};
-    border: 1px solid #00bfa6;
+    border: ${props => (props.$border === undefined ?  '1px solid #00bfa6' : '')};
     padding: 8px;
-    text-align: left;
+    text-align: ${props => (props.$textAlign ? props.$textAlign : 'left')};
 `;
 
-export const StyledTableCell = styled.td<{ $isSelected: boolean, $mini?: boolean }>`
-    border: 1px solid #00bfa6;
+export const StyledTableCell = styled.td<{ $isSelected: boolean, $mini?: boolean, $border?: boolean }>`
+    border: ${props => (props.$border === undefined ?  '1px solid #00bfa6' : '')};
     color: ${props => (props.$isSelected ? '#ffffff' : '#808080')};
     padding: ${props => (props.$mini ? '2px' : '8px')};
     background-color: ${props => (props.$isSelected ? '#3D3D3D' : '#adacac')};
@@ -62,7 +62,16 @@ const StyledFrequency = styled.div`
     color: white;
 `;
 
-export default function CSVViewer({blockId, small, mini, sample = 20}: { blockId: string; small?: boolean, mini?: boolean, sample?: number }) {
+interface CSVViewerProps {
+    blockId: string;
+    small?: boolean;
+    mini?: boolean;
+    sample?: number;
+    setHoveredColumn: (column: string | null) => void;
+}
+
+
+const CSVViewer: React.FC<CSVViewerProps> = ({ blockId, small, mini, sample = 20, setHoveredColumn }) => {
     const dispatch = useAppDispatch();
     const rawData = useAppSelector(getData);
     const filteredDataChanged = useAppSelector(getFilteredDataChanged);
@@ -73,6 +82,7 @@ export default function CSVViewer({blockId, small, mini, sample = 20}: { blockId
     const filteredColumns = useAppSelector(getFilteredDataColumns);
 
     const [selectedColumns, setSelectedColumns] = useState<string[]>(filteredColumns);
+
 
     function updateRawData() {
         if (rawData.length > 0) {
@@ -127,32 +137,36 @@ export default function CSVViewer({blockId, small, mini, sample = 20}: { blockId
                 <div>No data available</div>
             ) : (
                 <>
-                    {!small && <StyledFrequency>Data Frequency: {dataFrequency} Hz</StyledFrequency>}
                     <StyledCSVTable $small={small} $mini={mini}>
                         <thead>
-                        <tr>
-                            {columns.map(col => (
-                                <StyledTableHeader key={col} $isSelected={selectedColumns.includes(col)}>
-                                    {!mini && !small && <StyledCheckbox
-                                        type="checkbox"
-                                        checked={selectedColumns.includes(col)}
-                                        onChange={() => handleColumnChange(col)}
-                                    />}
-                                    {col}
-                                </StyledTableHeader>
-                            ))}
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {data.map((row, rowIndex) => (
-                            <tr key={rowIndex}>
+                            <tr>
                                 {columns.map(col => (
-                                    <StyledTableCell key={col} $isSelected={selectedColumns.includes(col)} $mini={mini}>
-                                        {formatNumber(row[col])} {/* Use the formatting function */}
-                                    </StyledTableCell>
+                                    <StyledTableHeader key={col}
+                                        $isSelected={selectedColumns.includes(col)}
+                                        onMouseEnter={() => setHoveredColumn(col)}
+                                    >
+                                        {!mini && !small && <StyledCheckbox
+                                            type="checkbox"
+                                            checked={selectedColumns.includes(col)}
+                                            onChange={() => handleColumnChange(col)}
+                                        />}
+                                        {col}
+                                    </StyledTableHeader>
                                 ))}
                             </tr>
-                        ))}
+                        </thead>
+                        <tbody>
+                            {data.map((row, rowIndex) => (
+                                <tr key={rowIndex}>
+                                    {columns.map(col => (
+                                        <StyledTableCell key={col} $isSelected={selectedColumns.includes(col)} $mini={mini}
+                                            onMouseEnter={() => setHoveredColumn(col)}
+                                        >
+                                            {formatNumber(row[col])} {/* Use the formatting function */}
+                                        </StyledTableCell>
+                                    ))}
+                                </tr>
+                            ))}
                         </tbody>
                     </StyledCSVTable>
                 </>
@@ -160,3 +174,5 @@ export default function CSVViewer({blockId, small, mini, sample = 20}: { blockId
         </StyledTableContainer>
     );
 }
+
+export default CSVViewer;
