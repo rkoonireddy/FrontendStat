@@ -5,7 +5,7 @@ import BoxPlot from "../charts/BoxPlot";
 import DescriptiveStatistics from "../charts/DescriptiveStatistics";
 //import { useAppDispatch } from "../../hooks";
 import { BlockModel } from "../../types/responseType";
-import {useState, useEffect} from "react";
+import { useState, useEffect } from "react";
 import BoxPlotImage from "../../assets/boxplot_icon.png";
 import TableImage from "../../assets/table_icon.png";
 
@@ -36,6 +36,7 @@ const StyledStackedChartContainer = styled.div<{ $height: number }>`
 `;
 
 const StyledButton = styled.button`
+  flex-basis: 5%;
   background-color: #007bff;
   color: white;
   border: none;
@@ -48,6 +49,16 @@ const StyledButton = styled.button`
   }
 `;
 
+const MainElementContainer = styled.div`
+  flex-basis: 65%;
+  overflow: auto;
+`;
+
+const StatisticsContainer = styled.div`
+  flex-basis: 30%; 
+  overflow: none;
+`;
+
 export function DataLoaderSection({ block }: { block: BlockModel }) {
   const [hoveredColumn, setHoveredColumn] = useState<string | null>(null);
   const [view, setView] = useState<'CSVViewer' | 'BoxPlot'>('BoxPlot');
@@ -56,25 +67,28 @@ export function DataLoaderSection({ block }: { block: BlockModel }) {
     setView((prevView) => (prevView === 'CSVViewer' ? 'BoxPlot' : 'CSVViewer'));
   };
 
-    return (
-      <StyledDataLoaderSectionContainer id={"dataloader-section"}>
+  return (
+    <StyledDataLoaderSectionContainer id={"dataloader-section"}>
       <SelectorContainer $height={30}>
         <StyledButton onClick={toggleView}>
-          {view === 'CSVViewer' ? 
-          <img src={BoxPlotImage} alt="Box Plot" style={{width: '20px', height: '20px'}}/> :
-          <img src={TableImage} alt="Table" style={{width: '20px', height: '20px'}}/>}
+          {view === 'CSVViewer' ?
+            <img src={BoxPlotImage} alt="Box Plot" style={{ width: '20px', height: '20px' }} /> :
+            <img src={TableImage} alt="Table" style={{ width: '20px', height: '20px' }} />}
         </StyledButton>
-        {view === 'CSVViewer' ? (
+        <MainElementContainer>
+          {view === 'CSVViewer' ? (
             <CSVViewer blockId={block.id} sample={5} setHoveredColumn={setHoveredColumn} />
           ) : (
-            <BoxPlot blockId={block.id} setHoveredColumn={setHoveredColumn}/>
+            <BoxPlot blockId={block.id} setHoveredColumn={setHoveredColumn} />
           )}
-        <DescriptiveStatistics column={hoveredColumn} />
+        </MainElementContainer>
+        <StatisticsContainer>
+          <DescriptiveStatistics column={hoveredColumn} />
+        </StatisticsContainer>
       </SelectorContainer>
-        <StyledStackedChartContainer $height={70} style={{ backgroundColor: '#ffffff08' }}>
-          <LineChart block={block} dataLoader={true} />
-        </StyledStackedChartContainer>
-      </StyledDataLoaderSectionContainer>
-    );
-  }
-  
+      <StyledStackedChartContainer $height={70} style={{ backgroundColor: '#ffffff08' }}>
+        <LineChart block={block} dataLoader={true} />
+      </StyledStackedChartContainer>
+    </StyledDataLoaderSectionContainer>
+  );
+}
