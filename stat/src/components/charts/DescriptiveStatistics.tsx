@@ -1,14 +1,14 @@
-import { getData } from "../../redux/dataSlice";
+import {getData} from "../../redux/dataSlice";
 import styled from "styled-components";
-import { useAppSelector } from "../../hooks";
-import { getFrequency } from "../../redux/pipelineSlice";
-import { getMean, getMedian, getRange, formatNumber, getVariance, getStandardDeviation } from "../../util/util";
+import {useAppSelector} from "../../hooks";
+import {getFrequency} from "../../redux/pipelineSlice";
+import {getMean, getMedian, getRange, formatNumber, getVariance, getStandardDeviation} from "../../util/util";
 
-const StyledTableCell = styled.td<{}>`
+const StyledTableCell = styled.td`
     display: table-cell;
     border: 0 solid #00bfa6;
     border-radius: 5px;
-    color:  white;
+    color: white;
     padding: 5px;
     background-color: #3D3D3D;
     font-size: 1.1rem;
@@ -22,7 +22,7 @@ const StyledColumnHeader = styled.div`
 `;
 
 
-export default function BoxPlot({ column }: { column: string | null }) {
+export default function BoxPlot({column}: { column: string | null }) {
     const rawData = useAppSelector(getData);
     const dataFrequency = useAppSelector(getFrequency);
     const columnLength = rawData.map(row => row[column as string]).filter((value): value is string => value !== null).length;
@@ -35,15 +35,22 @@ export default function BoxPlot({ column }: { column: string | null }) {
     return (
         <>
             <StyledColumnHeader>{column}</StyledColumnHeader>
-        <table>
-            <thead>
+            <table>
+                <thead>
                 <tr>
                     <StyledTableCell>Data Frequency:</StyledTableCell>
                     <StyledTableCell>{dataFrequency} Hz</StyledTableCell>
                 </tr>
-            </thead>
-            {column == null ? <>hover over columns for descriptice statistics</> :
-                <tbody>
+                </thead>
+                {column == null ?
+                    <tbody>
+                    <tr>
+                        <td>hover over columns for descriptice statistics</td>
+                    </tr>
+                    </tbody>
+
+                    :
+                    <tbody>
                     <tr>
                         <StyledTableCell>Observations:</StyledTableCell>
                         <StyledTableCell>{columnLength}</StyledTableCell>
@@ -68,8 +75,8 @@ export default function BoxPlot({ column }: { column: string | null }) {
                         <StyledTableCell>Standard Deviation</StyledTableCell>
                         <StyledTableCell>{formatNumber(stdev)}</StyledTableCell>
                     </tr>
-                </tbody>}
-        </table>
+                    </tbody>}
+            </table>
         </>
     );
 }
