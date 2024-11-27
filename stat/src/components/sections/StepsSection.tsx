@@ -186,7 +186,6 @@ function Flow() {
                         }}>
                             <ExportSVG style={{width: "35px", height: "35px", color: "#ffffff"}}/>
                         </StyledActionButton> : <div style={{width: "35px", height: "35px"}}/>}
-                    {pipelineExportableRunnable &&
                         <StyledActionButton title={"Run Pipeline"} onClick={(e) => {
                         onSave();
                         dispatch(setLoading(true));
@@ -200,7 +199,7 @@ function Flow() {
                         e.stopPropagation();
                     }}>
                         <RunSVG style={{width: "50px", height: "50px", color: "#00ff00"}}/>
-                    </StyledActionButton>}
+                    </StyledActionButton>
                     <StyledActionButton title={"Copy Pipeline ID"} onClick={() => {
                         navigator.clipboard.writeText(pipeline.id);
                         alert("Pipeline ID copied to clipboard.");
