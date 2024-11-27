@@ -156,7 +156,9 @@ export function LineChart({block, small = false, mini = false, dataLoader = fals
             }
         };
 
-        svg.call(zoomBehavior);
+        if (!small && !mini) {
+            svg.call(zoomBehavior);
+        }
         svg.on("dblclick.zoom", null);
         svg.on("dblclick", resetGraph);
 
@@ -299,7 +301,7 @@ export function LineChart({block, small = false, mini = false, dataLoader = fals
                     </svg>
                 </div>
             ) : (
-                /*
+
                 <div style={{
                     color: "#ffffff",
                     alignContent: "center",
@@ -308,19 +310,19 @@ export function LineChart({block, small = false, mini = false, dataLoader = fals
                 }}>
                     {small ? 'Run Pipeline' : 'Please run the pipeline to visualize your data!'}
                 </div>
-                */
-                <div style={{width: '100%', height: '100%'}}>
-                <svg
-                    ref={svgRef}
-                    width="100%"
-                    height="100%"
-                    style={{display: 'block'}}
-                >
-                    <g className="x-axis"/>
-                    <g className="y-axis"/>
-                    <g className="chart-group"/>
-                </svg>
-            </div>
+
+            //     <div style={{width: '100%', height: '100%'}}>
+            //     <svg
+            //         ref={svgRef}
+            //         width="100%"
+            //         height="100%"
+            //         style={{display: 'block'}}
+            //     >
+            //         <g className="x-axis"/>
+            //         <g className="y-axis"/>
+            //         <g className="chart-group"/>
+            //     </svg>
+            // </div>
             )}
         </div>
     );

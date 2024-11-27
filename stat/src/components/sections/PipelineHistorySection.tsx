@@ -49,21 +49,18 @@ export function PipelineHistorySection({show}: { show: boolean }) {
     const dispatch = useAppDispatch();
 
     return (
-        <StyledPipelineHistorySection $historyVisible={show}>
+        <StyledPipelineHistorySection $historyVisible={show} key={"pipeline-history"}>
             <HorizontalScrollContainer id={"pipeline-history"}>
-                {blocks.map((block) => {
-                    return (
-                        <>
-                            {block.type !== 'CSVStringLoader' ?
-                                <StyledHistoryItemContainer key={block.id} $historyVisible={show}
-                                                            $active={block.id === activeBlockId}
-                                                            onClick={() => dispatch(setActiveBlockId(block.id))}>
-                                    <div>{block.name}</div>
-                                    <LineChart block={block} small={true}/>
-                                </StyledHistoryItemContainer> : null}
-                        </>
+                {blocks.map((block) => (
+                        block.type !== 'CSVStringLoader' && (
+                            <StyledHistoryItemContainer key={block.id} $historyVisible={show}
+                                                        $active={block.id === activeBlockId}
+                                                        onClick={() => dispatch(setActiveBlockId(block.id))}>
+                                <div>{block.name}</div>
+                                <LineChart block={block} small={true}/>
+                            </StyledHistoryItemContainer>)
                     )
-                })}
+                )}
             </HorizontalScrollContainer>
         </StyledPipelineHistorySection>
     )

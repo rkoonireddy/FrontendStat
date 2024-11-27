@@ -14,10 +14,10 @@ const StyledBlocksContainer = styled.div`
     flex-direction: column;
 `;
 
-const StyledBlockLineSelectorContainer = styled.div<{ borderColor: string }>`
+const StyledBlockLineSelectorContainer = styled.div<{ $borderColor: string }>`
     padding: 10px;
     margin: 10px;
-    border: 2px solid ${(props) => props.borderColor}; /* Apply the dynamic border color */
+    border: 2px solid ${(props) => props.$borderColor}; /* Apply the dynamic border color */
     border-radius: 10px;
     background: linear-gradient(to bottom right, #3D3D3D 0%, #000000 100%);
     min-width: 200px;
@@ -51,6 +51,12 @@ const StyledBlockIdLabel = styled(StyledLabel)`
     color: #ffffff;
 `;
 
+const StyledRunBlockMsg = styled.div`
+    font-size: 0.65rem;
+    color: #ffffff;
+    font-style: italic;
+`;
+
 export function CompareCharts() {
     const blocks = useAppSelector((state) => state.pipeline.blocks) || []; // Fallback to empty array if undefined
     const [selectedFilters, setSelectedFilters] = useState<{ [key: string]: string[] }>({});
@@ -80,10 +86,11 @@ export function CompareCharts() {
                 <HorizontalScrollContainer id={"compare-charts"}>
                     {filteredBlocks.map((block: BlockModel, index) => (
                         <StyledBlockLineSelectorContainer key={block.id}
-                                                          borderColor={COLOR_PALETTE[index % COLOR_PALETTE.length]}>
+                                                          $borderColor={COLOR_PALETTE[index % COLOR_PALETTE.length]}>
                             <StyledBlockIdLabel>{block.name}</StyledBlockIdLabel>
                             <StyledCheckboxContainer>
-                                {(Object.values(block.cols_to_process) as string[]).map((filterName) => (
+                                {block.cols_to_process ?
+                                (Object.values(block.cols_to_process) as string[]).map((filterName) => (
                                     <div key={filterName} style={{display: 'flex', alignItems: 'center'}}>
                                         <input
                                             type="checkbox"
@@ -92,7 +99,7 @@ export function CompareCharts() {
                                         />
                                         <StyledLabel>{filterName}</StyledLabel>
                                     </div>
-                                ))}
+                                )) : <StyledRunBlockMsg> Run block to see available columns </StyledRunBlockMsg>}
                             </StyledCheckboxContainer>
                         </StyledBlockLineSelectorContainer>
                     ))}
