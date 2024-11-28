@@ -1,13 +1,22 @@
-import { useState, useEffect } from "react";
-import { StyledControl } from "../sections/ControlSection";
-import { MultiSelect } from "primereact/multiselect";
-import { ControlTitle } from "./ControlTitle";
+import {useState, useEffect} from "react";
+import {MultiSelect} from "primereact/multiselect";
 import {useAppDispatch, useAppSelector} from "../../hooks";
 import {getActiveBlock, updateControl} from "../../redux/pipelineSlice";
+import {ControlContainer} from "./ControlContainer";
 
-export function MultiSelectControl({ title, displayName, options, placeHolder = "Select...", columnSpan = 1, rowSpan = 1, defaultValues = null}: {
+export function MultiSelectControl({
+                                       title,
+                                       displayName,
+                                       description,
+                                       options,
+                                       placeHolder = "Select...",
+                                       columnSpan = 1,
+                                       rowSpan = 1,
+                                       defaultValues = null
+                                   }: {
     title: string,
     displayName: string,
+    description: string,
     options: { label: string, value: string }[],
     placeHolder?: string,
     columnSpan?: number,
@@ -25,14 +34,14 @@ export function MultiSelectControl({ title, displayName, options, placeHolder = 
             setSelectedOptions(defaultValues);
         }
 
-        if(activeBlock) {
+        if (activeBlock) {
             dispatch(updateControl({blockId: activeBlock.id, filter: {key: title, value: selectedOptions}}));
         }
     }, [defaultValues]);
 
     function updateOptions(value: string[]) {
 
-        if(activeBlock) {
+        if (activeBlock) {
             dispatch(updateControl({blockId: activeBlock.id, filter: {key: title, value: value}}));
         }
 
@@ -40,17 +49,16 @@ export function MultiSelectControl({ title, displayName, options, placeHolder = 
     }
 
     return (
-        <StyledControl $columnSpan={columnSpan} $rowSpan={rowSpan}> 
-            <ControlTitle title={displayName.toUpperCase()} margin={'0'} />
+        <ControlContainer displayName={displayName} description={description} columnSpan={columnSpan} rowSpan={rowSpan}>
             <MultiSelect id="multiSelect"
-                        value={selectedOptions}
-                        options={options.map(option => ({
-                            ...option,
-                            label: option.label.toUpperCase()
-                        }))}
-                        placeholder={placeHolder.toUpperCase()}
-                        style={{ width: width + "px", textTransform: 'uppercase' }}
-                        onChange={(e) => updateOptions(e.value)} />
-        </StyledControl>
+                         value={selectedOptions}
+                         options={options.map(option => ({
+                             ...option,
+                             label: option.label.toUpperCase()
+                         }))}
+                         placeholder={placeHolder.toUpperCase()}
+                         style={{width: width + "px", textTransform: 'uppercase'}}
+                         onChange={(e) => updateOptions(e.value)}/>
+        </ControlContainer>
     );
 }

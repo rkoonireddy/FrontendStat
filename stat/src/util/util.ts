@@ -1,3 +1,4 @@
+import { quantile } from "d3";
 import {DataDocument, DataPoint, PipelineModel} from "../types/dataType";
 import {BlockModel} from "../types/responseType";
 
@@ -108,3 +109,43 @@ export function formatNumber (value: any) {
     return value;
 }
 
+
+export function getMean(data: (string | null)[]): number {
+    // Filter out null values and convert strings to numbers
+    const numericData = data.filter((value): value is string => value !== null).map(Number);
+
+    // Calculate the mean
+    return numericData.reduce((a, b) => a + b, 0) / numericData.length;
+}
+
+export function getMedian(data: (string | null)[]): number {
+    const numericData = data.filter((value): value is string => value !== null).map(Number);
+    const sortedData = numericData.sort((a, b) => a - b);
+    const mid = Math.floor(data.length / 2);
+    return data.length % 2 !== 0 ? sortedData[mid] : (sortedData[mid - 1] + sortedData[mid]) / 2;
+}
+
+export function getRange(data: (string | null)[]): number {
+    const numericData = data.filter((value): value is string => value !== null).map(Number);
+    return Math.max(...numericData) - Math.min(...numericData);
+}
+
+export function getVariance(data: (string | null)[]): number {
+    const mean = getMean(data);
+    const numericData = data.filter((value): value is string => value !== null).map(Number);
+    return numericData.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / numericData.length;
+}
+
+export function getStandardDeviation(data: (string | null)[]): number {
+    return Math.sqrt(getVariance(data));
+}
+
+export function getQuartiles(data: (string | null)[]): number[] {
+    const numericData = data.filter((value): value is string => value !== null).map(Number);
+    const sortedData = numericData.sort((a, b) => a - b);
+    return [
+        quantile(sortedData, 0.25) ?? 0,
+        quantile(sortedData, 0.5) ?? 0,
+        quantile(sortedData, 0.75) ?? 0
+    ];
+}

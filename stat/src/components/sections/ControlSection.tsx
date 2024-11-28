@@ -71,6 +71,7 @@ export function ControlSection({show}: { show: boolean }) {
                             key={unique_key}
                             title={filter.name}
                             displayName={filter_display_name}
+                            description={filter.filter_description}
                             onLabel={"On"}
                             offLabel={"Off"}
                             value={blockControls[key]}/>
@@ -81,6 +82,7 @@ export function ControlSection({show}: { show: boolean }) {
                             key={unique_key}
                             title={filter.name}
                             displayName={filter_display_name}
+                            description={filter.filter_description}
                             initialValue={blockControls[key]}
                             validate={filter.nullable ?
                                 (value) => true : // If nullable, any string is valid
@@ -96,6 +98,7 @@ export function ControlSection({show}: { show: boolean }) {
                             key={unique_key}
                             title={filter.name}
                             displayName={filter_display_name}
+                            description={filter.filter_description}
                             initialValue={blockControls[key]}
                             validate={filter.nullable ?
                                 (value) => value === undefined || Number.isInteger(Number(value)) :
@@ -111,6 +114,7 @@ export function ControlSection({show}: { show: boolean }) {
                             key={unique_key}
                             title={filter.name}
                             displayName={filter_display_name}
+                            description={filter.filter_description}
                             initialValue={blockControls[key]}
                             validate={filter.nullable ?
                                 (value) => value === undefined || !isNaN(Number(value)) :
@@ -126,6 +130,7 @@ export function ControlSection({show}: { show: boolean }) {
                             key={unique_key}
                             title={filter.name}
                             displayName={filter_display_name}
+                            description={filter.filter_description}
                             options={filter.options.map((option: any) => {return {label: option, value: option};})}
                             defaultValue={blockControls[key]}/>
                         );
@@ -135,6 +140,7 @@ export function ControlSection({show}: { show: boolean }) {
                             key={unique_key}
                             title={filter.name}
                             displayName={filter_display_name}
+                            description={filter.filter_description}
                             options={filter.options.map((option: any) => {return {label: option, value: option};})}
                             defaultValues={blockControls[key]}/>
                         );
@@ -144,6 +150,7 @@ export function ControlSection({show}: { show: boolean }) {
                             key={unique_key}
                             title={filter.name}
                             displayName={filter_display_name}
+                            description={filter.filter_description}
                             min={filter.min}
                             max={filter.max}
                             step={1}
@@ -155,6 +162,7 @@ export function ControlSection({show}: { show: boolean }) {
                             key={unique_key}
                             title={filter.name}
                             displayName={filter_display_name}
+                            description={filter.filter_description}
                             range={[filter.min, filter.max]}
                             initial_range={[blockControls[key][0], blockControls[key][1]]}
                             step={1}/>
@@ -165,6 +173,7 @@ export function ControlSection({show}: { show: boolean }) {
                             key={unique_key}
                             title={filter.name}
                             displayName={filter_display_name}
+                            description={filter.filter_description}
                             range={[filter.min, filter.max]}
                             initial_range={[blockControls[key][0], blockControls[key][1]]}
                             step={filter.step}/>

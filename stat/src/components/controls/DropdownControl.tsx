@@ -1,15 +1,24 @@
 import {useState} from "react";
-import {StyledControl} from "../sections/ControlSection";
 import {Dropdown} from "primereact/dropdown";
-import {ControlTitle} from "./ControlTitle";
 import {useAppDispatch, useAppSelector} from "../../hooks";
 import {getActiveBlock, updateControl} from "../../redux/pipelineSlice";
+import {ControlContainer} from "./ControlContainer";
 
 
-export function DropdownControl({title, displayName, options, placeHolder = "Select...", columnSpan = 1, rowSpan = 1, defaultValue = null}: {
+export function DropdownControl({
+                                    title,
+                                    displayName,
+                                    description,
+                                    options,
+                                    placeHolder = "Select...",
+                                    columnSpan = 1,
+                                    rowSpan = 1,
+                                    defaultValue = null
+                                }: {
     title: string,
     displayName: string,
-    options: {label: string, value: string}[],
+    description: string,
+    options: { label: string, value: string }[],
     placeHolder?: string,
     columnSpan?: number,
     rowSpan?: number,
@@ -22,21 +31,20 @@ export function DropdownControl({title, displayName, options, placeHolder = "Sel
     const width = 150 * columnSpan;
 
     function updateOptions(value: string) {
-        if(activeBlock) {
+        if (activeBlock) {
             dispatch(updateControl({blockId: activeBlock.id, filter: {key: title, value: value}}));
         }
         setSelectedOption(value);
     }
 
     return (
-        <StyledControl $columnSpan={columnSpan} $rowSpan={rowSpan}>
-            <ControlTitle title={displayName} margin={'0'}/>
-            <Dropdown id={"dropdown"}
-                      value={selectedOption}
-                      options={options}
-                      placeholder={placeHolder}
-                      style={{width: width + "px"}}
-                      onChange={(e) => updateOptions(e.value)}/>
-        </StyledControl>
+        <ControlContainer displayName={displayName} description={description} columnSpan={columnSpan} rowSpan={rowSpan}>
+                <Dropdown id={"dropdown"}
+                          value={selectedOption}
+                          options={options}
+                          placeholder={placeHolder}
+                          style={{width: width + "px"}}
+                          onChange={(e) => updateOptions(e.value)}/>
+        </ControlContainer>
     )
 }

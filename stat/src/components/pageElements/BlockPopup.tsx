@@ -63,7 +63,7 @@ const StyledBlockTypeContainer = styled.div`
 
 
 const StyledBlockTypeTitle = styled.div`
-    font-size: 1.5rem;
+    font-size: 2rem;
     margin: 10px;
 `;
 
@@ -73,28 +73,92 @@ const StyledBlockTypeContent = styled.div`
     justify-content: center;
     align-items: center;
     width: 100%;
-`;
+    
+    .description {
+        display: flex;
+        flex-direction: column;
+        height: 475px;
+        padding: 15px;
+        font-family: 'Archivo', sans-serif;
+        font-size: 1.25rem;
+        overflow-y: scroll;
 
-const StyledBlockTypeDescription = styled.div`
-    font-size: 1rem;
-    margin: 10px;
-    width: 50%;
-`;
+        ::-webkit-scrollbar {
+            display: none;
+        }
 
-const StyledBlockTypeImages = styled.div`
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    width: 50%;
-`;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    
+    .description-title {
+        display: none;
+    }
+    
+    .description-subtitle {
+        margin: 25px 0 10px 0;
+        font-size: 1.5rem;
+    }
+    
+    .description-main {
+        text-align: center;
+        margin-bottom: 10px;
+    }
+    
+    .description-normal {
+        margin: 10px 0;
+        display:flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .description-normal .description-image {
+        width: 50%;
+    }
+    
+    b {
+        color: #73B5B4;
+    }
+    
+    .description-list {
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        margin: 10px 0;
+    }
+    
+    .description-list-item {
+        width: 50%;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    
+    .description-list-item .text {
+        margin-bottom: 5px;
+    }
+    
+    img {
+        width: 100%;
+        height: 100%;
+    }
+    
+    .description-link a {
+        font-style: italic;
+        color: #73B5B4;
+    }
 
+`;
 
 const StyledBlockTypeCreationContainer = styled.div`
     display: flex;
     width: 100%;
     flex-direction: row;
-    margin: auto 10px 10px 10px;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    border-top: 5px solid #ffffff30;
 `;
 
 export function BlockPopup({onCloseAction}: { onCloseAction: () => void }) {
@@ -121,7 +185,7 @@ export function BlockPopup({onCloseAction}: { onCloseAction: () => void }) {
     }
 
     return (
-        <Popup title={"Create Block"} onCloseAction={onCloseAction} noPadding={true}>
+        <Popup title={"Create Block"} onCloseAction={onCloseAction} noPadding={true} large={true}>
             <StyledCreateBlocksContainer>
                 <StyledBlockTypesContainer>
                     {blockTypes.map((type) => (
@@ -138,15 +202,12 @@ export function BlockPopup({onCloseAction}: { onCloseAction: () => void }) {
                     {blockType ?
                         <>
                             <StyledBlockTypeTitle>{blockType.name.replace("_", " ")}</StyledBlockTypeTitle>
-                            <StyledBlockTypeContent>
-                                <StyledBlockTypeDescription>{blockType.description}</StyledBlockTypeDescription>
-                                <StyledBlockTypeImages> </StyledBlockTypeImages>
-                            </StyledBlockTypeContent>
+                            <StyledBlockTypeContent dangerouslySetInnerHTML={{ __html: blockType.description}}/>
                             <StyledBlockTypeCreationContainer>
-                                <StyledInput $largeText={true} $width={"200px"} type="text" placeholder="Block Name"
+                                <StyledInput $largeText={true} $width={"200px"} type="text" placeholder="Block Name" $margin={"0 auto"}
                                              maxLength={18}
                                              onChange={(e) => setBlockName(e.target.value)}/>
-                                <PrimaryButton text={"Create Block"} action={addNewBlock}/>
+                                <PrimaryButton text={"Create Block"} action={addNewBlock} disabled={!blockName}/>
                             </StyledBlockTypeCreationContainer>
                         </> : <div>Select a block type from the list</div>}
                 </StyledBlockTypeContainer>

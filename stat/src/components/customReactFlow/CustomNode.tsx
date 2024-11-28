@@ -60,12 +60,12 @@ export const StyledDeleteButton = styled.div`
     }
 `;
 
-export const StyledNodeInfoIcon = styled(InfoSVG)`
+export const StyledNodeInfoIcon = styled(InfoSVG)<{ $scale?: number }>`
     position: absolute;
-    top: 2px;
-    left: 3px;
-    width: 7px;
-    height: 7px;
+    top: ${({ $scale }) => ($scale ? $scale * 2 : 2)}px;    
+    left: ${({ $scale }) => ($scale ? $scale * 3 : 3)}px;
+    width: ${({ $scale }) => ($scale ? $scale * 7 : 7)}px;
+    height: ${({ $scale }) => ($scale ? $scale * 7 : 7)}px;
     color: #989898;
 
     &:hover {
@@ -75,11 +75,11 @@ export const StyledNodeInfoIcon = styled(InfoSVG)`
     }
 `;
 
-export const StyledInfoPopup = styled.div<{ $visible: boolean }>`
+export const StyledInfoPopup = styled.div<{ $visible: boolean, $scale?: number }>`
     position: absolute;
-    top: 10px;
+    top: ${({ $scale }) => ($scale ? $scale * 10 : 10)}px;
     left: 0;
-    font-size: 0.5vw;
+    font-size: ${({ $scale }) => ($scale ? $scale * 0.5 : 0.5)}vw;
     background: linear-gradient(to bottom right, #3D3D3D 0%, #000000 100%);
     color: #73B5B4;
     padding: 2px 7px;
@@ -87,7 +87,7 @@ export const StyledInfoPopup = styled.div<{ $visible: boolean }>`
     border-radius: 4px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     z-index: 100;
-    width: 150px;
+    width: ${({ $scale }) => ($scale ? $scale * 150 : 150)}px;
     max-height: 250px;
     overflow-y: auto;
     display: ${({$visible}) => ($visible ? 'block' : 'none')};
@@ -112,12 +112,12 @@ export const StyledInfoPopup = styled.div<{ $visible: boolean }>`
     }
 `;
 
-export const StyledCloseInfoIcon = styled(CloseSVG)`
+export const StyledCloseInfoIcon = styled(CloseSVG)<{$scale?: number}>`
     position: absolute;
-    top: 1px;
-    right: 1px;
-    width: 10px;
-    height: 10px;
+    top: ${({ $scale }) => ($scale ? $scale * 1 : 1)}px;
+    right: ${({ $scale }) => ($scale ? $scale * 1 : 1)}px;
+    width: ${({ $scale }) => ($scale ? $scale * 10 : 10)}px;
+    height: ${({ $scale }) => ($scale ? $scale * 10 : 10)}px;
     opacity: 0.5;
     color: #ff0000;
 
@@ -188,7 +188,6 @@ const CustomNode = ({data}: CustomNodeProps) => {
                 title={"More information"}
                 onClick={(e) => {
                     e.stopPropagation();
-                    // dispatch(setActiveBlockId(data.id));
                     togglePopup();
                 }}
             >

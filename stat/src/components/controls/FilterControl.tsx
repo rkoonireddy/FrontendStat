@@ -1,13 +1,22 @@
 import {useState} from "react";
 import {InputSwitch} from "primereact/inputswitch";
-import {StyledControl} from "../sections/ControlSection";
-import {ControlTitle} from "./ControlTitle";
 import {getActiveBlock, updateControl} from "../../redux/pipelineSlice";
 import {useAppDispatch, useAppSelector} from "../../hooks";
+import {ControlContainer} from "./ControlContainer";
 
-export function FilterControl({title, displayName, onLabel, offLabel, value, columnSpan = 1, rowSpan = 1}: {
+export function FilterControl({
+                                  title,
+                                  displayName,
+                                  description,
+                                  onLabel,
+                                  offLabel,
+                                  value,
+                                  columnSpan = 1,
+                                  rowSpan = 1
+                              }: {
     title: string,
     displayName: string,
+    description: string,
     onLabel: string,
     offLabel: string,
     value: boolean,
@@ -18,19 +27,19 @@ export function FilterControl({title, displayName, onLabel, offLabel, value, col
     const dispatch = useAppDispatch();
     const [filterValue, setFilterValue] = useState(value);
     const [label, setLabel] = useState(filterValue ? onLabel : offLabel);
-    
+
     const toggle = (e: { value: boolean }) => {
         setFilterValue(e.value);  // Update the state with the new value
         updateLabel(e.value);  // Update the label
     };
-    
+
     function updateLabel(e: boolean) {
         setLabel(e ? onLabel : offLabel);
         update(e);
     }
 
     function update(e: boolean) {
-        if(activeBlock) {
+        if (activeBlock) {
             dispatch(
                 updateControl({
                     blockId: activeBlock.id,
@@ -41,12 +50,11 @@ export function FilterControl({title, displayName, onLabel, offLabel, value, col
     }
 
     return (
-        <StyledControl $columnSpan={columnSpan} $rowSpan={rowSpan}>
-            <ControlTitle title={displayName} />
+        <ControlContainer displayName={displayName} description={description} columnSpan={columnSpan} rowSpan={rowSpan}>
             <InputSwitch id={"input switch"}
                          checked={filterValue}
                          name={label}
                          onChange={toggle}/>
-        </StyledControl>
+        </ControlContainer>
     )
 }
