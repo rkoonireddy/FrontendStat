@@ -2,7 +2,7 @@ import {PipelineModel} from "../types/dataType";
 import {createAsyncThunk, createSelector, createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {RootState} from "../store";
 import {BlockModel, CreateBlockResponse} from "../types/responseType";
-import {createPipeline, exportPipeline, fetchPipeline, runPipeline} from "../service/pipelineService";
+import {createPipeline, exportPipeline, fetchPipeline, runPipeline, snoopPipeline} from "../service/pipelineService";
 import {
     addBlockToPipeline,
     createBlock,
@@ -126,6 +126,19 @@ export const connectTwoBlocks = createAsyncThunk <PipelineModel, {
             return await addEdgeToPipeline({fromBlockId, toBlockId, pipelineId});
         } catch (error) {
             return thunkAPI.rejectWithValue(`Failed to connect two blocks \n ${String(error)}`);
+        }
+    }
+);
+
+export const snoopPipelineColumns = createAsyncThunk<string, { pipelineId: string }, { rejectValue: string }>(
+    'pipeline/snoopPipelineColumns',
+    async ({pipelineId}, thunkAPI) => {
+        try {
+            const response_snoop = await snoopPipeline({pipelineId});
+            thunkAPI.dispatch(updatePipeline({pipelineId}));
+            return response_snoop;
+        } catch (error) {
+            return thunkAPI.rejectWithValue(`Failed to snoop pipeline \n ${String(error)}`);
         }
     }
 );
