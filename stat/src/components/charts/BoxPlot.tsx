@@ -159,7 +159,7 @@ export default function BoxPlot({ blockId, setHoveredColumn }: { blockId: string
                 <thead>
                     {<tr>
                         {columns.map(col => (
-                            <StyledTableHeader $isSelected={selectedColumns.includes(col)} $textAlign={'center'} $border={false}
+                            <StyledTableHeader key={"header_" + col} $isSelected={selectedColumns.includes(col)} $textAlign={'center'} $border={false}
                                 onMouseEnter={() => setHoveredColumn(col)}
                             >
                                 <StyledCheckbox
@@ -175,7 +175,7 @@ export default function BoxPlot({ blockId, setHoveredColumn }: { blockId: string
                 <tbody>
                     <tr>
                         {columns.map(col => (
-                            <StyledTableCell $isSelected={selectedColumns.includes(col)} $border={false}
+                            <StyledTableCell key={"cell_" + col} $isSelected={selectedColumns.includes(col)} $border={false}
                                 onMouseEnter={() => setHoveredColumn(col)}
                             >
                                 <div id={`boxplot-container-${col.replace('\r', '')}`}></div>

@@ -54,7 +54,7 @@ export function LineChart({block, small = false, mini = false, dataLoader = fals
             setChartData([]);
             setLegendLabels([]);
         }
-    }, [block, pipeline]);
+    }, [block, pipeline, filteredData, rawData]);
 
     const [dimensions, setDimensions] = useState({width: 0, height: 0});
     const svgRef = useRef<SVGSVGElement | null>(null);
@@ -287,7 +287,7 @@ export function LineChart({block, small = false, mini = false, dataLoader = fals
 
     return (
         <div style={{width: '100%', height: '100%', position: 'relative'}}>
-            {block?.output?.Dataframe?.data !== undefined ? (
+            {block?.output?.Dataframe?.data !== undefined || dataLoader ? (
                 <div style={{width: '100%', height: '100%'}}>
                     <svg
                         ref={svgRef}
