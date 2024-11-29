@@ -19,13 +19,14 @@ import {
     setLoading,
     snoopPipelineColumns
 } from "../../redux/pipelineSlice";
-import {createEdges, createNodesFromBlocks, getFirstKey} from "../../util/util";
+import {createEdges, getFirstKey} from "../../util/util";
 import CustomNode from "../customReactFlow/CustomNode";
 import CustomStartNode from "../customReactFlow/CustomStartNode";
 import CustomEdge from "../customReactFlow/CustomEdge";
 import {ReactComponent as RunSVG} from "../../assets/run.svg";
 import {ReactComponent as ExportSVG} from "../../assets/filetype-py.svg";
 import {ReactComponent as CopySVG} from "../../assets/copy.svg";
+import {createNodesFromBlocks} from "../../util/blockUtil";
 
 const NodeTypes = {customNode: CustomNode, customStartNode: CustomStartNode};
 const edgeTypes = {

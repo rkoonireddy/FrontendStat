@@ -20,6 +20,7 @@ const StyledSelectorContainer = styled.div<{ $height: number }>`
     align-items: center;
     height: ${(props) => props.$height + '%'};
     overflow: auto;
+    flex-grow: 1;
 `;
 
 const StyledStackedChartContainer = styled.div<{ $height: number }>`
@@ -33,6 +34,11 @@ const StyledStackedChartContainer = styled.div<{ $height: number }>`
     margin: 2px;
     overflow: auto;
     height: ${(props) => props.$height + '%'};
+`;
+
+const StyledToggleContainer = styled.div`
+    position: absolute;
+    top: 0;
 `;
 
 
@@ -61,9 +67,11 @@ export function DataLoaderSection({block}: { block: BlockModel }) {
 
     return (
         <StyledDataLoaderSectionContainer id={"dataloader-section"}>
-            <StyledSelectorContainer $height={30}>
+            <StyledSelectorContainer $height={40}>
+                <StyledToggleContainer>
                 <ToggleButton option1={"Table view"} option2={"Stat view"} selection={statView}
                               onSelect={setStatView}/>
+                </StyledToggleContainer>
                 <StyledDataViewContainer>
                 <StyledMainElementContainer>
                     {!statView ? (
@@ -77,7 +85,7 @@ export function DataLoaderSection({block}: { block: BlockModel }) {
                 </StyledStatisticsContainer>
                 </StyledDataViewContainer>
             </StyledSelectorContainer>
-            <StyledStackedChartContainer $height={70} style={{backgroundColor: '#ffffff08'}}>
+            <StyledStackedChartContainer $height={60} style={{backgroundColor: '#ffffff08'}}>
                 <LineChart block={block} dataLoader={true}/>
             </StyledStackedChartContainer>
         </StyledDataLoaderSectionContainer>

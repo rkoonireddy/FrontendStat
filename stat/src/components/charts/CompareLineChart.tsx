@@ -4,7 +4,7 @@ import {scaleLinear, axisBottom, axisLeft, line, curveCardinal} from 'd3';
 import {useAppSelector} from "../../hooks";
 import {IPipelineState} from "../../redux/pipelineSlice";
 import {BlockModel} from "../../types/responseType";
-import {convertToDataDocument} from "../../util/util";
+import {convertToDataDocument} from "../../util/blockUtil";
 import {COLOR_PALETTE} from "../../Theme";
 import styled from "styled-components";
 

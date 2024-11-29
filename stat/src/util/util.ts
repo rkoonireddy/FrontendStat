@@ -1,42 +1,7 @@
 import { quantile } from "d3";
-import {DataDocument, DataPoint, PipelineModel} from "../types/dataType";
-import {BlockModel} from "../types/responseType";
+import {DataDocument, PipelineModel} from "../types/dataType";
 
-export function getMinMax(data: DataPoint[][]): {x: {min: number, max: number}, y: {min: number, max: number}} {
-    let xMin = Infinity, xMax = -Infinity, yMin = Infinity, yMax = -Infinity;
-
-    data.forEach(dataset => {
-        dataset.forEach(point => {
-            if(point.x < xMin) xMin = point.x;
-            if(point.x > xMax) xMax = point.x;
-            if(point.y < yMin) yMin = point.y;
-            if(point.y > yMax) yMax = point.y;
-        });
-    });
-
-    return {
-        x: {min: xMin, max: xMax},
-        y: {min: yMin, max: yMax}
-    };
-}
-
-// blocks to customReactFlow
-export function createNodesFromBlocks(blocks: BlockModel[]) {
-    let y = -100;
-    return blocks.map((block: any) => {
-        y += 100;
-        return {
-            id: block.id,
-            type: "customNode",
-            description: block.descr,
-            tag: block.tag ? block.tag : "General",
-            data: { id: block.id, label: block.name, type: block.type, description: block.descr, tag: block.tag, blockId: block.id},
-            position: { x: 225, y: y },
-            ...(y === 0 && { type: "customStartNode" })
-        };
-    });
-}
-
+// Creates edges from the pipeline model
 export function createEdges(pipeline: PipelineModel): {id: string, type: string, source: string, target: string}[] {
     let edges : {id: string, type: string, source: string, target: string}[] = [];
     Object.entries(pipeline.edge_dict).forEach(([source, targets]) => {
@@ -52,27 +17,7 @@ export function createEdges(pipeline: PipelineModel): {id: string, type: string,
     return edges;
 }
 
-
-export function convertToDataPoints(data: any[]): DataPoint[][] {
-    const xValues = data[0].data.data;
-    const yArray = data.slice(1);
-    return yArray.map((yData: any) => yData.data.data.map((y: number, i: number) => ({x: xValues[i], y: y})));
-}
-
-export function convertToDataDocument(data: any[]): DataDocument[] {
-    if (!data.length || !data[0].data || !data[0].data.data) {
-        return [];
-    }
-
-    return data[0].data.data.map((_: any, rowIndex: number) => {
-        const rowObject: DataDocument = {};
-        data.forEach(column => {
-            rowObject[column.name] = column.data.data[rowIndex] as number | null;
-        });
-        return rowObject;
-    });
-}
-
+// Creates a DataDocument (used for the line chart) from the raw data uploaded into the redux store
 export function convertRawDataToDataDocument(rawData: any[]): DataDocument[] {
     if (!rawData.length) {
         console.log("No Raw Data");
@@ -89,6 +34,7 @@ export function convertRawDataToDataDocument(rawData: any[]): DataDocument[] {
     });
 }
 
+// returns the first key of a dictionary
 export function getFirstKey(dict: Record<string, any>): string | undefined {
     const keys = Object.keys(dict);
     return keys.length > 0 ? keys[0] : undefined;

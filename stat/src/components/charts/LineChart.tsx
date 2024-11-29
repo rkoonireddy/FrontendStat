@@ -16,8 +16,9 @@ import {getPipeline} from "../../redux/pipelineSlice";
 import {getData, getFilteredData} from "../../redux/dataSlice";
 import {BlockModel} from "../../types/responseType";
 import {DataDocument} from "../../types/dataType";
-import {convertRawDataToDataDocument, convertToDataDocument} from "../../util/util";
+import {convertRawDataToDataDocument} from "../../util/util";
 import {COLOR_PALETTE} from "../../Theme";
+import {convertToDataDocument} from "../../util/blockUtil";
 
 
 interface LineChartProps {

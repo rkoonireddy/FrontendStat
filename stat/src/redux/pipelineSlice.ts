@@ -11,10 +11,10 @@ import {
     runBlock,
     updateBlock
 } from "../service/blockService";
-import {createEdges, createNodesFromBlocks} from "../util/util";
+import {createEdges} from "../util/util";
 import {addEdgeToPipeline, deleteEdge} from "../service/edgeService";
-import { stat } from "fs";
 import {downloadPythonScript} from "../util/fileUtil";
+import {createNodesFromBlocks} from "../util/blockUtil";
 
 
 export interface IPipelineState {
