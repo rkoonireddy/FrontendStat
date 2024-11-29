@@ -79,7 +79,7 @@ function Flow() {
     const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
     const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
     const [isDragging, setIsDragging] = useState(false);
-    const [onGraphChange, setOnGraphChange] = useState(0);
+    const [restoreNeeded, setRestoreNeeded] = useState(false);
 
     useEffect(() => {
         const ns = createNodesFromBlocks(blocks);
@@ -92,10 +92,19 @@ function Flow() {
     }, [pipeline])
 
     useEffect(() => {
-        if (!isDragging) {
-            fitView();
+        const flowString = localStorage.getItem(flowKey);
+        if (flowString && !isDragging) {
+            const {nodes: restoredNodes, edges: restoredEdges} = JSON.parse(flowString);
+            if (JSON.stringify(nodes) !== JSON.stringify(restoredNodes)) {
+                setNodes(restoredNodes);
+                setEdges(restoredEdges);
+                fitView().then();
+                console.log("Flow restored.");
+            }
+        } else {
+            console.log("No saved flow found.");
         }
-    }, [nodes, edges, fitView, isDragging]);
+    }, [nodes]);
 
 
     const onConnect = useCallback(
@@ -128,33 +137,32 @@ function Flow() {
 
     const onNodeDragStart = () => {
         setIsDragging(true);
-        setOnGraphChange(1);
     };
 
     const onNodeDragStop = () => {
         setIsDragging(false);
-        setOnGraphChange(1);
-        onSave();
+        saveView();
     };
 
     // Save function
-    const onSave = useCallback(() => {
+    function saveView() {
         const flow = {nodes, edges};
         localStorage.setItem(flowKey, JSON.stringify(flow));
-    }, [nodes, edges]);
+    };
 
     // Restore function
-    const onRestore = useCallback(() => {
+    function restoreView()  {
         const flowString = localStorage.getItem(flowKey);
         if (flowString) {
             const {nodes: restoredNodes, edges: restoredEdges} = JSON.parse(flowString);
             setNodes(restoredNodes);
             setEdges(restoredEdges);
             fitView().then();
+            console.log("Flow restored.");
         } else {
             console.log("No saved flow found.");
         }
-    }, [setNodes, setEdges, fitView]);
+    };
 
     return (
         <ReactFlow
@@ -172,10 +180,10 @@ function Flow() {
             <Background/>
             <Controls/>
             <Panel position="top-right">
-                <button onClick={onSave}>
+                <button onClick={saveView}>
                     Save graph view
                 </button>
-                <button onClick={onRestore}>
+                <button onClick={restoreView}>
                     Restore saved view
                 </button>
             </Panel>
@@ -194,15 +202,12 @@ function Flow() {
                             <ExportSVG style={{width: "35px", height: "35px", color: "#ffffff"}}/>
                         </StyledActionButton> : <div style={{width: "35px", height: "35px"}}/>}
                         <StyledActionButton title={"Run Pipeline"} onClick={(e) => {
-                        onSave();
+                        saveView();
                         dispatch(setLoading(true));
                         dispatch(executePipeline({
                             pipelineId: pipeline.id,
                             startingBlockId: getFirstKey(pipeline.block_dict) as string
-                        }))
-                            .then(() => {
-                                onRestore();
-                            });
+                        }));
                         e.stopPropagation();
                     }}>
                         <RunSVG style={{width: "50px", height: "50px", color: "#00ff00"}}/>
