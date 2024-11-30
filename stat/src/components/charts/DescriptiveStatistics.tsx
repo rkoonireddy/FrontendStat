@@ -1,4 +1,4 @@
-import {getData} from "../../redux/dataSlice";
+import {getData, getRawDataColumns} from "../../redux/dataSlice";
 import styled from "styled-components";
 import {useAppSelector} from "../../hooks";
 import {getFrequency} from "../../redux/pipelineSlice";
@@ -25,7 +25,10 @@ const StyledColumnHeader = styled.div`
 export default function BoxPlot({column}: { column: string | null }) {
     const rawData = useAppSelector(getData);
     const dataFrequency = useAppSelector(getFrequency);
+    const rawDataColumns = useAppSelector(getRawDataColumns);
+    const indexColumnName = rawDataColumns[0];
     const columnLength = rawData.map(row => row[column as string]).filter((value): value is string => value !== null).length;
+    const indexLength = rawData.map(row => row[indexColumnName]).filter((value): value is string => value !== null).length;
     const mean = getMean(rawData.map(row => row[column as string]));
     const median = getMedian(rawData.map(row => row[column as string]));
     const range = getRange(rawData.map(row => row[column as string]));
@@ -54,6 +57,10 @@ export default function BoxPlot({column}: { column: string | null }) {
                     <tr>
                         <StyledTableCell>Observations:</StyledTableCell>
                         <StyledTableCell>{columnLength}</StyledTableCell>
+                    </tr>
+                    <tr>
+                        <StyledTableCell>Data Coverage</StyledTableCell>
+                        <StyledTableCell>{String(columnLength/indexLength * 100 + "%")}</StyledTableCell>
                     </tr>
                     <tr>
                         <StyledTableCell>Mean</StyledTableCell>
