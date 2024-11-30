@@ -2,6 +2,7 @@ import styled from "styled-components";
 import {LineChart} from "../charts/LineChart";
 import CSVViewer from "../charts/CSVViewer";
 import BoxPlot from "../charts/BoxPlot";
+import ViolinPlot from "../charts/ViolinPlot";
 import DescriptiveStatistics from "../charts/DescriptiveStatistics";
 import {BlockModel} from "../../types/responseType";
 import {useState} from "react";
@@ -77,7 +78,7 @@ export function DataLoaderSection({block}: { block: BlockModel }) {
                     {!statView ? (
                         <CSVViewer blockId={block.id} sample={5} setHoveredColumn={setHoveredColumn}/>
                     ) : (
-                        <BoxPlot blockId={block.id} setHoveredColumn={setHoveredColumn}/>
+                        <ViolinPlot/>
                     )}
                 </StyledMainElementContainer>
                 <StyledStatisticsContainer>
