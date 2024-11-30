@@ -25,9 +25,17 @@ const ViolinPlot = () => {
             .append('g')
             .attr('transform', `translate(${margin.left},${margin.top})`);
 
+        const maxNum = d3.max(rawData.flatMap(row => {
+            return inputColumns.map(column => Number(row[column]));
+        })) || 1;
+        
+        const minNum = d3.min(rawData.flatMap(row => {
+            return inputColumns.map(column => Number(row[column]));
+        })) || -1;
+
         // Build and show the Y scale
         const y = d3.scaleLinear()
-            .domain([-5, 8]) // Note that here the Y scale is set manually TODO: make this dynamic
+            .domain([minNum, maxNum])
             .range([height, 0]);
         svg.append("g").call(d3.axisLeft(y));
 
@@ -40,7 +48,7 @@ const ViolinPlot = () => {
             .attr("transform", `translate(0,${height})`)
             .call(d3.axisBottom(x));
 
-            inputColumns.forEach((column) => {
+        inputColumns.forEach((column) => {
             // Features of density estimate
             const kde = kernelDensityEstimator(kernelEpanechnikov(0.2), y.ticks(50));
 
