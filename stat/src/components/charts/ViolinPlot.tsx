@@ -37,7 +37,7 @@ const ViolinPlot = () => {
         const y = d3.scaleLinear()
             .domain([minNum, maxNum])
             .range([height, 0]);
-        svg.append("g").call(d3.axisLeft(y));
+        svg.append("g").attr("stroke", "white").call(d3.axisLeft(y));
 
         // Build and show the X scale
         const x = d3.scaleBand()
@@ -46,6 +46,7 @@ const ViolinPlot = () => {
             .padding(0.05); // This is important: it is the space between 2 groups
         svg.append("g")
             .attr("transform", `translate(0,${height})`)
+            .attr("stroke", "white")
             .call(d3.axisBottom(x));
 
         inputColumns.forEach((column) => {
