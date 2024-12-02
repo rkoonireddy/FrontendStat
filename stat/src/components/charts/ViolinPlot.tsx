@@ -2,12 +2,13 @@ import * as d3 from 'd3';
 import React, { useEffect, useRef } from 'react';
 import { getData, getRawDataColumns } from "../../redux/dataSlice";
 import { useAppSelector } from "../../hooks";
+import { getMedian } from "../../util/util";
 
 const ViolinPlot = () => {
     const svgRef = useRef<SVGSVGElement | null>(null);
     const rawData = useAppSelector(getData);
     const rawDataColumns = useAppSelector(getRawDataColumns);
-    const inputColumns = rawDataColumns
+    const inputColumns = rawDataColumns //Filter out the first column
         .filter((column, columnIndex): column is string => columnIndex !== 0);
 
     useEffect(() => {
@@ -28,7 +29,7 @@ const ViolinPlot = () => {
         const maxNum = d3.max(rawData.flatMap(row => {
             return inputColumns.map(column => Number(row[column]));
         })) || 1;
-        
+
         const minNum = d3.min(rawData.flatMap(row => {
             return inputColumns.map(column => Number(row[column]));
         })) || -1;
@@ -43,7 +44,7 @@ const ViolinPlot = () => {
         const x = d3.scaleBand()
             .range([0, width])
             .domain(inputColumns)
-            .padding(0.05); // This is important: it is the space between 2 groups
+            .padding(0.1); // This is important: it is the space between 2 groups
         svg.append("g")
             .attr("transform", `translate(0,${height})`)
             .attr("stroke", "white")
@@ -82,8 +83,7 @@ const ViolinPlot = () => {
                 .range([0, x.bandwidth()])
                 .domain([-maxNum, maxNum]);
 
-
-            // Add the shape to this svg!
+            // Add the violin shape
             svg.selectAll("myViolin")
                 .data(Array.from(sumstat))
                 .enter() // So now we are working group per group
@@ -102,7 +102,22 @@ const ViolinPlot = () => {
                     .x0(d => xNum(-d[1]))
                     .x1(d => xNum(d[1]))
                     .y(d => y(d[0]))
-                    .curve(d3.curveCatmullRom)); // This makes the line smoother to give the violin appearance           
+                    .curve(d3.curveCatmullRom)); // This makes the line smoother to give the violin appearance
+
+            const median = getMedian(rawData.map(row => row[column as string]));
+            // Add the median
+            svg.append("circle")
+                .attr("cx", x(column) as number + x.bandwidth() / 2)
+                .attr("cy", y(median))
+                .attr("r", 3)
+                .style("fill", "red");
+
+            svg.append("line") // whisker
+                .attr("x1", x(column) as number)
+                .attr("x2", x(column) as number + x.bandwidth())
+                .attr("y1", y(0))
+                .attr("y2", y(0))
+                .attr("stroke", "black");
         });
     }, [rawData]);
 

@@ -41,7 +41,7 @@ export default function BoxPlot({ column }: { column: string | null }) {
 
 
     useEffect(() => {
-        console.log("rawData", rawData);
+        //console.log("rawData", rawData);
     }, []);
 
     return (
