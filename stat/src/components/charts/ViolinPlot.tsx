@@ -113,8 +113,8 @@ const ViolinPlot = () => {
                 .style("fill", "red");
 
             svg.append("line") // whisker
-                .attr("x1", x(column) as number)
-                .attr("x2", x(column) as number + x.bandwidth())
+                .attr("x1", x(column) as number + x.bandwidth()*0.40)
+                .attr("x2", x(column) as number + x.bandwidth()*0.60)
                 .attr("y1", y(0))
                 .attr("y2", y(0))
                 .attr("stroke", "black");
