@@ -95,3 +95,12 @@ export function getQuartiles(data: (string | null)[]): number[] {
         quantile(sortedData, 0.75) ?? 0
     ];
 }
+
+export function getConfidenceInterval(data: (string | null)[]): [number, number] {
+    const numericData = data.filter((value): value is string => value !== null).map(Number);
+    const mean = getMean(data);
+    const standardError = getStandardDeviation(data) / Math.sqrt(numericData.length);
+    const criticalValue = 1.96; // 95% confidence
+    const marginOfError = criticalValue * standardError;
+    return [mean - marginOfError, mean + marginOfError];
+}

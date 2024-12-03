@@ -2,7 +2,7 @@ import * as d3 from 'd3';
 import React, { useEffect, useRef } from 'react';
 import { getData, getRawDataColumns } from "../../redux/dataSlice";
 import { useAppSelector } from "../../hooks";
-import { getQuartiles } from "../../util/util";
+import { getQuartiles, getConfidenceInterval } from "../../util/util";
 
 const ViolinPlot = () => {
     const svgRef = useRef<SVGSVGElement | null>(null);
@@ -120,13 +120,15 @@ const ViolinPlot = () => {
                 .attr("cy", y(quartiles[1]))
                 .attr("r", 3)
                 .style("fill", "red");
-
-            /*svg.append("line") // whisker
-                .attr("x1", x(column) as number + x.bandwidth() * 0.40)
-                .attr("x2", x(column) as number + x.bandwidth() * 0.60)
-                .attr("y1", y(0))
-                .attr("y2", y(0))
-                .attr("stroke", "black");*/
+            
+            // assuming normal distribution
+            const confidenceInterval = getConfidenceInterval(rawData.map(row => row[column as string]));
+            svg.append("line") // whisker
+                .attr("x1", x(column) as number + x.bandwidth() * 0.5)
+                .attr("x2", x(column) as number + x.bandwidth() * 0.5)
+                .attr("y1", y(quartiles[1] - confidenceInterval[0]))
+                .attr("y2", y(quartiles[1] + confidenceInterval[1]))
+                .attr("stroke", "black");
         });
     }, [rawData]);
 
