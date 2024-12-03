@@ -2,7 +2,7 @@ import * as d3 from 'd3';
 import React, { useEffect, useRef } from 'react';
 import { getData, getRawDataColumns } from "../../redux/dataSlice";
 import { useAppSelector } from "../../hooks";
-import { getMedian } from "../../util/util";
+import { getQuartiles } from "../../util/util";
 
 const ViolinPlot = () => {
     const svgRef = useRef<SVGSVGElement | null>(null);
@@ -104,20 +104,29 @@ const ViolinPlot = () => {
                     .y(d => y(d[0]))
                     .curve(d3.curveCatmullRom)); // This makes the line smoother to give the violin appearance
 
-            const median = getMedian(rawData.map(row => row[column as string]));
+            const quartiles = getQuartiles(rawData.map(row => row[column as string]));
+
+            svg.append("rect") //IQR box
+                .attr("x", x(column) as number + x.bandwidth() * 0.4)
+                .attr("y", y(quartiles[2]))
+                .attr("width", x.bandwidth() * 0.2)
+                .attr("height", y(quartiles[0]) - y(quartiles[2]))
+                .attr("fill", "yellow")
+                .attr("stroke", "black");
+            
             // Add the median
             svg.append("circle")
                 .attr("cx", x(column) as number + x.bandwidth() / 2)
-                .attr("cy", y(median))
+                .attr("cy", y(quartiles[1]))
                 .attr("r", 3)
                 .style("fill", "red");
 
-            svg.append("line") // whisker
-                .attr("x1", x(column) as number + x.bandwidth()*0.40)
-                .attr("x2", x(column) as number + x.bandwidth()*0.60)
+            /*svg.append("line") // whisker
+                .attr("x1", x(column) as number + x.bandwidth() * 0.40)
+                .attr("x2", x(column) as number + x.bandwidth() * 0.60)
                 .attr("y1", y(0))
                 .attr("y2", y(0))
-                .attr("stroke", "black");
+                .attr("stroke", "black");*/
         });
     }, [rawData]);
 
