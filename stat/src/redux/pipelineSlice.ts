@@ -2,7 +2,7 @@ import {PipelineModel} from "../types/dataType";
 import {createAsyncThunk, createSelector, createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {RootState} from "../store";
 import {BlockModel, CreateBlockResponse} from "../types/responseType";
-import {createPipeline, exportPipeline, fetchPipeline, runPipeline, snoopPipeline} from "../service/pipelineService";
+import {createPipeline, exportPipeline, fetchPipeline, runPipeline, snoopPipeline, deletePipeline} from "../service/pipelineService";
 import {
     addBlockToPipeline,
     createBlock,
@@ -239,6 +239,19 @@ export const deleteEdgeFromPipeline = createAsyncThunk<void, { edgeId: string, p
             thunkAPI.dispatch(updatePipeline({pipelineId}));
         } catch (error) {
             return thunkAPI.rejectWithValue(`Failed to delete edge from pipeline \n ${String(error)}`);
+        }
+    }
+);
+
+export const deletePipelineThunk = createAsyncThunk<void, { pipelineId: string }, {
+    rejectValue: string
+}>(
+    'pipeline/deletePipelineThunk',
+    async ({pipelineId}, thunkAPI) => {
+        try {
+            return await deletePipeline({pipelineId});
+        } catch (error) {
+            return thunkAPI.rejectWithValue(`Failed to delete pipeline \n ${String(error)}`);
         }
     }
 );

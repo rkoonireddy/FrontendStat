@@ -50,7 +50,6 @@ export async function runPipeline({pipelineId, startingBlockId}: {
     return await response.text();
 }
 
-
 export async function snoopPipeline({pipelineId}: {
     pipelineId: string
 }): Promise<string> {
@@ -78,8 +77,7 @@ export async function exportPipeline({pipelineId, startBlockId, endBlockId}: { p
     return await response.text();
 }
 
-
-export function deletePipeline({pipelineId}: { pipelineId: string }): Promise<void> {
+export async function deletePipeline({pipelineId}: { pipelineId: string }): Promise<void> {
     return fetch(baseurl + "pipeline/" + pipelineId,
         {
             method: "DELETE"
