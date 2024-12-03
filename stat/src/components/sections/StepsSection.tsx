@@ -17,7 +17,8 @@ import {
     getBlocks,
     getPipeline,
     setLoading,
-    snoopPipelineColumns
+    snoopPipelineColumns,
+    showDeletePipelinePopup
 } from "../../redux/pipelineSlice";
 import {createEdges, getFirstKey} from "../../util/util";
 import CustomNode from "../customReactFlow/CustomNode";
@@ -81,7 +82,6 @@ function Flow() {
     const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
     const [isDragging, setIsDragging] = useState(false);
     const [onGraphChange, setOnGraphChange] = useState(0);
-    const [showDialogDeletePipeline, setShowDialogDeletePipeline] = useState(false);
 
     useEffect(() => {
         const ns = createNodesFromBlocks(blocks);
@@ -216,7 +216,7 @@ function Flow() {
                         <CopySVG style={{width: "35px", height: "35px", fill: "#ffffff"}}/>
                     </StyledActionButton>
                     <StyledActionButton title={"Delete Pipeline"} onClick={() => {
-                        // TODO: Implement showDeletePipelinePopup from state that makes popup appear
+                        dispatch(showDeletePipelinePopup());
                     }}>
                         <TrashSVG style={{width: "35px", height: "35px", fill: "#ffffff"}}/>
                     </StyledActionButton>

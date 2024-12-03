@@ -329,6 +329,9 @@ export const pipelineSlice = createSlice({
             state.errorStatus = false;
             state.errorMessage = null;
         },
+        showDeletePipelinePopup(state) {
+            state.deletePipelinePopup = true;
+        },
         clearDeletePipelinePopup(state) {
             state.deletePipelinePopup = false;
         }
@@ -452,6 +455,7 @@ export const {
     addControl,
     updateControl,
     clearError,
+    showDeletePipelinePopup,
     clearDeletePipelinePopup
 } = pipelineSlice.actions;
 

@@ -48,7 +48,7 @@ export function PopupWithAction({title, onOkAction, onCancelAction, large = fals
         <StyledPopup $large={large} $noPadding={noPadding}>
             {!noPadding && <StyledTitle>{title}</StyledTitle> }
             <PrimaryButton text={"Ok"} action={onOkAction}/>
-            <PrimaryButton text={"Ok"} action={onCancelAction}/>
+            <PrimaryButton text={"Cancel"} action={onCancelAction}/>
         </StyledPopup>
     )
 }

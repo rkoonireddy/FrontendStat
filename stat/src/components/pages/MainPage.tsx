@@ -11,6 +11,7 @@ import {useState} from "react";
 import {Loading} from "../pageElements/Loading";
 import {ErrorPopup} from "../pageElements/ErrorPopup";
 import {BlockPopup} from "../pageElements/BlockPopup";
+import { DeletePipelinePopup } from "../pageElements/DeletePipelinePopup";
 
 
 const StyledMainPage = styled.div`
@@ -50,6 +51,7 @@ function MainPage() {
         <StyledMainPage>
             {loading && <Loading/>}
             {<ErrorPopup/>}
+            {<DeletePipelinePopup/> }
             {showCreateBlockPopup &&
                 <BlockPopup onCloseAction={closePopup}/>}
             <StyledSideBar>
