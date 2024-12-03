@@ -26,6 +26,7 @@ import CustomEdge from "../customReactFlow/CustomEdge";
 import {ReactComponent as RunSVG} from "../../assets/run.svg";
 import {ReactComponent as ExportSVG} from "../../assets/filetype-py.svg";
 import {ReactComponent as CopySVG} from "../../assets/copy.svg";
+import {ReactComponent as TrashSVG} from "../../assets/trash.svg";
 import {createNodesFromBlocks} from "../../util/blockUtil";
 
 const NodeTypes = {customNode: CustomNode, customStartNode: CustomStartNode};
@@ -80,6 +81,7 @@ function Flow() {
     const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
     const [isDragging, setIsDragging] = useState(false);
     const [onGraphChange, setOnGraphChange] = useState(0);
+    const [showDialogDeletePipeline, setShowDialogDeletePipeline] = useState(false);
 
     useEffect(() => {
         const ns = createNodesFromBlocks(blocks);
@@ -212,6 +214,11 @@ function Flow() {
                         alert("Pipeline ID copied to clipboard.");
                     }}>
                         <CopySVG style={{width: "35px", height: "35px", fill: "#ffffff"}}/>
+                    </StyledActionButton>
+                    <StyledActionButton title={"Delete Pipeline"} onClick={() => {
+                        
+                    }}>
+                        <TrashSVG style={{width: "35px", height: "35px", fill: "#ffffff"}}/>
                     </StyledActionButton>
                 </StyledToolbar>
             </Panel>

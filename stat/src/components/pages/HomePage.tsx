@@ -28,6 +28,7 @@ import {StyledInput, StyledUnit} from "../controls/InputControl";
 import {PreviewTable} from "../tables/PreviewTable";
 import {checkFileValidity, preProcessCSVData} from "../../util/fileUtil";
 import {ErrorPopup} from "../pageElements/ErrorPopup";
+import { DeletePipelinePopup } from "../pageElements/DeletePipelinePopup";
 import {unwrapResult} from '@reduxjs/toolkit';
 
 const StyledHomeContainer = styled.div`
@@ -312,6 +313,7 @@ export default function HomePage() {
                 <img src={logoNoBg} alt="Logo"/>
             </StyledHeader>
             <ErrorPopup/>
+            <DeletePipelinePopup/>
             <StyledHomeContentContainer>
 
                 <StyledWelcomeContentContainer>
