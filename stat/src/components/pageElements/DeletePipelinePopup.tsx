@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import {clearError} from "../../redux/pipelineSlice";
+import {clearDeletePipelinePopup} from "../../redux/pipelineSlice";
 import {useSelector, useDispatch} from 'react-redux';
 import {RootState} from '../../store';
 import {PopupWithAction} from "./PopupWithAction";
@@ -14,11 +14,14 @@ const StyledMessage = styled.div`
 `;
 
 export function DeletePipelinePopup() {
+    const dispatch = useDispatch();
+    const deletePipelinePopup = useSelector((state: RootState) => state.pipeline.deletePipelinePopup);
+    if (!deletePipelinePopup) return null;
     return (
         <PopupWithAction
             title={"Delete Pipeline?"}
-            onOkAction={() => {console.log("OkAction clicked")}}
-            onCancelAction={() => {console.log("CancelAction clicked")}}
+            onOkAction={() => {dispatch(clearDeletePipelinePopup())}}
+            onCancelAction={() => {dispatch(clearDeletePipelinePopup())}}
         />
     )
 }

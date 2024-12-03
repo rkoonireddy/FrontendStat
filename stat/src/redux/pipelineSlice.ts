@@ -25,6 +25,7 @@ export interface IPipelineState {
     loading: boolean,
     errorStatus: boolean,
     errorMessage: string | null,
+    deletePipelinePopup: boolean,
     controls: {
         [blockId: string]: {
             [controlName: string]: any
@@ -47,6 +48,7 @@ const initialState: IPipelineState = {
     loading: false,
     errorStatus: false,
     errorMessage: null,
+    deletePipelinePopup: false,
     controls: {}
 }
 
@@ -326,6 +328,9 @@ export const pipelineSlice = createSlice({
         clearError(state) {
             state.errorStatus = false;
             state.errorMessage = null;
+        },
+        clearDeletePipelinePopup(state) {
+            state.deletePipelinePopup = false;
         }
     },
     extraReducers: builder => {
@@ -446,7 +451,8 @@ export const {
     setLoading,
     addControl,
     updateControl,
-    clearError
+    clearError,
+    clearDeletePipelinePopup
 } = pipelineSlice.actions;
 
 export default pipelineSlice.reducer;

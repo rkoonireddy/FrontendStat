@@ -313,7 +313,9 @@ export default function HomePage() {
                 <img src={logoNoBg} alt="Logo"/>
             </StyledHeader>
             <ErrorPopup/>
-            <DeletePipelinePopup/>
+            <DeletePipelinePopup
+            // TODO: Implemnetn handleDelete function
+            /> 
             <StyledHomeContentContainer>
 
                 <StyledWelcomeContentContainer>

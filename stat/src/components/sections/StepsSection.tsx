@@ -216,7 +216,7 @@ function Flow() {
                         <CopySVG style={{width: "35px", height: "35px", fill: "#ffffff"}}/>
                     </StyledActionButton>
                     <StyledActionButton title={"Delete Pipeline"} onClick={() => {
-                        
+                        // TODO: Implement showDeletePipelinePopup from state that makes popup appear
                     }}>
                         <TrashSVG style={{width: "35px", height: "35px", fill: "#ffffff"}}/>
                     </StyledActionButton>
