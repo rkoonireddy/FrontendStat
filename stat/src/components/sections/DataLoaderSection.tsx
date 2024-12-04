@@ -78,7 +78,7 @@ export function DataLoaderSection({block}: { block: BlockModel }) {
                     {!statView ? (
                         <CSVViewer blockId={block.id} sample={5} setHoveredColumn={setHoveredColumn}/>
                     ) : (
-                        <ViolinPlot/>
+                        <ViolinPlot setHoveredColumn={setHoveredColumn}/>
                     )}
                 </StyledMainElementContainer>
                 <StyledStatisticsContainer>

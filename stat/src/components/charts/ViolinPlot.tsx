@@ -1,10 +1,14 @@
 import * as d3 from 'd3';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { getData, getRawDataColumns } from "../../redux/dataSlice";
 import { useAppSelector } from "../../hooks";
 import { getQuartiles, getConfidenceInterval } from "../../util/util";
 
-const ViolinPlot = () => {
+interface ViolinPlotProps {
+    setHoveredColumn: (column: string | null) => void;
+}
+
+const ViolinPlot: React.FC<ViolinPlotProps> = ({ setHoveredColumn }) => {
     const svgRef = useRef<SVGSVGElement | null>(null);
     const rawData = useAppSelector(getData);
     const rawDataColumns = useAppSelector(getRawDataColumns);
@@ -91,8 +95,14 @@ const ViolinPlot = () => {
                 //.attr("transform", d => `translate(${x(d[0])},0)`) // Translation on the right to be at the group position
                 .attr("transform", d => {
                     const xPos = x(d[0]);
-                    //console.log("d[0]:", d[0], "xPos:", xPos); // Debugging statement
+                    console.log("d[0]:", d[0], "xPos:", xPos); // Debugging statement
                     return `translate(${xPos},0)`; // Translation on the right to be at the group position
+                })
+                .on("mouseover", function (event, d) {
+                    setHoveredColumn(d[0].toString());
+                })
+                .on("mouseout", function () {
+                    setHoveredColumn(null);
                 })
                 .append("path")
                 .datum(d => d[1].filter((v): v is [number, number] => v[0] !== undefined && v[1] !== undefined)) // Filter out undefined values, working density per density
@@ -102,7 +112,7 @@ const ViolinPlot = () => {
                     .x0(d => xNum(-d[1]))
                     .x1(d => xNum(d[1]))
                     .y(d => y(d[0]))
-                    .curve(d3.curveCatmullRom)); // This makes the line smoother to give the violin appearance
+                    .curve(d3.curveCatmullRom)) // This makes the line smoother to give the violin appearance
 
             const quartiles = getQuartiles(rawData.map(row => row[column as string]));
 
@@ -113,14 +123,14 @@ const ViolinPlot = () => {
                 .attr("height", y(quartiles[0]) - y(quartiles[2]))
                 .attr("fill", "yellow")
                 .attr("stroke", "black");
-            
+
             // Add the median
             svg.append("circle")
                 .attr("cx", x(column) as number + x.bandwidth() / 2)
                 .attr("cy", y(quartiles[1]))
                 .attr("r", 3)
                 .style("fill", "red");
-            
+
             // assuming normal distribution
             const confidenceInterval = getConfidenceInterval(rawData.map(row => row[column as string]));
             svg.append("line") // whisker
