@@ -58,6 +58,10 @@ export const StyledDeleteButton = styled.div`
         cursor: pointer;
         opacity: 0.8;
     }
+    
+    & svg:hover {
+        fill: #ff0000!important;
+    }
 `;
 
 export const StyledNodeInfoIcon = styled(InfoSVG)<{ $scale?: number }>`
@@ -177,7 +181,7 @@ const CustomNode = ({data}: CustomNodeProps) => {
                 dispatch(deleteBlockFromPipeline({pipelineId: pipeline.id, blockId: data.id}));
                 e.stopPropagation();
             }}>
-                <TrashSVG style={{width: "7px", height: "7px", color: "#ff0000"}}/>
+                <TrashSVG style={{width: "7px", height: "7px", fill: (data.id === activeNodeId ? '#939393BF' : '#f0f0f0f0') }}/>
             </StyledDeleteButton>
             <StyledNodeLabel $active={data.id === activeNodeId} $small={data.label.length > 14}>
                 {data.label}
