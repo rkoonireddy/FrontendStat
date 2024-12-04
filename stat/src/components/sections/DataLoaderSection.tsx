@@ -87,7 +87,7 @@ export function DataLoaderSection({block}: { block: BlockModel }) {
                 </StyledDataViewContainer>
             </StyledSelectorContainer>
             <StyledStackedChartContainer $height={60} style={{backgroundColor: '#ffffff08'}}>
-                <LineChart block={block} dataLoader={true}/>
+                <LineChart block={block} dataLoader={true} hoveredColumn={hoveredColumn}/>
             </StyledStackedChartContainer>
         </StyledDataLoaderSectionContainer>
     );

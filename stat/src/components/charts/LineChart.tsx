@@ -26,9 +26,10 @@ interface LineChartProps {
     small?: boolean;
     mini?: boolean;
     dataLoader?: boolean;
+    hoveredColumn?: string | null;
 }
 
-export function LineChart({block, small = false, mini = false, dataLoader = false}: LineChartProps) {
+export function LineChart({block, small = false, mini = false, dataLoader = false, hoveredColumn = null}: LineChartProps) {
     const pipeline = useAppSelector(getPipeline);
     const rawData = useAppSelector(getData);
     const filteredData = useAppSelector(getFilteredData);
@@ -284,6 +285,16 @@ export function LineChart({block, small = false, mini = false, dataLoader = fals
         }
 
     }, [chartData, dimensions, legendLabels, selectedLineIndex, mini, small]);
+
+    useEffect(() => { // Link selected Line Index to hovered column
+        if (hoveredColumn) {
+            const columnIndex = filteredData[0]?.hasOwnProperty(hoveredColumn) ? Object.keys(filteredData[0]).indexOf(hoveredColumn) : -1;
+            setSelectedLineIndex(columnIndex - 1 );
+        }
+        else {
+            //setSelectedLineIndex(null);
+        }
+    }, [hoveredColumn]);
 
 
     return (
