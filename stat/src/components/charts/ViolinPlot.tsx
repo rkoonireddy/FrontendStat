@@ -95,7 +95,7 @@ const ViolinPlot: React.FC<ViolinPlotProps> = ({ setHoveredColumn }) => {
                 //.attr("transform", d => `translate(${x(d[0])},0)`) // Translation on the right to be at the group position
                 .attr("transform", d => {
                     const xPos = x(d[0]);
-                    console.log("d[0]:", d[0], "xPos:", xPos); // Debugging statement
+                    //console.log("d[0]:", d[0], "xPos:", xPos); // Debugging statement
                     return `translate(${xPos},0)`; // Translation on the right to be at the group position
                 })
                 .on("mouseover", function (event, d) {
