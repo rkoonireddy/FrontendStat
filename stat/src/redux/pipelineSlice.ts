@@ -70,7 +70,7 @@ export const checkPipeline = createAsyncThunk<boolean, string, { rejectValue: st
             await fetchPipeline({pipelineId});
             return true;
         } catch (error) {
-            return thunkAPI.rejectWithValue('Failed to find pipeline in the database');
+            return thunkAPI.rejectWithValue(`Failed to find pipeline ID "${pipelineId}" in the database`);
         }
     }
 );
@@ -487,6 +487,8 @@ export const {
 } = pipelineSlice.actions;
 
 export default pipelineSlice.reducer;
+
+export const getPipelineId = (state: RootState) => state.pipeline.pipelineModel.id;
 
 export const getPipeline = (state: RootState) => state.pipeline.pipelineModel;
 

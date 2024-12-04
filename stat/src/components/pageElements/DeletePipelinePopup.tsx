@@ -27,7 +27,7 @@ export function DeletePipelinePopup() {
     const pipeline = useAppSelector(getPipeline);
     const deletePipelinePopup = useSelector((state: RootState) => state.pipeline.deletePipelinePopup);
 
-    function handleOk() {
+    function handleDelete() {
         dispatch(deletePipelineThunk({pipelineId: pipeline.id}))
             .unwrap()
             .then(() => {
@@ -53,8 +53,8 @@ export function DeletePipelinePopup() {
     if (!deletePipelinePopup) return null;
     return (
         <PopupWithAction
-            title={"Delete Pipeline?"}
-            onOkAction={() => {handleOk()}}
+            title={"Delete Pipeline? \n WARNING: This action is irreversible!"}
+            onDeleteAction={() => {handleDelete()}}
             onCancelAction={() => {handleCancel()}}
         />
     )

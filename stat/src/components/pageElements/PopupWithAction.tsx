@@ -35,11 +35,12 @@ const StyledTitle = styled.div`
     font-size: 2rem;
     color: white;
     margin: 5px auto;
+    white-space: pre-line; /* Allows '\n' to render as a line break */
 `;
 
-export function PopupWithAction({title, onOkAction, onCancelAction, large = false, noPadding = false}: {
+export function PopupWithAction({title, onDeleteAction, onCancelAction, large = false, noPadding = false}: {
     title: string,
-    onOkAction: () => void,
+    onDeleteAction: () => void,
     onCancelAction: () => void,
     large?: boolean,
     noPadding?: boolean
@@ -47,7 +48,7 @@ export function PopupWithAction({title, onOkAction, onCancelAction, large = fals
     return (
         <StyledPopup $large={large} $noPadding={noPadding}>
             {!noPadding && <StyledTitle>{title}</StyledTitle> }
-            <PrimaryButton text={"Ok"} action={onOkAction}/>
+            <PrimaryButton text={"Delete"} action={onDeleteAction}/>
             <PrimaryButton text={"Cancel"} action={onCancelAction}/>
         </StyledPopup>
     )
