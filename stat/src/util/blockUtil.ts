@@ -1,5 +1,5 @@
 import {BlockModel} from "../types/responseType";
-import {DataDocument} from "../types/dataType";
+import {DataDocument, PipelineModel} from "../types/dataType";
 
 export function createNodesFromBlocks(blocks: BlockModel[]) {
     let y = -100;
@@ -30,3 +30,18 @@ export function convertToDataDocument(data: any[]): DataDocument[] {
         return rowObject;
     });
 }
+
+// returns a list of block ids which use the specified column in any way
+export function isColumnUsedInChildren({pipeline, startBlockId, columnName}: {pipeline: PipelineModel, startBlockId: string, columnName: string}): string[] {
+    const blockIdsUsingColumn: string[] = [];
+    const edgeDict = pipeline.edge_dict;
+    const startBlock = edgeDict[startBlockId];
+    Object.entries(startBlock).forEach(([targets]) => {
+
+    });
+
+
+    return [];
+}
+
+

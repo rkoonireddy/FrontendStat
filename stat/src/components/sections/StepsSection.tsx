@@ -99,7 +99,6 @@ function Flow() {
                 setNodes(restoredNodes);
                 setEdges(restoredEdges);
                 fitView().then();
-                console.log("Flow restored.");
             }
         } else {
             console.log("No saved flow found.");
@@ -158,7 +157,6 @@ function Flow() {
             setNodes(restoredNodes);
             setEdges(restoredEdges);
             fitView().then();
-            console.log("Flow restored.");
         } else {
             console.log("No saved flow found.");
         }
