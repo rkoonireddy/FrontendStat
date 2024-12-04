@@ -17,7 +17,8 @@ import {
     getBlocks,
     getPipeline,
     setLoading,
-    snoopPipelineColumns
+    snoopPipelineColumns,
+    showDeletePipelinePopup
 } from "../../redux/pipelineSlice";
 import {createEdges, getFirstKey} from "../../util/util";
 import CustomNode from "../customReactFlow/CustomNode";
@@ -26,6 +27,7 @@ import CustomEdge from "../customReactFlow/CustomEdge";
 import {ReactComponent as RunSVG} from "../../assets/run.svg";
 import {ReactComponent as ExportSVG} from "../../assets/filetype-py.svg";
 import {ReactComponent as CopySVG} from "../../assets/copy.svg";
+import {ReactComponent as TrashSVG} from "../../assets/trash.svg";
 import {createNodesFromBlocks} from "../../util/blockUtil";
 
 const NodeTypes = {customNode: CustomNode, customStartNode: CustomStartNode};
@@ -46,19 +48,31 @@ const StyledToolbar = styled.div`
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    margin: 2px;
+    width: 450px;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
 `;
 
-const StyledActionButton = styled.div`
+const StyledActionButton = styled.div<{ $position?: string }>`
     display: flex;
     justify-content: center;
     align-items: center;
     width: fit-content;
     height: fit-content;
+    ${props => props.$position === "left" ? "margin-right: auto;" : ""}
+    
+    & svg {
+        fill: #ffffff;
+    }
 
     &:hover {
         cursor: pointer;
         scale: 1.05;
+    }
+    
+    & svg.delete:hover {
+        fill: #ff0000;
     }
 `;
 
@@ -178,7 +192,7 @@ function Flow() {
             fitView
         >
             <Background/>
-            <Controls/>
+            <Controls position="top-left"/>
             <Panel position="top-right">
                 <button onClick={saveView}>
                     Save graph view
@@ -189,6 +203,11 @@ function Flow() {
             </Panel>
             <Panel position={"bottom-right"}>
                 <StyledToolbar>
+                    <StyledActionButton $position={"left"} title={"Delete Pipeline"} onClick={() => {
+                        dispatch(showDeletePipelinePopup());
+                    }}>
+                        <TrashSVG className={"delete"} style={{width: "35px", height: "35px"}}/>
+                    </StyledActionButton>
                     {pipelineExportableRunnable && activeBlock && activeBlock?.output?.Dataframe?.data !== undefined ?
                         <StyledActionButton title={"Export Pipeline"} onClick={(e) => {
                             dispatch(setLoading(true));
@@ -199,7 +218,7 @@ function Flow() {
                             }));
                             e.stopPropagation();
                         }}>
-                            <ExportSVG style={{width: "35px", height: "35px", color: "#ffffff"}}/>
+                            <ExportSVG style={{width: "35px", height: "35px"}}/>
                         </StyledActionButton> : <div style={{width: "35px", height: "35px"}}/>}
                         <StyledActionButton title={"Run Pipeline"} onClick={(e) => {
                         saveView();
@@ -210,13 +229,13 @@ function Flow() {
                         }));
                         e.stopPropagation();
                     }}>
-                        <RunSVG style={{width: "50px", height: "50px", color: "#00ff00"}}/>
+                        <RunSVG style={{width: "50px", height: "50px", fill: "#00ff00"}}/>
                     </StyledActionButton>
                     <StyledActionButton title={"Copy Pipeline ID"} onClick={() => {
                         navigator.clipboard.writeText(pipeline.id);
                         alert("Pipeline ID copied to clipboard.");
                     }}>
-                        <CopySVG style={{width: "35px", height: "35px", fill: "#ffffff"}}/>
+                        <CopySVG style={{width: "35px", height: "35px"}}/>
                     </StyledActionButton>
                 </StyledToolbar>
             </Panel>

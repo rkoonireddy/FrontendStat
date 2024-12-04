@@ -8,7 +8,7 @@ import {addControl, fetchUpdateBlock, getActiveBlock, getControls, getPipelineMo
 import {useAppDispatch, useAppSelector} from "../../hooks";
 import {useEffect, useState} from "react";
 import {MultiSelectControl} from "../controls/MultiSelectControl";
-import {PrimaryButton} from "../buttons/PrimaryButton";
+import {PrimaryButton} from "../pageElements/buttons/PrimaryButton";
 
 const StyledControls = styled.div<{ $show: boolean }>`
     display: ${props => (props.$show ? "flex" : "none")};

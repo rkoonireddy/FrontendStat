@@ -9,8 +9,9 @@ import {getActiveBlock, getLoading} from "../../redux/pipelineSlice";
 import {useAppSelector} from "../../hooks";
 import {useState} from "react";
 import {Loading} from "../pageElements/Loading";
-import {ErrorPopup} from "../pageElements/ErrorPopup";
-import {BlockPopup} from "../pageElements/BlockPopup";
+import {ErrorPopup} from "../pageElements/popups/ErrorPopup";
+import {BlockPopup} from "../pageElements/popups/BlockPopup";
+import { DeletePipelinePopup } from "../pageElements/popups/DeletePipelinePopup";
 
 
 const StyledMainPage = styled.div`
@@ -50,6 +51,7 @@ function MainPage() {
         <StyledMainPage>
             {loading && <Loading/>}
             {<ErrorPopup/>}
+            {<DeletePipelinePopup/> }
             {showCreateBlockPopup &&
                 <BlockPopup onCloseAction={closePopup}/>}
             <StyledSideBar>

@@ -3,7 +3,7 @@ import {
 } from "../../redux/dataSlice";
 import styled from "styled-components";
 import { useState } from "react";
-import { PrimaryButton } from "../buttons/PrimaryButton";
+import { PrimaryButton } from "../pageElements/buttons/PrimaryButton";
 import { useAppSelector } from "../../hooks";
 import { StyledCheckbox, StyledTableCell, StyledTableHeader } from "../charts/CSVViewer";
 import {formatNumber} from "../../util/util";

@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import {ReactNode} from "react";
-import {ReactComponent as XSVG} from "../../assets/x.svg";
+import {ReactComponent as XSVG} from "../../../assets/x.svg";
 
 const StyledPopup = styled.div<{ $large: boolean, $noPadding: boolean }>`
     position: absolute;
@@ -35,6 +35,8 @@ const StyledTitle = styled.div`
     font-size: 2rem;
     color: white;
     margin: 5px auto;
+    white-space: pre-line;
+    text-align: center;
 `;
 
 export function Popup({children, title, onCloseAction, large = false, noPadding = false}: {

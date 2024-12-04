@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import {ReactComponent as MinusSVG} from "../../assets/dash-square.svg";
+import {ReactComponent as MinusSVG} from "../../../assets/dash-square.svg";
 
 
 const StyledMinusButton = styled.div`

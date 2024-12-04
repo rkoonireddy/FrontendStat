@@ -1,11 +1,10 @@
 import styled from "styled-components";
 import logoNoBg from "../../assets/logo-no-bg.png";
-import {PrimaryButton} from "../buttons/PrimaryButton";
+import {PrimaryButton} from "../pageElements/buttons/PrimaryButton";
 import {useNavigate} from "react-router-dom";
 import {ChangeEvent, useState} from "react";
 import {
     getPreviewData,
-    rawDataExists,
     previewDataExists,
     readData,
     setRawData,
@@ -14,6 +13,7 @@ import {
 } from "../../redux/dataSlice";
 import {useAppDispatch, useAppSelector} from "../../hooks";
 import {
+    getPipelineId,
     resetPipelineData,
     createNewBlock,
     createNewPipeline,
@@ -23,11 +23,11 @@ import {
     fetchFullBlock,
 } from "../../redux/pipelineSlice";
 import {LoaderModel} from "../../types/responseType";
-import {Popup} from "../pageElements/Popup";
+import {Popup} from "../pageElements/popups/Popup";
 import {StyledInput, StyledUnit} from "../controls/InputControl";
 import {PreviewTable} from "../tables/PreviewTable";
 import {checkFileValidity, preProcessCSVData} from "../../util/fileUtil";
-import {ErrorPopup} from "../pageElements/ErrorPopup";
+import {ErrorPopup} from "../pageElements/popups/ErrorPopup";
 import {unwrapResult} from '@reduxjs/toolkit';
 
 const StyledHomeContainer = styled.div`
@@ -201,7 +201,7 @@ function FileUpload({onClose, onUpload}: { onClose: () => void, onUpload: (frequ
 export default function HomePage() {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
-    const dataExists = useAppSelector(rawDataExists);
+    const pipelineIdResume = useAppSelector(getPipelineId);
     const previewData = useAppSelector(getPreviewData);
     const previewDataExistsBool = useAppSelector(previewDataExists);
     const [frequency, setFrequency] = useState(0);
@@ -230,7 +230,6 @@ export default function HomePage() {
         dispatch(setFileFrequency(frequency));
         dispatch(createNewBlock({blockType: 'CSVStringLoader', blockName: 'Data loader'}));
 
-        // Route to /main
         navigate('/main');
     };
 
@@ -238,10 +237,11 @@ export default function HomePage() {
         setPipelineLoad(value.trim());
     }
 
-    const handlePipelineLoad = async () => {
+    const handlePipelineLoad = async (pipelineId: string|null = null) => {
+        const pipelineIdToLoad: string = pipelineId || pipelineLoad;
         // First try to fetch pipeline data to check if pipeline ID exists
         try {
-            await dispatch(checkPipeline(pipelineLoad)).then(unwrapResult);
+            await dispatch(checkPipeline(pipelineIdToLoad)).then(unwrapResult);
         } catch (error) {
             setPipelineLoad("");
             return;
@@ -252,7 +252,7 @@ export default function HomePage() {
         dispatch(resetPipelineData());
 
         // Then update the pipeline data, repopulate the redux store
-        const pipeline_reloaded = await dispatch(updatePipeline({pipelineId: pipelineLoad})).then(unwrapResult);
+        const pipeline_reloaded = await dispatch(updatePipeline({pipelineId: pipelineIdToLoad})).then(unwrapResult);
 
         // Then fetch the first block of the pipeline. It is expected to be a CSV loader block. Abort if it is not.
         const loader_block_id = Object.keys(pipeline_reloaded.block_dict)[0];
@@ -294,8 +294,6 @@ export default function HomePage() {
 
         // Now we can update the rawData in the redux store
         dispatch(setRawData(cleanedData));
-
-        // Finally we route to /main
         navigate('/main');
     }
 
@@ -331,7 +329,11 @@ export default function HomePage() {
                         </p>
                         <StyledButtonContainer>
                             <PrimaryButton text={"Upload Sample"} action={() => setIsFileUploadOpen(true)}/>
-                            {dataExists ? <PrimaryButton text={"Resume"} action={() => navigate('/main')}/> : null}
+                            {
+                                pipelineIdResume !== null && pipelineIdResume !== undefined && pipelineIdResume.length > 0 ?
+                                <PrimaryButton text={"Resume"} action={() => handlePipelineLoad(pipelineIdResume)}/> :
+                                null
+                            }
                         </StyledButtonContainer>
                     </StyledContentContainer>
                     <StyledVerticalDividor/>

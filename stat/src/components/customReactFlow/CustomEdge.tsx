@@ -24,12 +24,13 @@ const StyledDeleteIconContainer = styled.div<{ $transform: string }>`
   & svg {
     width: 7px;
     height: 7px;
-    color: #ff0000;
+    fill: #f0f0f0f0;
     opacity: 0.3;
   }
 
   & svg:hover {
     opacity: 0.8;
+      fill: #ff0000;
   }
 `;
 

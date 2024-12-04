@@ -2,7 +2,7 @@ import {PipelineModel} from "../types/dataType";
 import {createAsyncThunk, createSelector, createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {RootState} from "../store";
 import {BlockModel, CreateBlockResponse} from "../types/responseType";
-import {createPipeline, exportPipeline, fetchPipeline, runPipeline, snoopPipeline} from "../service/pipelineService";
+import {createPipeline, exportPipeline, fetchPipeline, runPipeline, snoopPipeline, deletePipeline} from "../service/pipelineService";
 import {
     addBlockToPipeline,
     createBlock,
@@ -25,6 +25,7 @@ export interface IPipelineState {
     loading: boolean,
     errorStatus: boolean,
     errorMessage: string | null,
+    deletePipelinePopup: boolean,
     controls: {
         [blockId: string]: {
             [controlName: string]: any
@@ -47,6 +48,7 @@ const initialState: IPipelineState = {
     loading: false,
     errorStatus: false,
     errorMessage: null,
+    deletePipelinePopup: false,
     controls: {}
 }
 
@@ -68,7 +70,7 @@ export const checkPipeline = createAsyncThunk<boolean, string, { rejectValue: st
             await fetchPipeline({pipelineId});
             return true;
         } catch (error) {
-            return thunkAPI.rejectWithValue('Failed to find pipeline in the database');
+            return thunkAPI.rejectWithValue(`Failed to find pipeline ID "${pipelineId}" in the database`);
         }
     }
 );
@@ -241,6 +243,19 @@ export const deleteEdgeFromPipeline = createAsyncThunk<void, { edgeId: string, p
     }
 );
 
+export const deletePipelineThunk = createAsyncThunk<void, { pipelineId: string }, {
+    rejectValue: string
+}>(
+    'pipeline/deletePipelineThunk',
+    async ({pipelineId}, thunkAPI) => {
+        try {
+            return await deletePipeline({pipelineId});
+        } catch (error) {
+            return thunkAPI.rejectWithValue(`Failed to delete pipeline ${pipelineId} \n ${String(error)}`);
+        }
+    }
+);
+
 
 export const pipelineSlice = createSlice({
     name: 'pipeline',
@@ -251,6 +266,11 @@ export const pipelineSlice = createSlice({
             state.blocks = [];
             state.activeBlockId = null;
             state.frequency = 60;
+            state.loading = false;
+            state.errorStatus = false;
+            state.errorMessage = null;
+            state.deletePipelinePopup = false;
+            state.controls = {};
         },
         setBlocks: (state, action: PayloadAction<BlockModel[]>) => {
             state.blocks = action.payload;
@@ -326,6 +346,12 @@ export const pipelineSlice = createSlice({
         clearError(state) {
             state.errorStatus = false;
             state.errorMessage = null;
+        },
+        showDeletePipelinePopup(state) {
+            state.deletePipelinePopup = true;
+        },
+        clearDeletePipelinePopup(state) {
+            state.deletePipelinePopup = false;
         }
     },
     extraReducers: builder => {
@@ -430,6 +456,15 @@ export const pipelineSlice = createSlice({
             state.errorMessage = String(action.payload);
             state.loading = false;
         });
+        builder.addCase(deletePipelineThunk.pending, (state, action) => {
+            state.loading = true;
+        });
+        builder.addCase(deletePipelineThunk.rejected, (state, action) => {
+            state.errorStatus = true;
+            state.errorMessage = String(action.payload);
+            state.loading = false;
+        });
+        
     }
 })
 
@@ -446,10 +481,14 @@ export const {
     setLoading,
     addControl,
     updateControl,
-    clearError
+    clearError,
+    showDeletePipelinePopup,
+    clearDeletePipelinePopup
 } = pipelineSlice.actions;
 
 export default pipelineSlice.reducer;
+
+export const getPipelineId = (state: RootState) => state.pipeline.pipelineModel.id;
 
 export const getPipeline = (state: RootState) => state.pipeline.pipelineModel;
 

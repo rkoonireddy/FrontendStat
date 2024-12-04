@@ -1,13 +1,12 @@
-import {StyledInput} from "../controls/InputControl";
-import {Dropdown} from "primereact/dropdown";
+import {StyledInput} from "../../controls/InputControl";
 import {PrimaryButton} from "../buttons/PrimaryButton";
 import {Popup} from "./Popup";
 import {useEffect, useState} from "react";
-import {getBlockTypes} from "../../service/blockService";
-import {createNewBlock, getActiveBlock, getPipelineModel, updatePipeline} from "../../redux/pipelineSlice";
-import {useAppDispatch, useAppSelector} from "../../hooks";
+import {getBlockTypes} from "../../../service/blockService";
+import {createNewBlock, getPipelineModel, updatePipeline} from "../../../redux/pipelineSlice";
+import {useAppDispatch, useAppSelector} from "../../../hooks";
 import styled from "styled-components";
-import {BlockTypeModel} from "../../types/responseType";
+import {BlockTypeModel} from "../../../types/responseType";
 
 const StyledCreateBlocksContainer = styled.div`
     display: flex;
