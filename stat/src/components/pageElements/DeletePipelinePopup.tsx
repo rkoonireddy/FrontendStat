@@ -1,7 +1,13 @@
 import styled from "styled-components";
 import {useSelector} from 'react-redux';
 import {useNavigate} from "react-router-dom";
-import {clearDeletePipelinePopup, deletePipelineThunk, getPipeline, resetPipelineData} from "../../redux/pipelineSlice";
+import {
+    clearDeletePipelinePopup,
+    deletePipelineThunk,
+    getPipeline,
+    resetPipelineData
+} from "../../redux/pipelineSlice";
+import {resetData} from "../../redux/dataSlice";
 import {useAppSelector, useAppDispatch} from "../../hooks";
 import {RootState} from '../../store';
 import {PopupWithAction} from "./PopupWithAction";
@@ -27,7 +33,8 @@ export function DeletePipelinePopup() {
             .then(() => {
                 // If deletion success, close the popup, clear state and reroute to home
                 dispatch(clearDeletePipelinePopup());
-                // Reset pipeline data
+                // Reset pipeline data and raw data
+                dispatch(resetData());
                 dispatch(resetPipelineData());
                 // Navigate to home
                 navigate("/");
