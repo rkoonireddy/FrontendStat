@@ -9,9 +9,9 @@ import {getActiveBlock, getLoading} from "../../redux/pipelineSlice";
 import {useAppSelector} from "../../hooks";
 import {useState} from "react";
 import {Loading} from "../pageElements/Loading";
-import {ErrorPopup} from "../pageElements/ErrorPopup";
-import {BlockPopup} from "../pageElements/BlockPopup";
-import { DeletePipelinePopup } from "../pageElements/DeletePipelinePopup";
+import {ErrorPopup} from "../pageElements/popups/ErrorPopup";
+import {BlockPopup} from "../pageElements/popups/BlockPopup";
+import { DeletePipelinePopup } from "../pageElements/popups/DeletePipelinePopup";
 
 
 const StyledMainPage = styled.div`

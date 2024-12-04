@@ -1,4 +1,3 @@
-import styled from "styled-components";
 import {useSelector} from 'react-redux';
 import {useNavigate} from "react-router-dom";
 import {
@@ -6,20 +5,22 @@ import {
     deletePipelineThunk,
     getPipeline,
     resetPipelineData
-} from "../../redux/pipelineSlice";
-import {resetData} from "../../redux/dataSlice";
-import {useAppSelector, useAppDispatch} from "../../hooks";
-import {RootState} from '../../store';
-import {PopupWithAction} from "./PopupWithAction";
+} from "../../../redux/pipelineSlice";
+import {resetData} from "../../../redux/dataSlice";
+import {useAppSelector, useAppDispatch} from "../../../hooks";
+import {RootState} from '../../../store';
+import {PrimaryButton} from "../buttons/PrimaryButton";
+import {Popup} from "./Popup";
+import styled from "styled-components";
 
-const StyledMessage = styled.div`
-  font-size: 0.9rem;
-  color: white;
-  margin: 15px auto;
-  font-family: consolas, monospace;
-  text-align: center;
-  white-space: pre-line;
+const StyledDeleteButtonsContainer = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: auto 0 50px 0;
+    width: 100%;
 `;
+
 
 export function DeletePipelinePopup() {
     const navigate = useNavigate();
@@ -31,31 +32,30 @@ export function DeletePipelinePopup() {
         dispatch(deletePipelineThunk({pipelineId: pipeline.id}))
             .unwrap()
             .then(() => {
-                // If deletion success, close the popup, clear state and reroute to home
                 dispatch(clearDeletePipelinePopup());
-                // Reset pipeline data and raw data
                 dispatch(resetData());
                 dispatch(resetPipelineData());
-                // Navigate to home
                 navigate("/");
             })
             .catch((error) => {
                 console.log("Error deleting pipeline: ", error);
                 dispatch(clearDeletePipelinePopup());
             });
-    };
-    
+    }
+
     function handleCancel() {
         // Simply close the popup if cancel is clicked
         dispatch(clearDeletePipelinePopup());
-    };
+    }
 
     if (!deletePipelinePopup) return null;
     return (
-        <PopupWithAction
-            title={"Delete Pipeline?\nWARNING: This action is irreversible!"}
-            onDeleteAction={() => {handleDelete()}}
-            onCancelAction={() => {handleCancel()}}
-        />
+        <Popup title={"Delete Pipeline?\nWARNING: This action is irreversible!"}
+               onCloseAction={handleCancel}>
+            <StyledDeleteButtonsContainer>
+                <PrimaryButton text={"Cancel"} action={handleCancel}/>
+                <PrimaryButton text={"Delete"} action={handleDelete} color={"#ff0000"}/>
+            </StyledDeleteButtonsContainer>
+        </Popup>
     )
 }

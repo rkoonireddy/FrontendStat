@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import logoNoBg from "../../assets/logo-no-bg.png";
-import {PrimaryButton} from "../buttons/PrimaryButton";
+import {PrimaryButton} from "../pageElements/buttons/PrimaryButton";
 import {useNavigate} from "react-router-dom";
 import {ChangeEvent, useState} from "react";
 import {
@@ -23,11 +23,11 @@ import {
     fetchFullBlock,
 } from "../../redux/pipelineSlice";
 import {LoaderModel} from "../../types/responseType";
-import {Popup} from "../pageElements/Popup";
+import {Popup} from "../pageElements/popups/Popup";
 import {StyledInput, StyledUnit} from "../controls/InputControl";
 import {PreviewTable} from "../tables/PreviewTable";
 import {checkFileValidity, preProcessCSVData} from "../../util/fileUtil";
-import {ErrorPopup} from "../pageElements/ErrorPopup";
+import {ErrorPopup} from "../pageElements/popups/ErrorPopup";
 import {unwrapResult} from '@reduxjs/toolkit';
 
 const StyledHomeContainer = styled.div`
@@ -230,7 +230,6 @@ export default function HomePage() {
         dispatch(setFileFrequency(frequency));
         dispatch(createNewBlock({blockType: 'CSVStringLoader', blockName: 'Data loader'}));
 
-        // Route to /main
         navigate('/main');
     };
 
@@ -239,11 +238,7 @@ export default function HomePage() {
     }
 
     const handlePipelineLoad = async (pipelineId: string|null = null) => {
-
-        // Used for both "Resume" and "Load Pipeline"
-
-        var pipelineIdToLoad: string = pipelineId || pipelineLoad;
-
+        const pipelineIdToLoad: string = pipelineId || pipelineLoad;
         // First try to fetch pipeline data to check if pipeline ID exists
         try {
             await dispatch(checkPipeline(pipelineIdToLoad)).then(unwrapResult);
@@ -299,8 +294,6 @@ export default function HomePage() {
 
         // Now we can update the rawData in the redux store
         dispatch(setRawData(cleanedData));
-
-        // Finally we route to /main
         navigate('/main');
     }
 

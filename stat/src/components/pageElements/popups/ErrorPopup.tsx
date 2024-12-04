@@ -1,7 +1,7 @@
 import styled from "styled-components";
-import {clearError} from "../../redux/pipelineSlice";
+import {clearError} from "../../../redux/pipelineSlice";
 import {useSelector, useDispatch} from 'react-redux';
-import {RootState} from '../../store';
+import {RootState} from '../../../store';
 import {Popup} from "./Popup";
 
 const StyledMessage = styled.div`

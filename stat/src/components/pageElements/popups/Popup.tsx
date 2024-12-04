@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import {ReactNode} from "react";
-import { PrimaryButton } from "../buttons/PrimaryButton";
+import {ReactComponent as XSVG} from "../../../assets/x.svg";
 
 const StyledPopup = styled.div<{ $large: boolean, $noPadding: boolean }>`
     position: absolute;
@@ -35,21 +35,22 @@ const StyledTitle = styled.div`
     font-size: 2rem;
     color: white;
     margin: 5px auto;
-    white-space: pre-line; /* Allows '\n' to render as a line break */
+    white-space: pre-line;
+    text-align: center;
 `;
 
-export function PopupWithAction({title, onDeleteAction, onCancelAction, large = false, noPadding = false}: {
+export function Popup({children, title, onCloseAction, large = false, noPadding = false}: {
+    children: ReactNode,
     title: string,
-    onDeleteAction: () => void,
-    onCancelAction: () => void,
+    onCloseAction: () => void,
     large?: boolean,
     noPadding?: boolean
 }) {
     return (
         <StyledPopup $large={large} $noPadding={noPadding}>
+            <XSVG onClick={onCloseAction}/>
             {!noPadding && <StyledTitle>{title}</StyledTitle> }
-            <PrimaryButton text={"Delete"} action={onDeleteAction}/>
-            <PrimaryButton text={"Cancel"} action={onCancelAction}/>
+            {children}
         </StyledPopup>
     )
 }
