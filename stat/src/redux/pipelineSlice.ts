@@ -266,6 +266,11 @@ export const pipelineSlice = createSlice({
             state.blocks = [];
             state.activeBlockId = null;
             state.frequency = 60;
+            state.loading = false;
+            state.errorStatus = false;
+            state.errorMessage = null;
+            state.deletePipelinePopup = false;
+            state.controls = {};
         },
         setBlocks: (state, action: PayloadAction<BlockModel[]>) => {
             state.blocks = action.payload;
