@@ -53,7 +53,7 @@ export function DeletePipelinePopup() {
     if (!deletePipelinePopup) return null;
     return (
         <PopupWithAction
-            title={"Delete Pipeline? \n WARNING: This action is irreversible!"}
+            title={"Delete Pipeline?\nWARNING: This action is irreversible!"}
             onDeleteAction={() => {handleDelete()}}
             onCancelAction={() => {handleCancel()}}
         />
