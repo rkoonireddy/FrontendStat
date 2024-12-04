@@ -251,7 +251,7 @@ export const deletePipelineThunk = createAsyncThunk<void, { pipelineId: string }
         try {
             return await deletePipeline({pipelineId});
         } catch (error) {
-            return thunkAPI.rejectWithValue(`Failed to delete pipeline \n ${String(error)}`);
+            return thunkAPI.rejectWithValue(`Failed to delete pipeline ${pipelineId} \n ${String(error)}`);
         }
     }
 );
@@ -451,6 +451,15 @@ export const pipelineSlice = createSlice({
             state.errorMessage = String(action.payload);
             state.loading = false;
         });
+        builder.addCase(deletePipelineThunk.pending, (state, action) => {
+            state.loading = true;
+        });
+        builder.addCase(deletePipelineThunk.rejected, (state, action) => {
+            state.errorStatus = true;
+            state.errorMessage = String(action.payload);
+            state.loading = false;
+        });
+        
     }
 })
 

@@ -1,7 +1,8 @@
 import styled from "styled-components";
+import {useSelector} from 'react-redux';
+import {useNavigate} from "react-router-dom";
 import {clearDeletePipelinePopup, deletePipelineThunk, getPipeline} from "../../redux/pipelineSlice";
-import {useSelector, useDispatch} from 'react-redux';
-import {useAppSelector} from "../../hooks";
+import {useAppSelector, useAppDispatch} from "../../hooks";
 import {RootState} from '../../store';
 import {PopupWithAction} from "./PopupWithAction";
 
@@ -15,17 +16,30 @@ const StyledMessage = styled.div`
 `;
 
 export function DeletePipelinePopup() {
-    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const dispatch = useAppDispatch();
     const pipeline = useAppSelector(getPipeline);
     const deletePipelinePopup = useSelector((state: RootState) => state.pipeline.deletePipelinePopup);
 
     function handleOk() {
-        console.log("OK");
-        deletePipelineThunk({pipelineId: pipeline.id});
+        dispatch(deletePipelineThunk({pipelineId: pipeline.id}))
+            .unwrap()
+            .then(() => {
+                // If deletion success, close the popup, clear state and reroute to home
+                dispatch(clearDeletePipelinePopup());
+                // TODO: How to clear the state?
+                
+                // Navigate to home
+                navigate("/");
+            })
+            .catch((error) => {
+                console.log("Error deleting pipeline: ", error);
+                dispatch(clearDeletePipelinePopup());
+            });
     };
     
     function handleCancel() {
-        console.log("Cancel");
+        // Simply close the popup if cancel is clicked
         dispatch(clearDeletePipelinePopup());
     };
 
