@@ -65,7 +65,8 @@ const StyledMainElementContainer = styled.div`
     display: flex;
     flex-basis: 65%;
     justify-content: center;
-    flex-direction: column;
+    flex-direction: row;
+    align-items: center;
     overflow: auto;
     height: 100%;
 `;

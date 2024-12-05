@@ -125,7 +125,7 @@ const ViolinPlot: React.FC<ViolinPlotProps> = ({ setHoveredColumn }) => {
                 .append("path")
                 .datum(d => d[1].filter((v): v is [number, number] => v[0] !== undefined && v[1] !== undefined)) // Filter out undefined values, working density per density
                 .style("stroke", "none")
-                .style("fill", "#69b3a2")
+                .style("fill", "#00bfa6").attr("opacity", 0.8)
                 .attr("d", d3.area<[number, number]>()
                     .x0(d => xNum(-d[1]))
                     .x1(d => xNum(d[1]))
@@ -139,7 +139,7 @@ const ViolinPlot: React.FC<ViolinPlotProps> = ({ setHoveredColumn }) => {
                 .attr("y", y(quartiles[2]))
                 .attr("width", x.bandwidth() * 0.2)
                 .attr("height", y(quartiles[0]) - y(quartiles[2]))
-                .attr("fill", "#dab9c6")
+                .attr("fill", "#ffffff")
                 .attr("stroke", "black")
                 .on("mouseover", function (event, d) {
                     setHoveredColumn(column);

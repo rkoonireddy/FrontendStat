@@ -12,7 +12,7 @@ const StyledTableCell = styled.td`
     color: white;
     padding: 5px;
     background-color: #3D3D3D;
-    font-size: 1.1rem;
+    font-size: 1.0rem;
 `;
 
 const StyledColumnHeader = styled.div`
