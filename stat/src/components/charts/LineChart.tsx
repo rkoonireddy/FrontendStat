@@ -121,6 +121,7 @@ export function LineChart({ block, small = false, mini = false, dataLoader = fal
             .scaleExtent([1, 5])
             .translateExtent([[margin.left, margin.top], [width + margin.right, height + margin.bottom]])
             .on("zoom", (event) => {
+                svg.selectAll(".hovered-column-info").remove();
                 const newXScale = event.transform.rescaleX(xScale);
                 const newYScale = event.transform.rescaleY(yScale);
 
@@ -150,6 +151,7 @@ export function LineChart({ block, small = false, mini = false, dataLoader = fal
         const resetGraph = () => {
             if (svgRef.current) {
                 const svg = select(svgRef.current);
+                svg.selectAll(".hovered-column-info").remove();
                 svg.transition().duration(250).call(
                     zoomBehavior.transform,
                     zoomIdentity,
