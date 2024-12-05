@@ -22,6 +22,7 @@ const StyledSelectorContainer = styled.div<{ $height: number }>`
     height: ${(props) => props.$height + '%'};
     overflow: auto;
     flex-grow: 1;
+    margin: auto 0 15px 0;
 `;
 
 const StyledStackedChartContainer = styled.div<{ $height: number }>`
@@ -37,28 +38,40 @@ const StyledStackedChartContainer = styled.div<{ $height: number }>`
     height: ${(props) => props.$height + '%'};
 `;
 
-const StyledToggleContainer = styled.div`
-    position: absolute;
-    top: 0;
+const StyledToggleContainer = styled.div<{ $height: number }>`
+  position: absolute;
+  top: 0;
 `;
 
+/*const StyledToggleContainer = styled.div<{ $height: number }>`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: ${(props) => props.$height + '%'};
+    flew-wrap: nowrap;
+`;*/
 
-const StyledDataViewContainer = styled.div`
+
+const StyledDataViewContainer = styled.div<{ $height: number }>`
     display: flex;
     width: 100%;
-    margin: auto 0 15px 0;
+    height: ${(props) => props.$height + '%'};
+    flex-direction: row;
+    align-items: flex-start;
 `;
 
 const StyledMainElementContainer = styled.div`
-    width: 65%;
     display: flex;
+    flex-basis: 65%;
     justify-content: center;
     flex-direction: column;
     overflow: auto;
+    height: 100%;
 `;
 
 const StyledStatisticsContainer = styled.div`
-    flex-basis: 30%;
+    flex-basis: 33%;
     overflow: none;
 `;
 
@@ -69,11 +82,11 @@ export function DataLoaderSection({block}: { block: BlockModel }) {
     return (
         <StyledDataLoaderSectionContainer id={"dataloader-section"}>
             <StyledSelectorContainer $height={40}>
-                <StyledToggleContainer>
+                <StyledToggleContainer $height={10}>
                 <ToggleButton option1={"Table view"} option2={"Stat view"} selection={statView}
                               onSelect={setStatView}/>
                 </StyledToggleContainer>
-                <StyledDataViewContainer>
+                <StyledDataViewContainer $height={90}>
                 <StyledMainElementContainer>
                     {!statView ? (
                         <CSVViewer blockId={block.id} sample={5} setHoveredColumn={setHoveredColumn}/>
