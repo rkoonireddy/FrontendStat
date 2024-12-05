@@ -90,20 +90,19 @@ const ViolinPlot: React.FC<ViolinPlotProps> = ({ setHoveredColumn }) => {
             // Add the violin shape
             svg.selectAll("myViolin")
                 .data(Array.from(sumstat))
-                .enter() // So now we are working group per group
+                .enter()
                 .append("g")
-                //.attr("transform", d => `translate(${x(d[0])},0)`) // Translation on the right to be at the group position
                 .attr("transform", d => {
                     const xPos = x(d[0]);
                     //console.log("d[0]:", d[0], "xPos:", xPos); // Debugging statement
                     return `translate(${xPos},0)`; // Translation on the right to be at the group position
                 })
                 .on("mouseover", function (event, d) {
-                    setHoveredColumn(d[0].toString());
+                    setHoveredColumn(column);
                 })
-                .on("mouseout", function () {
+                /*.on("mouseout", function () {
                     setHoveredColumn(null);
-                })
+                })*/
                 .append("path")
                 .datum(d => d[1].filter((v): v is [number, number] => v[0] !== undefined && v[1] !== undefined)) // Filter out undefined values, working density per density
                 .style("stroke", "none")
@@ -121,8 +120,11 @@ const ViolinPlot: React.FC<ViolinPlotProps> = ({ setHoveredColumn }) => {
                 .attr("y", y(quartiles[2]))
                 .attr("width", x.bandwidth() * 0.2)
                 .attr("height", y(quartiles[0]) - y(quartiles[2]))
-                .attr("fill", "yellow")
-                .attr("stroke", "black");
+                .attr("fill", "#dab9c6")
+                .attr("stroke", "black")
+                .on("mouseover", function (event, d) {
+                    setHoveredColumn(column);
+                })
 
             // Add the median
             svg.append("circle")

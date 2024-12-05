@@ -337,7 +337,7 @@ export function LineChart({ block, small = false, mini = false, dataLoader = fal
             setSelectedLineIndex(columnIndex - 1);
         }
         else {
-            setSelectedLineIndex(0);
+            //setSelectedLineIndex(0);
         }
     }, [hoveredColumn]);
 
