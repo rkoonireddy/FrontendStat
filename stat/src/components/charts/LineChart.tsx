@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState} from "react";
+import { useEffect, useRef, useState } from "react";
 import {
     axisBottom,
     axisLeft,
@@ -11,14 +11,14 @@ import {
     zoom,
     ZoomBehavior, zoomIdentity
 } from "d3";
-import {useAppSelector} from "../../hooks";
-import {getPipeline} from "../../redux/pipelineSlice";
-import {getData, getFilteredData} from "../../redux/dataSlice";
-import {BlockModel} from "../../types/responseType";
-import {DataDocument} from "../../types/dataType";
-import {convertRawDataToDataDocument} from "../../util/util";
-import {COLOR_PALETTE} from "../../Theme";
-import {convertToDataDocument} from "../../util/blockUtil";
+import { useAppSelector } from "../../hooks";
+import { getPipeline } from "../../redux/pipelineSlice";
+import { getData, getFilteredData } from "../../redux/dataSlice";
+import { BlockModel } from "../../types/responseType";
+import { DataDocument } from "../../types/dataType";
+import { convertRawDataToDataDocument, getMinMax } from "../../util/util";
+import { COLOR_PALETTE } from "../../Theme";
+import { convertToDataDocument } from "../../util/blockUtil";
 
 
 interface LineChartProps {
@@ -29,7 +29,7 @@ interface LineChartProps {
     hoveredColumn?: string | null;
 }
 
-export function LineChart({block, small = false, mini = false, dataLoader = false, hoveredColumn = null}: LineChartProps) {
+export function LineChart({ block, small = false, mini = false, dataLoader = false, hoveredColumn = null }: LineChartProps) {
     const pipeline = useAppSelector(getPipeline);
     const rawData = useAppSelector(getData);
     const filteredData = useAppSelector(getFilteredData);
@@ -58,7 +58,7 @@ export function LineChart({block, small = false, mini = false, dataLoader = fals
         }
     }, [block, pipeline, filteredData, rawData]);
 
-    const [dimensions, setDimensions] = useState({width: 0, height: 0});
+    const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
     const svgRef = useRef<SVGSVGElement | null>(null);
 
     useEffect(() => {
@@ -67,8 +67,8 @@ export function LineChart({block, small = false, mini = false, dataLoader = fals
 
         const resizeObserver = new ResizeObserver(entries => {
             if (!entries || entries.length === 0) return;
-            const {width, height} = entries[0].contentRect;
-            setDimensions({width, height});
+            const { width, height } = entries[0].contentRect;
+            setDimensions({ width, height });
         });
 
         resizeObserver.observe(svgElement);
@@ -84,12 +84,12 @@ export function LineChart({block, small = false, mini = false, dataLoader = fals
         if (!svgRef.current || dimensions.width === 0 || dimensions.height === 0) return;
         const svg = select(svgRef.current);
 
-        let margin = {top: 20, right: 10, bottom: 50, left: 50};
+        let margin = { top: 20, right: 10, bottom: 50, left: 50 };
         if (small) {
             if (mini) {
-                margin = {top: 2, right: 2, bottom: 2, left: 2};
+                margin = { top: 2, right: 2, bottom: 2, left: 2 };
             } else {
-                margin = {top: 10, right: 10, bottom: 25, left: 25};
+                margin = { top: 10, right: 10, bottom: 25, left: 25 };
             }
         }
 
@@ -180,6 +180,51 @@ export function LineChart({block, small = false, mini = false, dataLoader = fals
             .selectAll("path, line")
             .style("stroke", "black")
             .style("stroke-width", small ? "1px" : "2px");
+
+        svg.selectAll(".hovered-column-info").remove();
+
+        if (hoveredColumn!) {
+            const minMax = getMinMax(rawData.map(row => row[hoveredColumn]));
+            svg.append("line") //max-line
+                .attr("class", "hovered-column-info")
+                .attr("transform", `translate(${margin.left}, ${margin.top})`)
+                .attr("x1", 0)
+                .attr("x2", width)
+                .attr("y1", yScale(minMax[1]))
+                .attr("y2", yScale(minMax[1]))
+                .style("stroke", "white")
+                .style("stroke-dasharray", "4 2")
+
+            // Append text over max line
+            svg.append("text")
+                .attr("class", "hovered-column-info")
+                .attr("transform", `translate(${margin.left}, ${margin.top})`)
+                .attr("x", width - 10) // Adjust x position as needed
+                .attr("y", yScale(minMax[1]) - 5) // Adjust y position as needed
+                .attr("text-anchor", "end")
+                .style("fill", "white")
+                .text(`Max: ${minMax[1]}`);
+
+            svg.append("line") //min-line
+                .attr("class", "hovered-column-info")
+                .attr("transform", `translate(${margin.left}, ${margin.top})`)
+                .attr("x1", 0)
+                .attr("x2", width)
+                .attr("y1", yScale(minMax[0]))
+                .attr("y2", yScale(minMax[0]))
+                .style("stroke", "white")
+                .style("stroke-dasharray", "4 2")
+
+            // Append text below min line
+            svg.append("text")
+                .attr("class", "hovered-column-info")
+                .attr("transform", `translate(${margin.left}, ${margin.top})`)
+                .attr("x", width - 10) // Adjust x position as needed
+                .attr("y", yScale(minMax[0]) + 15) // Adjust y position as needed
+                .attr("text-anchor", "end")
+                .style("fill", "white")
+                .text(`Min: ${minMax[0]}`);
+        }
 
         const lineGenerator = line<number | null>()
             .defined(d => d !== null)
@@ -289,27 +334,27 @@ export function LineChart({block, small = false, mini = false, dataLoader = fals
     useEffect(() => { // Link selected Line Index to hovered column
         if (hoveredColumn) {
             const columnIndex = filteredData[0]?.hasOwnProperty(hoveredColumn) ? Object.keys(filteredData[0]).indexOf(hoveredColumn) : -1;
-            setSelectedLineIndex(columnIndex - 1 );
+            setSelectedLineIndex(columnIndex - 1);
         }
         else {
-            //setSelectedLineIndex(null);
+            setSelectedLineIndex(0);
         }
     }, [hoveredColumn]);
 
 
     return (
-        <div style={{width: '100%', height: '100%', position: 'relative'}}>
+        <div style={{ width: '100%', height: '100%', position: 'relative' }}>
             {block?.output?.Dataframe?.data !== undefined || dataLoader ? (
-                <div style={{width: '100%', height: '100%'}}>
+                <div style={{ width: '100%', height: '100%' }}>
                     <svg
                         ref={svgRef}
                         width="100%"
                         height="100%"
-                        style={{display: 'block'}}
+                        style={{ display: 'block' }}
                     >
-                        <g className="x-axis"/>
-                        <g className="y-axis"/>
-                        <g className="chart-group"/>
+                        <g className="x-axis" />
+                        <g className="y-axis" />
+                        <g className="chart-group" />
                     </svg>
                 </div>
             ) : (
@@ -323,18 +368,18 @@ export function LineChart({block, small = false, mini = false, dataLoader = fals
                     {small ? 'Run Pipeline' : 'Please run the pipeline to visualize your data!'}
                 </div>
 
-            //     <div style={{width: '100%', height: '100%'}}>
-            //     <svg
-            //         ref={svgRef}
-            //         width="100%"
-            //         height="100%"
-            //         style={{display: 'block'}}
-            //     >
-            //         <g className="x-axis"/>
-            //         <g className="y-axis"/>
-            //         <g className="chart-group"/>
-            //     </svg>
-            // </div>
+                //     <div style={{width: '100%', height: '100%'}}>
+                //     <svg
+                //         ref={svgRef}
+                //         width="100%"
+                //         height="100%"
+                //         style={{display: 'block'}}
+                //     >
+                //         <g className="x-axis"/>
+                //         <g className="y-axis"/>
+                //         <g className="chart-group"/>
+                //     </svg>
+                // </div>
             )}
         </div>
     );

@@ -76,6 +76,11 @@ export function getRange(data: (string | null)[]): number {
     return Math.max(...numericData) - Math.min(...numericData);
 }
 
+export function getMinMax(data: (string | null)[]): [number, number] {
+    const numericData = data.filter((value): value is string => value !== null).map(Number);
+    return [Math.min(...numericData), Math.max(...numericData)];
+}
+
 export function getVariance(data: (string | null)[]): number {
     const mean = getMean(data);
     const numericData = data.filter((value): value is string => value !== null).map(Number);
