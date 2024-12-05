@@ -23,6 +23,7 @@ const ViolinPlot: React.FC<ViolinPlotProps> = ({ setHoveredColumn }) => {
         const resizeObserver = new ResizeObserver(entries => {
             if (!entries || entries.length === 0) return;
             const { width, height } = entries[0].contentRect;
+            d3.select(svgElement).selectAll("g").remove(); // Clear the svg, TODO: find a better way to update the graph
             setDimensions({ width, height });
         });
 
@@ -36,11 +37,10 @@ const ViolinPlot: React.FC<ViolinPlotProps> = ({ setHoveredColumn }) => {
     }, []);
 
     useEffect(() => {
-        //if (!svgRef.current) return;
         if (!svgRef.current || dimensions.width === 0 || dimensions.height === 0) return;
 
         // Set the dimensions and margins of the graph
-        const margin = { top: 10, right: 30, bottom: 30, left: 40 };
+        const margin = { top: 10, right: 30, bottom: 20, left: 40 };
         const width = dimensions.width - margin.left - margin.right;
         const height = dimensions.height - margin.top - margin.bottom;
 
@@ -50,7 +50,7 @@ const ViolinPlot: React.FC<ViolinPlotProps> = ({ setHoveredColumn }) => {
             .attr('height', height + margin.top + margin.bottom)
             .append('g')
             .attr('transform', `translate(${margin.left},${margin.top})`);
-
+            
         const maxNum = d3.max(rawData.flatMap(row => {
             return inputColumns.map(column => Number(row[column]));
         })) || 1;
@@ -90,8 +90,6 @@ const ViolinPlot: React.FC<ViolinPlotProps> = ({ setHoveredColumn }) => {
                 },
                 d => column
             );
-
-            //console.log("sumstat:", Array.from(sumstat)); // Debugging statement
 
             // What is the biggest value that the density estimate reach?
             let maxNum = 0;
