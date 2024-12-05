@@ -12,16 +12,37 @@ const ViolinPlot: React.FC<ViolinPlotProps> = ({ setHoveredColumn }) => {
     const svgRef = useRef<SVGSVGElement | null>(null);
     const rawData = useAppSelector(getData);
     const rawDataColumns = useAppSelector(getRawDataColumns);
+    const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
     const inputColumns = rawDataColumns //Filter out the first column
         .filter((column, columnIndex): column is string => columnIndex !== 0);
 
+    useEffect(() => { // Resize observer
+        const svgElement = svgRef.current;
+        if (!svgElement) return;
+
+        const resizeObserver = new ResizeObserver(entries => {
+            if (!entries || entries.length === 0) return;
+            const { width, height } = entries[0].contentRect;
+            setDimensions({ width, height });
+        });
+
+        resizeObserver.observe(svgElement);
+
+        return () => {
+            if (resizeObserver && svgElement) {
+                resizeObserver.unobserve(svgElement);
+            }
+        };
+    }, []);
+
     useEffect(() => {
-        if (!svgRef.current) return;
+        //if (!svgRef.current) return;
+        if (!svgRef.current || dimensions.width === 0 || dimensions.height === 0) return;
 
         // Set the dimensions and margins of the graph
         const margin = { top: 10, right: 30, bottom: 30, left: 40 };
-        const width = 400 - margin.left - margin.right;
-        const height = 270 - margin.top - margin.bottom;
+        const width = dimensions.width - margin.left - margin.right;
+        const height = dimensions.height - margin.top - margin.bottom;
 
         // Set up the SVG
         const svg = d3.select(svgRef.current)
@@ -142,9 +163,9 @@ const ViolinPlot: React.FC<ViolinPlotProps> = ({ setHoveredColumn }) => {
                 .attr("y2", y(quartiles[1] + confidenceInterval[1]))
                 .attr("stroke", "black");
         });
-    }, [rawData]);
+    }, [rawData, dimensions]);
 
-    return <svg ref={svgRef}></svg>;
+    return <svg ref={svgRef} style={{ width: '100%', height: '100%' }}></svg>;
 };
 
 // Kernel density estimator
