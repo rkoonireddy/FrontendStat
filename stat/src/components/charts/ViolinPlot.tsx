@@ -41,8 +41,15 @@ const ViolinPlot: React.FC<ViolinPlotProps> = ({ setHoveredColumn }) => {
 
         // Set the dimensions and margins of the graph
         const margin = { top: 10, right: 30, bottom: 20, left: 40 };
-        const width = dimensions.width - margin.left - margin.right;
         const height = dimensions.height - margin.top - margin.bottom;
+        let width  = (dimensions.width - margin.left - margin.right);
+        
+        if(inputColumns.length < 3) {
+            width = width * inputColumns.length * 0.33;
+        }
+        if(width < inputColumns.length * 100) { // Minimum width 100 px per column
+            width = inputColumns.length * 100;
+        }
 
         // Set up the SVG
         const svg = d3.select(svgRef.current)
