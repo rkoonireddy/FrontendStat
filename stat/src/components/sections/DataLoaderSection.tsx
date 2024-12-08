@@ -63,7 +63,7 @@ const StyledDataViewContainer = styled.div<{ $height: number }>`
 
 const StyledMainElementContainer = styled.div`
     display: flex;
-    flex-basis: 65%;
+    flex-basis: 75%;
     justify-content: center;
     flex-direction: row;
     align-items: center;
@@ -72,8 +72,8 @@ const StyledMainElementContainer = styled.div`
 `;
 
 const StyledStatisticsContainer = styled.div`
-    flex-basis: 33%;
     overflow: none;
+    min-width: fit-content;
 `;
 
 export function DataLoaderSection({block}: { block: BlockModel }) {

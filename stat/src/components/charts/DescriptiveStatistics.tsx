@@ -12,7 +12,7 @@ const StyledTableCell = styled.td`
     color: white;
     padding: 5px;
     background-color: #3D3D3D;
-    font-size: 1.0rem;
+    font-size: 0.9rem;
 `;
 
 const StyledColumnHeader = styled.div`
@@ -88,7 +88,7 @@ export default function BoxPlot({ column }: { column: string | null }) {
                             <StyledTableCell>{formatNumber(variance)}</StyledTableCell>
                         </tr>
                         <tr>
-                            <StyledTableCell>Standard Deviation</StyledTableCell>
+                            <StyledTableCell>Std Dev</StyledTableCell>
                             <StyledTableCell>{formatNumber(stdev)}</StyledTableCell>
                         </tr>
                     </tbody>}

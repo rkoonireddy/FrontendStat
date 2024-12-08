@@ -50,7 +50,7 @@ export function formatNumber (value: any) {
     // Check if value is a number or a string representation of a number
     if (typeof value === 'number' || (typeof value === 'string' && !isNaN(Number(value)))) {
         // Parse the number and convert to locale string
-        return Number(value).toLocaleString('en-US', { maximumFractionDigits: 10 });
+        return Number(value).toLocaleString('en-US', { maximumFractionDigits: 5 });
     }
     return value;
 }
