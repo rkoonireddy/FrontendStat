@@ -95,7 +95,7 @@ export const snoopPipelineColumns = createAsyncThunk<string, { pipelineId: strin
     async ({pipelineId}, thunkAPI) => {
         try {
             const response_snoop = await snoopPipeline({pipelineId});
-            thunkAPI.dispatch(updatePipeline({pipelineId}));
+            thunkAPI.dispatch(updatePipeline({pipelineId: pipelineId, resetPipeline: false}));
             return response_snoop;
         } catch (error) {
             return thunkAPI.rejectWithValue(`Failed to snoop pipeline \n ${String(error)}`);
@@ -103,18 +103,21 @@ export const snoopPipelineColumns = createAsyncThunk<string, { pipelineId: strin
     }
 );
 
-export const updatePipeline = createAsyncThunk<PipelineModel, { pipelineId: string }, { rejectValue: string }>(
+export const updatePipeline = createAsyncThunk<PipelineModel, { pipelineId: string, resetPipeline: boolean }, { rejectValue: string }>(
     'pipeline/updatePipeline',
-    async ({pipelineId}, thunkAPI) => {
+    async ({pipelineId, resetPipeline}, thunkAPI) => {
         try {
             const pipeline = await fetchPipeline({pipelineId});
             const newBlockIds = Object.keys(pipeline.block_dict);
             const newBlocks = await Promise.all(newBlockIds.map(blockId => thunkAPI.dispatch(fetchFullBlock(blockId)).unwrap()));
             thunkAPI.dispatch(setBlocks(newBlocks));
-            const loaderBlock: LoaderModel = newBlocks.filter(block => block.type === 'CSVStringLoader')[0] as LoaderModel;
-            thunkAPI.dispatch(setFileFrequency(loaderBlock.freq_hz));
-            const cleanedRawData = parseCSVString(loaderBlock.csv_string);
-            thunkAPI.dispatch(setRawData(cleanedRawData))
+            if (resetPipeline) {
+                const loaderBlock: LoaderModel = newBlocks.filter(block => block.type === 'CSVStringLoader')[0] as LoaderModel;
+                thunkAPI.dispatch(setFileFrequency(loaderBlock.freq_hz));
+                const cleanedRawData = parseCSVString(loaderBlock.csv_string);
+                thunkAPI.dispatch(setRawData(cleanedRawData))
+            }
+
             return pipeline;
         } catch (error) {
             return thunkAPI.rejectWithValue(`Failed to update pipeline \n ${String(error)}`);
@@ -129,7 +132,7 @@ export const executePipeline = createAsyncThunk<string, { pipelineId: string, st
     async ({pipelineId, startingBlockId}, thunkAPI) => {
         try {
             const response = await runPipeline({pipelineId: pipelineId, startingBlockId: startingBlockId});
-            thunkAPI.dispatch(updatePipeline({pipelineId}));
+            thunkAPI.dispatch(updatePipeline({pipelineId: pipelineId, resetPipeline: false}));
             return response;
         } catch (error) {
             return thunkAPI.rejectWithValue(`Failed to run pipeline \n ${String(error)}`);
@@ -155,7 +158,7 @@ export const fetchUpdateBlock = createAsyncThunk<string, { pipelineId: string, b
     async ({pipelineId, blockId, filters}, thunkAPI) => {
         try {
             const response = await updateBlock({blockId, filters});
-            thunkAPI.dispatch(updatePipeline({pipelineId}));
+            thunkAPI.dispatch(updatePipeline({pipelineId: pipelineId, resetPipeline: false}));
             return response
         } catch (error) {
             return thunkAPI.rejectWithValue(`Failed to update and fetch full block \n ${String(error)}`);
@@ -171,7 +174,7 @@ export const deleteBlockFromPipeline = createAsyncThunk<void, { blockId: string,
     async ({blockId, pipelineId}, thunkAPI) => {
         try {
             await deleteBlock({blockId, pipelineId});
-            thunkAPI.dispatch(updatePipeline({pipelineId}));
+            thunkAPI.dispatch(updatePipeline({pipelineId: pipelineId, resetPipeline: false}));
         } catch (error) {
             return thunkAPI.rejectWithValue(`Failed to delete block from pipeline \n ${String(error)}`);
         }
@@ -185,7 +188,7 @@ export const deleteEdgeFromPipeline = createAsyncThunk<void, { edgeId: string, p
     async ({edgeId, pipelineId}, thunkAPI) => {
         try {
             await deleteEdge({edgeId, pipelineId});
-            thunkAPI.dispatch(updatePipeline({pipelineId}));
+            thunkAPI.dispatch(updatePipeline({pipelineId: pipelineId, resetPipeline: false}));
         } catch (error) {
             return thunkAPI.rejectWithValue(`Failed to delete edge from pipeline \n ${String(error)}`);
         }

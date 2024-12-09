@@ -29,8 +29,13 @@ export interface IPipelineState {
             [controlName: string]: any
         }
     },
-    reactFlow: string | null,
-    reloadView: boolean
+    reactFlowNodes: {
+        nodeId: string,
+        position: {
+            x: number,
+            y: number
+        }
+    }[],
 }
 
 const initialPipelineModel: PipelineModel = {
@@ -50,8 +55,7 @@ const initialState: IPipelineState = {
     errorMessage: null,
     deletePipelinePopup: false,
     controls: {},
-    reactFlow: null,
-    reloadView: false
+    reactFlowNodes: [],
 }
 
 
@@ -71,6 +75,7 @@ export const pipelineSlice = createSlice({
             state.errorMessage = null;
             state.deletePipelinePopup = false;
             state.controls = {};
+            state.reactFlowNodes = [];
         },
         setBlocks: (state, action: PayloadAction<BlockModel[]>) => {
             state.blocks = action.payload;
@@ -152,16 +157,10 @@ export const pipelineSlice = createSlice({
         },
         clearDeletePipelinePopup(state) {
             state.deletePipelinePopup = false;
-            state.reactFlow = null;
         },
-        addReactFlowState(state, action: PayloadAction<string>) {
-            state.reactFlow = action.payload
-        },
-        clearReactFlowState(state) {
-            state.reactFlow = null;
-        },
-        setReloadView(state, action: PayloadAction<boolean>) {
-            state.reloadView = action.payload;
+        setReactFlowNodes(state, action: PayloadAction<{ nodeId: string, position: { x: number, y: number } }[]>) {
+            console.log(action.payload)
+            state.reactFlowNodes = action.payload;
         }
     },
     extraReducers: builder => {
@@ -291,9 +290,7 @@ export const {
     clearError,
     showDeletePipelinePopup,
     clearDeletePipelinePopup,
-    addReactFlowState,
-    clearReactFlowState,
-    setReloadView,
+    setReactFlowNodes
 } = pipelineSlice.actions;
 
 export default pipelineSlice.reducer;
@@ -307,11 +304,6 @@ export const getFrequency = (state: RootState) => state.pipeline.frequency;
 export const getBlocks = (state: RootState) => state.pipeline.blocks;
 
 export const getBlockById = (state: RootState, blockId: string) => state.pipeline.blocks.find(block => block.id === blockId);
-
-export const getAllNodes = createSelector(
-    [getBlocks],
-    (blocks) => createNodesFromBlocks(blocks)
-);
 
 export const getAllEdges = createSelector(
     [getPipeline],
@@ -340,6 +332,12 @@ export const blockConnectedToPipeline = createSelector(
     }
 );
 
-export const reactFlowState = (state: RootState) => state.pipeline.reactFlow;
+export const getReactFlowNodes = (state: RootState) => state.pipeline.reactFlowNodes;
 
-export const reloadView = (state: RootState) => state.pipeline.reloadView;
+export const getAllNodes = createSelector(
+    [getBlocks, getReactFlowNodes],
+    (blocks, reactFlowNodes) => {
+        console.log("getAllNodes", blocks, reactFlowNodes)
+        return createNodesFromBlocks(blocks, reactFlowNodes)
+    }
+);

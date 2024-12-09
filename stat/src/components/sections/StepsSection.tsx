@@ -1,12 +1,13 @@
 import styled from "styled-components";
+import Dagre from '@dagrejs/dagre';
 import {
     ReactFlow,
     Controls,
     Background,
-    addEdge, useNodesState, useEdgesState, useReactFlow, ReactFlowProvider, Panel
+    addEdge, useNodesState, useEdgesState, ReactFlowProvider, Panel, Edge, useReactFlow
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import React, {useCallback, useEffect, useState} from "react";
+import React, {useCallback, useEffect} from "react";
 import {useAppDispatch, useAppSelector} from "../../hooks";
 import {
     blockConnectedToPipeline,
@@ -15,9 +16,9 @@ import {
     getAllEdges,
     getAllNodes,
     getBlocks,
-    getPipeline,
-    setLoading,
-    showDeletePipelinePopup, reactFlowState, addReactFlowState, reloadView, setReloadView
+    getPipeline, getReactFlowNodes,
+    setLoading, setReactFlowNodes,
+    showDeletePipelinePopup
 } from "../../redux/pipelineSlice";
 import {createEdges, getFirstKey} from "../../util/util";
 import CustomNode from "../customReactFlow/CustomNode";
@@ -27,8 +28,10 @@ import {ReactComponent as RunSVG} from "../../assets/run.svg";
 import {ReactComponent as ExportSVG} from "../../assets/filetype-py.svg";
 import {ReactComponent as CopySVG} from "../../assets/copy.svg";
 import {ReactComponent as TrashSVG} from "../../assets/trash.svg";
+import {ReactComponent as AlignSVG} from "../../assets/align.svg";
 import {createNodesFromBlocks} from "../../util/blockUtil";
 import {connectTwoBlocks, executePipeline, fetchExportPipeline, snoopPipelineColumns} from "../../redux/pipelineThunk";
+import {CompleteNode} from "../../types/reactFlowCustomTypes";
 
 const NodeTypes = {customNode: CustomNode, customStartNode: CustomStartNode};
 const edgeTypes = {
@@ -60,8 +63,8 @@ const StyledActionButton = styled.div<{ $position?: string }>`
     align-items: center;
     width: fit-content;
     height: fit-content;
+
     ${props => props.$position === "left" ? "margin-right: auto;" : ""}
-    
     & svg {
         fill: #ffffff;
     }
@@ -70,11 +73,41 @@ const StyledActionButton = styled.div<{ $position?: string }>`
         cursor: pointer;
         scale: 1.05;
     }
-    
+
     & svg.delete:hover {
         fill: #ff0000;
     }
 `;
+
+const getLayoutedElements = (nodes: CompleteNode[], edges: Edge[], options: { direction: string }) => {
+    const g = new Dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
+    g.setGraph({rankdir: options.direction});
+
+    edges.forEach((edge) => g.setEdge(edge.source, edge.target));
+    nodes.forEach((node) =>
+        g.setNode(node.id, {
+            ...node,
+            width: 100,
+            height: 25,
+        }),
+    );
+
+    Dagre.layout(g);
+
+    return {
+        nodes: nodes.map((node) => {
+            const position = g.node(node.id);
+            const x = position.x - 100 / 2;
+            const y = position.y - 25 / 2;
+
+            return {...node, position: {x, y}};
+        }),
+        edges: edges.map((edge) => ({
+            ...edge,
+            type: edge.type ?? 'custom-edge',
+        })),
+    };
+};
 
 function Flow() {
     const {fitView} = useReactFlow();
@@ -88,39 +121,39 @@ function Flow() {
     const pipelineExportableRunnable = useAppSelector(state =>
         activeBlockId ? blockConnectedToPipeline(state, activeBlockId) : false
     );
-    const reactFlowString = useAppSelector(reactFlowState);
+    const reactFlowNodes = useAppSelector(getReactFlowNodes);
+
     const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
     const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-    const [isDragging, setIsDragging] = useState(false);
-    const restoreNeeded = useAppSelector(reloadView);
 
     useEffect(() => {
-        dispatch(setReloadView(true));
-        console.log("Reload view set to true.");
-    }, []);
-
-    useEffect(() => {
-        const ns = createNodesFromBlocks(blocks);
+        console.log(reactFlowNodes)
+        const ns = createNodesFromBlocks(blocks, reactFlowNodes);
+        console.log("blocksUpdate triggered", ns);
         setNodes(ns);
     }, [blocks])
 
     useEffect(() => {
         const es = createEdges(pipeline);
+        console.log("pipelineUpdate triggered", es);
         setEdges(es);
-    }, [pipeline])
+    }, [pipeline]);
 
-    useEffect(() => {
-        if (reactFlowString && !isDragging && restoreNeeded) {
-            const {nodes: restoredNodes, edges: restoredEdges} = JSON.parse(reactFlowString);
-            if (JSON.stringify(nodes) !== JSON.stringify(restoredNodes)) {
-                setNodes(restoredNodes);
-                setEdges(restoredEdges);
-                fitView().then();
-            }
-            dispatch(setReloadView(false))
-        }
-    }, [nodes]);
 
+    const onLayout = useCallback(
+        (direction: string) => {
+            const layouted = getLayoutedElements(nodes, edges, {direction});
+
+            setNodes([...layouted.nodes]);
+            setEdges([...layouted.edges]);
+
+            setTimeout(() => {
+                fitView({duration: 500});
+                saveLayout();
+            }, 100);
+        },
+        [nodes, edges],
+    );
 
     const onConnect = useCallback(
         (connection: any) => {
@@ -134,12 +167,12 @@ function Flow() {
                         connectTwoBlocks({fromBlockId: edge.source, toBlockId: edge.target, pipelineId: pipeline.id}))
                         .unwrap()
                         .then(() => {
-                            // If edge creation is successful, first let the pipieline snoop the columns
+                            // If edge creation is successful, first let the pipeline snoop the columns
                             return dispatch(snoopPipelineColumns({pipelineId: pipeline.id})).unwrap();
                         })
                         .then(() => {
                             return addEdge(edge, eds);
-                        })
+                        }).then(() => saveLayout())
                         .catch((err) => {
                             return eds;
                         })
@@ -150,31 +183,21 @@ function Flow() {
         [setEdges, dispatch, pipeline.id]
     )
 
-    const onNodeDragStart = () => {
-        setIsDragging(true);
+    const onNodeDragStop = useCallback(() => {
+        saveLayout();
+    }, [nodes]);
+
+    function saveLayout() {
+        const reactFlowNodes: {
+            nodeId: string;
+            position: { x: number; y: number }
+        }[] = nodes.map(node => ({
+            nodeId: node.id,
+            position: {x: node.position.x, y: node.position.y}
+        }));
+        dispatch(setReactFlowNodes(reactFlowNodes));
     }
 
-    const onNodeDragStop = () => {
-        setIsDragging(false);
-        saveView();
-    }
-
-    function saveView() {
-        const flow = {nodes, edges};
-        dispatch(addReactFlowState(JSON.stringify(flow)));
-    }
-
-    function restoreView()  {
-        if (reactFlowString) {
-            const {nodes: restoredNodes, edges: restoredEdges} = JSON.parse(reactFlowString);
-            setNodes(restoredNodes);
-            setEdges(restoredEdges);
-            fitView().then();
-            console.log("Flow restored.");
-        } else {
-            console.log("No saved flow found.");
-        }
-    }
 
     return (
         <ReactFlow
@@ -183,7 +206,6 @@ function Flow() {
             edges={edges}
             onEdgesChange={onEdgesChange}
             onConnect={onConnect}
-            onNodeDragStart={onNodeDragStart}
             onNodeDragStop={onNodeDragStop}
             nodeTypes={NodeTypes}
             edgeTypes={edgeTypes}
@@ -192,12 +214,9 @@ function Flow() {
             <Background/>
             <Controls position="top-left"/>
             <Panel position="top-right">
-                <button onClick={saveView}>
-                    Save graph view
-                </button>
-                <button onClick={restoreView}>
-                    Restore saved view
-                </button>
+                <StyledActionButton title={"Align Blocks"} onClick={() => onLayout("TB")}>
+                    <AlignSVG style={{width: "35px", height: "35px"}}/>
+                </StyledActionButton>
             </Panel>
             <Panel position={"bottom-right"}>
                 <StyledToolbar>
@@ -218,9 +237,10 @@ function Flow() {
                         }}>
                             <ExportSVG style={{width: "35px", height: "35px"}}/>
                         </StyledActionButton> : <div style={{width: "35px", height: "35px"}}/>}
-                        <StyledActionButton title={"Run Pipeline"} onClick={(e) => {
-                        saveView();
+                    <StyledActionButton title={"Run Pipeline"} onClick={(e) => {
+                        saveLayout();
                         dispatch(setLoading(true));
+
                         dispatch(executePipeline({
                             pipelineId: pipeline.id,
                             startingBlockId: getFirstKey(pipeline.block_dict) as string

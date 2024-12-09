@@ -24,7 +24,8 @@
     "primereact": "^10.8.2",
     "react-redux": "^9.1.2",
     "redux-persist": "^6.0.0",
-    "@reduxjs/toolkit": "2.2.7"
+    "@reduxjs/toolkit": "2.2.7",
+    "@dagrejs/dagre": "^1.1.4"
   },
   "scripts": {
     "start": "react-scripts start",

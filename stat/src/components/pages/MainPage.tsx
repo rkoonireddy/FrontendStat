@@ -43,6 +43,10 @@ function MainPage() {
     const [showCreateBlockPopup, setShowCreateBlockPopup] = useState(false);
     const activeBlock = useAppSelector(getActiveBlock);
 
+    function showPopup() {
+        setShowCreateBlockPopup(!showCreateBlockPopup)
+    }
+
     function closePopup() {
         setShowCreateBlockPopup(false);
     }
@@ -51,7 +55,7 @@ function MainPage() {
         <StyledMainPage>
             {loading && <Loading/>}
             {<ErrorPopup/>}
-            {<DeletePipelinePopup/> }
+            {<DeletePipelinePopup/>}
             {showCreateBlockPopup &&
                 <BlockPopup onCloseAction={closePopup}/>}
             <StyledSideBar>
@@ -59,7 +63,7 @@ function MainPage() {
                              onClick={() => navigate("/")}/>
                 <PlusSVG title={"Create a new block"}
                          style={{width: "50px", height: "50px", margin: "10px", fill: "#73B5B4"}}
-                         onClick={() => setShowCreateBlockPopup(!showCreateBlockPopup)}/>
+                         onClick={() => showPopup()}/>
                 <ExamplesSVG title={"Examples"} style={{width: "50px", height: "50px", margin: "10px", fill: "#73B5B4"}}/>
             </StyledSideBar>
             <StepsSection/>

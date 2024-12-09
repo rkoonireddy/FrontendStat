@@ -1,8 +1,9 @@
 import { quantile } from "d3";
 import {DataDocument, PipelineModel} from "../types/dataType";
+import {CustomEdge} from "../types/reactFlowCustomTypes";
 
 // Creates edges from the pipeline model
-export function createEdges(pipeline: PipelineModel): {id: string, type: string, source: string, target: string}[] {
+export function createEdges(pipeline: PipelineModel): CustomEdge[] {
     let edges : {id: string, type: string, source: string, target: string}[] = [];
     Object.entries(pipeline.edge_dict).forEach(([source, targets]) => {
         targets.forEach(target => {

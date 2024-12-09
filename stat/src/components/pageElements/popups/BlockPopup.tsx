@@ -3,7 +3,7 @@ import {PrimaryButton} from "../buttons/PrimaryButton";
 import {Popup} from "./Popup";
 import {useEffect, useState} from "react";
 import {getBlockTypes} from "../../../service/blockService";
-import {getPipelineModel, setReloadView} from "../../../redux/pipelineSlice";
+import {getPipelineModel} from "../../../redux/pipelineSlice";
 import {useAppDispatch, useAppSelector} from "../../../hooks";
 import styled from "styled-components";
 import {BlockTypeModel} from "../../../types/responseType";
@@ -172,13 +172,12 @@ export function BlockPopup({onCloseAction}: { onCloseAction: () => void }) {
         getBlockTypes().then((types) => {
             setBlockTypes(types);
             if (pipeline.id !== "") {
-                dispatch(updatePipeline({pipelineId: pipeline.id}));
+                dispatch(updatePipeline({pipelineId: pipeline.id, resetPipeline: false}));
             }
         });
     }, []);
 
     function addNewBlock() {
-        dispatch(setReloadView(false))
         if (blockType !== undefined && blockName !== undefined) {
             dispatch(createNewBlock({blockType: blockType.name, blockName: blockName}));
             onCloseAction();

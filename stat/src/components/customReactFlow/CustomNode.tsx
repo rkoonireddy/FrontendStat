@@ -1,7 +1,6 @@
 import React, {useState} from 'react';
 import styled from 'styled-components';
 import {Handle, Position} from '@xyflow/react';
-import {CustomNodeProps} from "../../types/nodeTypes";
 import {useAppDispatch, useAppSelector} from "../../hooks";
 import {
     blockConnectedToPipeline,
@@ -14,6 +13,7 @@ import {ReactComponent as InfoSVG} from "../../assets/info-circle-fill.svg"
 import {ReactComponent as CloseSVG} from '../../assets/x.svg';
 import {LineChart} from "../charts/LineChart";
 import {deleteBlockFromPipeline} from "../../redux/pipelineThunk";
+import {CustomNodeProps} from "../../types/reactFlowCustomTypes";
 
 export const StyledNodeContainer = styled.div<{ $active?: boolean }>`
     padding: 5px;
@@ -162,7 +162,7 @@ export const StyledNodeOutputPopup = styled.div`
     z-index: 100;
 `;
 
-const CustomNode = ({data}: CustomNodeProps) => {
+const CustomNode = ({data}: {data: CustomNodeProps}) => {
     const [isInfoVisible, setIsInfoVisible] = useState(false);
     const pipeline = useAppSelector(getPipelineModel);
     const dispatch = useAppDispatch();

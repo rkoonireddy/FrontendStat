@@ -15,7 +15,7 @@ import {
     getPipelineId,
     resetPipelineData,
     setFileFrequency,
-    clearReactFlowState, setError,
+    setError,
 } from "../../redux/pipelineSlice";
 import {StyledInput, StyledUnit} from "../controls/InputControl";
 import {PreviewTable} from "../tables/PreviewTable";
@@ -216,7 +216,6 @@ export default function HomePage() {
         setFrequency(frequency);
         setIsFileUploadOpen(false);
         setIsFilePreviewOpen(true);
-        dispatch(clearReactFlowState());
     }
 
     const handleAccept = async (selectedColumns: string[]) => {
@@ -249,7 +248,7 @@ export default function HomePage() {
                 dispatch(resetPipelineData())
             ]);
 
-            await reloadPipeline(pipelineIdToLoad);
+            await dispatch(updatePipeline({pipelineId: pipelineIdToLoad, resetPipeline: pipelineId !== null}));
 
             navigate('/main');
 
@@ -261,10 +260,6 @@ export default function HomePage() {
             const errorMessage = JSON.parse((error as Error).message).detail || "Error loading pipeline";
             dispatch(setError(errorMessage));
         }
-    }
-
-    async function reloadPipeline(pipelineId: string) {
-        return await dispatch(updatePipeline({pipelineId})).then(unwrapResult);
     }
 
     function handleOnClose() {
