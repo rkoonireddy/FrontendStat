@@ -66,6 +66,7 @@ export const pipelineSlice = createSlice({
     initialState,
     reducers: {
         resetPipelineData: (state) => {
+            console.log("resetPipelineData")
             state.pipelineModel = initialPipelineModel;
             state.blocks = [];
             state.activeBlockId = null;
@@ -159,7 +160,6 @@ export const pipelineSlice = createSlice({
             state.deletePipelinePopup = false;
         },
         setReactFlowNodes(state, action: PayloadAction<{ nodeId: string, position: { x: number, y: number } }[]>) {
-            console.log(action.payload)
             state.reactFlowNodes = action.payload;
         }
     },
@@ -337,7 +337,6 @@ export const getReactFlowNodes = (state: RootState) => state.pipeline.reactFlowN
 export const getAllNodes = createSelector(
     [getBlocks, getReactFlowNodes],
     (blocks, reactFlowNodes) => {
-        console.log("getAllNodes", blocks, reactFlowNodes)
         return createNodesFromBlocks(blocks, reactFlowNodes)
     }
 );

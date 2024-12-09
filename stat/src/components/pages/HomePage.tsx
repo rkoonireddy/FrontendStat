@@ -243,10 +243,7 @@ export default function HomePage() {
         try {
             await fetchPipeline({pipelineId: pipelineIdToLoad});
 
-            await Promise.all([
-                dispatch(resetData()),
-                dispatch(resetPipelineData())
-            ]);
+            if (pipelineId !== null) dispatch(resetData());
 
             await dispatch(updatePipeline({pipelineId: pipelineIdToLoad, resetPipeline: pipelineId !== null}));
 

@@ -14,7 +14,6 @@ export function createNodesFromBlocks(
     let y = -100;
     let x = 225;
     return blocks.map((block: BlockModel) => {
-        console.log(reactFlowNodes)
         const reactFlowNode = reactFlowNodes.find(node => node.nodeId === block.id);
         if (reactFlowNode === undefined) {
             y += 100;

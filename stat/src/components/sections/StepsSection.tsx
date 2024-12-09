@@ -127,15 +127,12 @@ function Flow() {
     const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
     useEffect(() => {
-        console.log(reactFlowNodes)
         const ns = createNodesFromBlocks(blocks, reactFlowNodes);
-        console.log("blocksUpdate triggered", ns);
         setNodes(ns);
     }, [blocks])
 
     useEffect(() => {
         const es = createEdges(pipeline);
-        console.log("pipelineUpdate triggered", es);
         setEdges(es);
     }, [pipeline]);
 
