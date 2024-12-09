@@ -10,15 +10,14 @@ import React, {useCallback, useEffect, useState} from "react";
 import {useAppDispatch, useAppSelector} from "../../hooks";
 import {
     blockConnectedToPipeline,
-    connectTwoBlocks,
-    executePipeline, fetchExportPipeline, getActiveBlock, getActiveBlockId,
+    getActiveBlock,
+    getActiveBlockId,
     getAllEdges,
     getAllNodes,
     getBlocks,
     getPipeline,
     setLoading,
-    snoopPipelineColumns,
-    showDeletePipelinePopup
+    showDeletePipelinePopup, reactFlowState, addReactFlowState, reloadView, setReloadView
 } from "../../redux/pipelineSlice";
 import {createEdges, getFirstKey} from "../../util/util";
 import CustomNode from "../customReactFlow/CustomNode";
@@ -29,6 +28,7 @@ import {ReactComponent as ExportSVG} from "../../assets/filetype-py.svg";
 import {ReactComponent as CopySVG} from "../../assets/copy.svg";
 import {ReactComponent as TrashSVG} from "../../assets/trash.svg";
 import {createNodesFromBlocks} from "../../util/blockUtil";
+import {connectTwoBlocks, executePipeline, fetchExportPipeline, snoopPipelineColumns} from "../../redux/pipelineThunk";
 
 const NodeTypes = {customNode: CustomNode, customStartNode: CustomStartNode};
 const edgeTypes = {
@@ -76,8 +76,6 @@ const StyledActionButton = styled.div<{ $position?: string }>`
     }
 `;
 
-const flowKey = 'react-flow-flow';
-
 function Flow() {
     const {fitView} = useReactFlow();
     const dispatch = useAppDispatch();
@@ -90,10 +88,16 @@ function Flow() {
     const pipelineExportableRunnable = useAppSelector(state =>
         activeBlockId ? blockConnectedToPipeline(state, activeBlockId) : false
     );
+    const reactFlowString = useAppSelector(reactFlowState);
     const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
     const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
     const [isDragging, setIsDragging] = useState(false);
-    const [restoreNeeded, setRestoreNeeded] = useState(false);
+    const restoreNeeded = useAppSelector(reloadView);
+
+    useEffect(() => {
+        dispatch(setReloadView(true));
+        console.log("Reload view set to true.");
+    }, []);
 
     useEffect(() => {
         const ns = createNodesFromBlocks(blocks);
@@ -106,17 +110,14 @@ function Flow() {
     }, [pipeline])
 
     useEffect(() => {
-        const flowString = localStorage.getItem(flowKey);
-        if (flowString && !isDragging) {
-            const {nodes: restoredNodes, edges: restoredEdges} = JSON.parse(flowString);
+        if (reactFlowString && !isDragging && restoreNeeded) {
+            const {nodes: restoredNodes, edges: restoredEdges} = JSON.parse(reactFlowString);
             if (JSON.stringify(nodes) !== JSON.stringify(restoredNodes)) {
                 setNodes(restoredNodes);
                 setEdges(restoredEdges);
                 fitView().then();
-                console.log("Flow restored.");
             }
-        } else {
-            console.log("No saved flow found.");
+            dispatch(setReloadView(false))
         }
     }, [nodes]);
 
@@ -147,28 +148,25 @@ function Flow() {
             });
         },
         [setEdges, dispatch, pipeline.id]
-    );
+    )
 
     const onNodeDragStart = () => {
         setIsDragging(true);
-    };
+    }
 
     const onNodeDragStop = () => {
         setIsDragging(false);
         saveView();
-    };
+    }
 
-    // Save function
     function saveView() {
         const flow = {nodes, edges};
-        localStorage.setItem(flowKey, JSON.stringify(flow));
-    };
+        dispatch(addReactFlowState(JSON.stringify(flow)));
+    }
 
-    // Restore function
     function restoreView()  {
-        const flowString = localStorage.getItem(flowKey);
-        if (flowString) {
-            const {nodes: restoredNodes, edges: restoredEdges} = JSON.parse(flowString);
+        if (reactFlowString) {
+            const {nodes: restoredNodes, edges: restoredEdges} = JSON.parse(reactFlowString);
             setNodes(restoredNodes);
             setEdges(restoredEdges);
             fitView().then();
@@ -176,7 +174,7 @@ function Flow() {
         } else {
             console.log("No saved flow found.");
         }
-    };
+    }
 
     return (
         <ReactFlow

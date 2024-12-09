@@ -2,7 +2,6 @@ import {useSelector} from 'react-redux';
 import {useNavigate} from "react-router-dom";
 import {
     clearDeletePipelinePopup,
-    deletePipelineThunk,
     getPipeline,
     resetPipelineData
 } from "../../../redux/pipelineSlice";
@@ -12,6 +11,7 @@ import {RootState} from '../../../store';
 import {PrimaryButton} from "../buttons/PrimaryButton";
 import {Popup} from "./Popup";
 import styled from "styled-components";
+import {deletePipelineThunk} from "../../../redux/pipelineThunk";
 
 const StyledDeleteButtonsContainer = styled.div`
     display: flex;
@@ -44,7 +44,6 @@ export function DeletePipelinePopup() {
     }
 
     function handleCancel() {
-        // Simply close the popup if cancel is clicked
         dispatch(clearDeletePipelinePopup());
     }
 

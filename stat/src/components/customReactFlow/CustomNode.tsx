@@ -5,7 +5,6 @@ import {CustomNodeProps} from "../../types/nodeTypes";
 import {useAppDispatch, useAppSelector} from "../../hooks";
 import {
     blockConnectedToPipeline,
-    deleteBlockFromPipeline,
     getActiveBlockId, getBlockById,
     getPipelineModel,
     setActiveBlockId
@@ -14,6 +13,7 @@ import {ReactComponent as TrashSVG} from "../../assets/trash3-fill.svg";
 import {ReactComponent as InfoSVG} from "../../assets/info-circle-fill.svg"
 import {ReactComponent as CloseSVG} from '../../assets/x.svg';
 import {LineChart} from "../charts/LineChart";
+import {deleteBlockFromPipeline} from "../../redux/pipelineThunk";
 
 export const StyledNodeContainer = styled.div<{ $active?: boolean }>`
     padding: 5px;

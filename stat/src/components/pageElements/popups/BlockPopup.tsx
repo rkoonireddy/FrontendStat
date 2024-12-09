@@ -3,10 +3,11 @@ import {PrimaryButton} from "../buttons/PrimaryButton";
 import {Popup} from "./Popup";
 import {useEffect, useState} from "react";
 import {getBlockTypes} from "../../../service/blockService";
-import {createNewBlock, getPipelineModel, updatePipeline} from "../../../redux/pipelineSlice";
+import {getPipelineModel, setReloadView} from "../../../redux/pipelineSlice";
 import {useAppDispatch, useAppSelector} from "../../../hooks";
 import styled from "styled-components";
 import {BlockTypeModel} from "../../../types/responseType";
+import {createNewBlock, updatePipeline} from "../../../redux/pipelineThunk";
 
 const StyledCreateBlocksContainer = styled.div`
     display: flex;
@@ -177,6 +178,7 @@ export function BlockPopup({onCloseAction}: { onCloseAction: () => void }) {
     }, []);
 
     function addNewBlock() {
+        dispatch(setReloadView(false))
         if (blockType !== undefined && blockName !== undefined) {
             dispatch(createNewBlock({blockType: blockType.name, blockName: blockName}));
             onCloseAction();

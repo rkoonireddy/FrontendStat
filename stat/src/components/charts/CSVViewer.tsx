@@ -11,8 +11,9 @@ import styled from "styled-components";
 import { useState, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../hooks";
 import { updateCSVLoaderBlock } from "../../service/blockService";
-import { fetchFullBlock, getFrequency } from "../../redux/pipelineSlice";
+import { getFrequency } from "../../redux/pipelineSlice";
 import { formatNumber } from "../../util/util";
+import {fetchFullBlock} from "../../redux/pipelineThunk";
 
 export const StyledTableContainer = styled.div`
     height: fit-content;
@@ -44,10 +45,6 @@ export const StyledTableCell = styled.td<{ $isSelected: boolean, $mini?: boolean
     color: ${props => (props.$isSelected ? '#ffffff' : '#808080')};
     padding: ${props => (props.$mini ? '2px' : '8px')};
     background-color: ${props => (props.$isSelected ? '#3D3D3D' : '#adacac')};
-`;
-
-export const StyledFilterContainer = styled.div`
-    margin-bottom: 20px;
 `;
 
 export const StyledCheckbox = styled.input`

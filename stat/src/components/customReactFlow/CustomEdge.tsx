@@ -2,7 +2,8 @@ import {BaseEdge, getBezierPath, EdgeProps, EdgeLabelRenderer, useReactFlow} fro
 import {ReactComponent as TrashSVG} from "../../assets/trash3-fill.svg";
 import styled from "styled-components";
 import {useAppDispatch, useAppSelector} from "../../hooks";
-import {deleteEdgeFromPipeline, getPipelineModel} from "../../redux/pipelineSlice";
+import {getPipelineModel} from "../../redux/pipelineSlice";
+import {deleteEdgeFromPipeline} from "../../redux/pipelineThunk";
 
 const StyledBaseEdge = styled(BaseEdge)`
   stroke-width: 1;

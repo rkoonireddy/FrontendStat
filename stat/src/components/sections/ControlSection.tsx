@@ -4,11 +4,12 @@ import {FilterControl} from "../controls/FilterControl";
 import {InputControl} from "../controls/InputControl";
 import {DropdownControl} from "../controls/DropdownControl";
 import {RangeControl} from "../controls/RangeControl";
-import {addControl, fetchUpdateBlock, getActiveBlock, getControls, getPipelineModel} from "../../redux/pipelineSlice";
+import {addControl, getActiveBlock, getControls, getPipelineModel} from "../../redux/pipelineSlice";
 import {useAppDispatch, useAppSelector} from "../../hooks";
 import {useEffect, useState} from "react";
 import {MultiSelectControl} from "../controls/MultiSelectControl";
 import {PrimaryButton} from "../pageElements/buttons/PrimaryButton";
+import {fetchUpdateBlock} from "../../redux/pipelineThunk";
 
 const StyledControls = styled.div<{ $show: boolean }>`
     display: ${props => (props.$show ? "flex" : "none")};
