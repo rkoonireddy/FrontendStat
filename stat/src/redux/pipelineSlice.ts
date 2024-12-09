@@ -6,7 +6,7 @@ import {createEdges} from "../util/util";
 import {downloadPythonScript} from "../util/fileUtil";
 import {createNodesFromBlocks} from "../util/blockUtil";
 import {
-    checkPipeline, connectTwoBlocks,
+    connectTwoBlocks,
     createNewBlock,
     createNewPipeline, deletePipelineThunk,
     executePipeline, fetchExportPipeline,
@@ -139,6 +139,10 @@ export const pipelineSlice = createSlice({
                 console.log("updateControl: blockId or filter key not found in state.controls");
             }
         },
+        setError(state, action: PayloadAction<string>) {
+            state.errorStatus = true;
+            state.errorMessage = action.payload;
+        },
         clearError(state) {
             state.errorStatus = false;
             state.errorMessage = null;
@@ -171,10 +175,6 @@ export const pipelineSlice = createSlice({
         builder.addCase(createNewPipeline.rejected, (state, action) => {
             console.log(action.error.message);
             state.loading = false;
-            state.errorStatus = true;
-            state.errorMessage = String(action.payload);
-        });
-        builder.addCase(checkPipeline.rejected, (state, action) => {
             state.errorStatus = true;
             state.errorMessage = String(action.payload);
         });
@@ -287,6 +287,7 @@ export const {
     setLoading,
     addControl,
     updateControl,
+    setError,
     clearError,
     showDeletePipelinePopup,
     clearDeletePipelinePopup,

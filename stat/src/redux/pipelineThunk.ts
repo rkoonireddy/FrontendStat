@@ -8,7 +8,7 @@ import {
     runPipeline,
     snoopPipeline
 } from "../service/pipelineService";
-import {BlockModel, CreateBlockResponse} from "../types/responseType";
+import {BlockModel, CreateBlockResponse, LoaderModel} from "../types/responseType";
 import {
     addBlockToPipeline,
     createBlock,
@@ -18,7 +18,9 @@ import {
 } from "../service/blockService";
 import {RootState} from "../store";
 import {addEdgeToPipeline, deleteEdge} from "../service/edgeService";
-import {setBlocks} from "./pipelineSlice";
+import {setBlocks, setFileFrequency} from "./pipelineSlice";
+import {setRawData} from "./dataSlice";
+import {parseCSVString} from "../util/fileUtil";
 
 export const createNewPipeline = createAsyncThunk<PipelineModel, void, { rejectValue: string }>(
     'pipeline/new',
@@ -27,18 +29,6 @@ export const createNewPipeline = createAsyncThunk<PipelineModel, void, { rejectV
             return await createPipeline();
         } catch (error) {
             return thunkAPI.rejectWithValue('Failed to create pipeline');
-        }
-    }
-);
-
-export const checkPipeline = createAsyncThunk<boolean, string, { rejectValue: string }>(
-    'pipeline/check',
-    async (pipelineId, thunkAPI) => {
-        try {
-            await fetchPipeline({pipelineId});
-            return true;
-        } catch (error) {
-            return thunkAPI.rejectWithValue(`Failed to find pipeline ID "${pipelineId}" in the database`);
         }
     }
 );
@@ -121,6 +111,10 @@ export const updatePipeline = createAsyncThunk<PipelineModel, { pipelineId: stri
             const newBlockIds = Object.keys(pipeline.block_dict);
             const newBlocks = await Promise.all(newBlockIds.map(blockId => thunkAPI.dispatch(fetchFullBlock(blockId)).unwrap()));
             thunkAPI.dispatch(setBlocks(newBlocks));
+            const loaderBlock: LoaderModel = newBlocks.filter(block => block.type === 'CSVStringLoader')[0] as LoaderModel;
+            thunkAPI.dispatch(setFileFrequency(loaderBlock.freq_hz));
+            const cleanedRawData = parseCSVString(loaderBlock.csv_string);
+            thunkAPI.dispatch(setRawData(cleanedRawData))
             return pipeline;
         } catch (error) {
             return thunkAPI.rejectWithValue(`Failed to update pipeline \n ${String(error)}`);

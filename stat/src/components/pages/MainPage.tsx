@@ -7,11 +7,11 @@ import {StepsSection} from "../sections/StepsSection";
 import {VizSection} from "../sections/VizSection";
 import {getActiveBlock, getLoading} from "../../redux/pipelineSlice";
 import {useAppSelector} from "../../hooks";
-import {useState} from "react";
+import React, {useState} from "react";
 import {Loading} from "../pageElements/Loading";
-import {ErrorPopup} from "../pageElements/popups/ErrorPopup";
+import {DeletePipelinePopup} from "../pageElements/popups/DeletePipelinePopup";
 import {BlockPopup} from "../pageElements/popups/BlockPopup";
-import { DeletePipelinePopup } from "../pageElements/popups/DeletePipelinePopup";
+import {ErrorPopup} from "../pageElements/popups/ErrorPopup";
 
 
 const StyledMainPage = styled.div`
