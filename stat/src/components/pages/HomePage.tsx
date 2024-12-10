@@ -237,15 +237,22 @@ export default function HomePage() {
     };
 
     async function handlePipelineLoad(pipelineId: string | null = null) {
-        setLoading(true);
+        // setLoading(true);
         const pipelineIdToLoad: string = pipelineId || pipelineLoad;
 
         try {
             await fetchPipeline({pipelineId: pipelineIdToLoad});
 
-            if (pipelineId !== null) dispatch(resetData());
+            if (pipelineId === null) {
+                console.log("handlePipelineLoad without pipelineId argument called, resetData")
+                dispatch(resetData());
+            } else {
+                console.log("handlePipelineLoad with pipelineId argument called, this means Resume. Do not resetData")
+            }
 
-            await dispatch(updatePipeline({pipelineId: pipelineIdToLoad, resetPipeline: true}));
+            console.log(`pipelineId !== null: ${pipelineId !== null}`);
+
+            await dispatch(updatePipeline({pipelineId: pipelineIdToLoad, resetPipeline: pipelineId === null}));
 
             navigate('/main');
 
