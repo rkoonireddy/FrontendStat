@@ -19,7 +19,7 @@ import {
 import {RootState} from "../store";
 import {addEdgeToPipeline, deleteEdge} from "../service/edgeService";
 import {setBlocks, setFileFrequency} from "./pipelineSlice";
-import {setRawData} from "./dataSlice";
+import {setFilteredData, setRawData} from "./dataSlice";
 import {parseCSVString} from "../util/fileUtil";
 
 export const createNewPipeline = createAsyncThunk<PipelineModel, void, { rejectValue: string }>(
@@ -115,7 +115,9 @@ export const updatePipeline = createAsyncThunk<PipelineModel, { pipelineId: stri
                 const loaderBlock: LoaderModel = newBlocks.filter(block => block.type === 'CSVStringLoader')[0] as LoaderModel;
                 thunkAPI.dispatch(setFileFrequency(loaderBlock.freq_hz));
                 const cleanedRawData = parseCSVString(loaderBlock.csv_string);
-                thunkAPI.dispatch(setRawData(cleanedRawData))
+                // When we reset the pipeline, we want to set the raw data to the cleaned raw data. The filtered data is equal to the cleaned raw data
+                thunkAPI.dispatch(setRawData(cleanedRawData));
+                thunkAPI.dispatch(setFilteredData(cleanedRawData));
             }
 
             return pipeline;
