@@ -77,7 +77,6 @@ const CSVViewer: React.FC<CSVViewerProps> = ({ blockId, small, mini, sample = 20
     const data = rawData.slice(0, sample);
     const columns = useAppSelector(getRawDataColumns);
     const filteredColumns = useAppSelector(getFilteredDataColumns);
-
     const [selectedColumns, setSelectedColumns] = useState<string[]>(filteredColumns);
 
 

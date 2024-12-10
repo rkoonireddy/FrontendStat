@@ -73,16 +73,16 @@ export function DataLoaderSection({block}: { block: BlockModel }) {
                               onSelect={setStatView}/>
                 </StyledToggleContainer>
                 <StyledDataViewContainer>
-                <StyledMainElementContainer>
-                    {!statView ? (
-                        <CSVViewer blockId={block.id} sample={5} setHoveredColumn={setHoveredColumn}/>
-                    ) : (
-                        <BoxPlot blockId={block.id} setHoveredColumn={setHoveredColumn}/>
-                    )}
-                </StyledMainElementContainer>
-                <StyledStatisticsContainer>
-                    <DescriptiveStatistics column={hoveredColumn}/>
-                </StyledStatisticsContainer>
+                    <StyledMainElementContainer>
+                        {!statView ? (
+                            <CSVViewer blockId={block.id} sample={5} setHoveredColumn={setHoveredColumn}/>
+                        ) : (
+                            <BoxPlot blockId={block.id} setHoveredColumn={setHoveredColumn}/>
+                        )}
+                    </StyledMainElementContainer>
+                    <StyledStatisticsContainer>
+                        <DescriptiveStatistics column={hoveredColumn}/>
+                    </StyledStatisticsContainer>
                 </StyledDataViewContainer>
             </StyledSelectorContainer>
             <StyledStackedChartContainer $height={60} style={{backgroundColor: '#ffffff08'}}>
