@@ -245,7 +245,7 @@ export default function HomePage() {
 
             if (pipelineId !== null) dispatch(resetData());
 
-            await dispatch(updatePipeline({pipelineId: pipelineIdToLoad, resetPipeline: pipelineId !== null}));
+            await dispatch(updatePipeline({pipelineId: pipelineIdToLoad, resetPipeline: true}));
 
             navigate('/main');
 
