@@ -129,7 +129,7 @@ function Flow() {
     useEffect(() => {
         const ns = createNodesFromBlocks(blocks, reactFlowNodes);
         setNodes(ns);
-    }, [blocks])
+    }, [blocks, edges])
 
     useEffect(() => {
         const es = createEdges(pipeline);
