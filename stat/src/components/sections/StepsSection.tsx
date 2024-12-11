@@ -29,6 +29,9 @@ import {ReactComponent as ExportSVG} from "../../assets/filetype-py.svg";
 import {ReactComponent as CopySVG} from "../../assets/copy.svg";
 import {ReactComponent as TrashSVG} from "../../assets/trash.svg";
 import {ReactComponent as AlignSVG} from "../../assets/align.svg";
+import {ReactComponent as ZoomInSVG} from "../../assets/zoom-in.svg";
+import {ReactComponent as ZoomOutSVG} from "../../assets/zoom-out.svg";
+import {ReactComponent as FitToViewSVG} from "../../assets/fit-to-screen.svg";
 import {createNodesFromBlocks} from "../../util/blockUtil";
 import {connectTwoBlocks, executePipeline, fetchExportPipeline, snoopPipelineColumns} from "../../redux/pipelineThunk";
 import {CompleteNode} from "../../types/reactFlowCustomTypes";
@@ -46,12 +49,12 @@ const StyledStepsContainer = styled.div`
     background-color: #ffffff08;
 `;
 
-const StyledToolbar = styled.div`
+const StyledToolbar = styled.div<{ $width?: string }>`
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    width: 450px;
+    width: ${props => props.$width ? props.$width : "450px"};
     left: 0;
     right: 0;
     margin: 0 auto;
@@ -67,6 +70,10 @@ const StyledActionButton = styled.div<{ $position?: string }>`
     ${props => props.$position === "left" ? "margin-right: auto;" : ""}
     & svg {
         fill: #ffffff;
+    }
+    
+    & svg.custom-line {
+        stroke: #ffffff;
     }
 
     &:hover {
@@ -110,7 +117,7 @@ const getLayoutedElements = (nodes: CompleteNode[], edges: Edge[], options: { di
 };
 
 function Flow() {
-    const {fitView} = useReactFlow();
+    const {fitView, zoomIn, zoomOut} = useReactFlow();
     const dispatch = useAppDispatch();
     const pipeline = useAppSelector(getPipeline);
     const blocks = useAppSelector(getBlocks);
@@ -209,11 +216,22 @@ function Flow() {
             fitView
         >
             <Background/>
-            <Controls position="top-left"/>
+            {/*<Controls position="top-left"/>*/}
             <Panel position="top-right">
+                <StyledToolbar $width={"200px"}>
                 <StyledActionButton title={"Align Blocks"} onClick={() => onLayout("TB")}>
                     <AlignSVG style={{width: "35px", height: "35px"}}/>
                 </StyledActionButton>
+                <StyledActionButton title={"Fit Pipeline into view"} onClick={() => fitView()}>
+                    <FitToViewSVG style={{width: "35px", height: "35px"}}/>
+                </StyledActionButton>
+                <StyledActionButton title={"Zoom in"} onClick={() => zoomIn()}>
+                    <ZoomInSVG style={{width: "35px", height: "35px"}}/>
+                </StyledActionButton>
+                <StyledActionButton title={"Zoom out"} onClick={() => zoomOut()}>
+                    <ZoomOutSVG style={{width: "35px", height: "35px"}}/>
+                </StyledActionButton>
+                </StyledToolbar>
             </Panel>
             <Panel position={"bottom-right"}>
                 <StyledToolbar>
