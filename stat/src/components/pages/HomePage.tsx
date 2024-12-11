@@ -237,7 +237,7 @@ export default function HomePage() {
     };
 
     async function handlePipelineLoad(pipelineId: string | null = null) {
-        // setLoading(true);
+        setLoading(true);
         const pipelineIdToLoad: string = pipelineId || pipelineLoad;
 
         try {
