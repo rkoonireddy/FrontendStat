@@ -203,13 +203,13 @@ function FileUpload({onClose, onUpload}: { onClose: () => void, onUpload: (frequ
 export default function HomePage() {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
-    const pipelineIdResume = useAppSelector(getPipelineId);
+    const existingPipelineId = useAppSelector(getPipelineId);
     const previewData = useAppSelector(getPreviewData);
     const previewDataExistsBool = useAppSelector(previewDataExists);
     const [frequency, setFrequency] = useState(0);
     const [isFileUploadOpen, setIsFileUploadOpen] = useState(false);
     const [isFilePreviewOpen, setIsFilePreviewOpen] = useState(false);
-    const [pipelineLoad, setPipelineLoad] = useState<string>("");
+    const [pipelineIdToLoad, setPipelineIdToLoad] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(false);
 
     const handleFileUpload = (frequency: number) => {
@@ -236,30 +236,24 @@ export default function HomePage() {
         navigate('/main');
     };
 
-    async function handlePipelineLoad(pipelineId: string | null = null) {
+    async function handlePipelineLoad(pipelineId: string = 'not set') {
         setLoading(true);
-        const pipelineIdToLoad: string = pipelineId || pipelineLoad;
+
+        if (pipelineId === 'not set') dispatch(resetData());
+
+        const existingPipelineId: string = pipelineId === 'not set' ? pipelineIdToLoad : pipelineId;
 
         try {
-            await fetchPipeline({pipelineId: pipelineIdToLoad});
+            await fetchPipeline({pipelineId: existingPipelineId});
 
-            if (pipelineId === null) {
-                console.log("handlePipelineLoad without pipelineId argument called, resetData")
-                dispatch(resetData());
-            } else {
-                console.log("handlePipelineLoad with pipelineId argument called, this means Resume. Do not resetData")
-            }
-
-            console.log(`pipelineId !== null: ${pipelineId !== null}`);
-
-            await dispatch(updatePipeline({pipelineId: pipelineIdToLoad, resetPipeline: pipelineId === null}));
+            await dispatch(updatePipeline({pipelineId: existingPipelineId, resetPipeline: pipelineId === 'not set'}));
 
             navigate('/main');
 
             return;
         } catch (error) {
             console.error("Error loading pipeline:", error);
-            setPipelineLoad("");
+            setPipelineIdToLoad("");
             setLoading(false);
             const errorMessage = JSON.parse((error as Error).message).detail || "Error loading pipeline";
             dispatch(setError(errorMessage));
@@ -300,10 +294,10 @@ export default function HomePage() {
                         <StyledButtonContainer>
                             <PrimaryButton text={"Upload Sample"} action={() => setIsFileUploadOpen(true)}/>
                             {
-                                pipelineIdResume?.length > 0 ?
+                                existingPipelineId?.length > 0 ?
                                     <PrimaryButton text={"Resume"}
                                                    action={() => {
-                                                       handlePipelineLoad(pipelineIdResume).then()
+                                                       handlePipelineLoad(existingPipelineId).then()
                                                    }}/> :
                                     null
                             }
@@ -317,12 +311,12 @@ export default function HomePage() {
                         <StyledButtonContainer>
                             <PrimaryButton text={"Load Pipeline"} action={() => {
                                 handlePipelineLoad().then()
-                            }} disabled={pipelineLoad === ""}/>
+                            }} disabled={pipelineIdToLoad === ""}/>
                             <StyledInput
                                 $width={"500px"}
                                 $margin={'auto'}
-                                value={pipelineLoad}
-                                onChange={(e) => setPipelineLoad(e.target.value.trim())}
+                                value={pipelineIdToLoad}
+                                onChange={(e) => setPipelineIdToLoad(e.target.value.trim())}
                                 placeholder="Enter pipeline ID"
                             />
                         </StyledButtonContainer>
