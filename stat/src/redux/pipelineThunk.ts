@@ -134,7 +134,16 @@ export const executePipeline = createAsyncThunk<string, { pipelineId: string, st
             const response = await runPipeline({pipelineId: pipelineId, startingBlockId: startingBlockId});
             thunkAPI.dispatch(updatePipeline({pipelineId: pipelineId, resetPipeline: false}));
             return response;
-        } catch (error) {
+        } catch (error: any) {
+            if (error instanceof Error && error.message) {
+                // If its a proper error, try to parse the message as JSON and return the detail property
+                try {
+                    const error_message: { detail?: String } = JSON.parse(error.message);
+                    if (error_message.detail) {
+                        return thunkAPI.rejectWithValue(`Failed to run pipeline \n ${error_message.detail}`);
+                    }
+                } catch (parseError) {}
+            }
             return thunkAPI.rejectWithValue(`Failed to run pipeline \n ${String(error)}`);
         }
     }
