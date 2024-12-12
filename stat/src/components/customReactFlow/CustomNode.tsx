@@ -1,19 +1,21 @@
-import React, {useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import {Handle, Position} from '@xyflow/react';
-import {useAppDispatch, useAppSelector} from "../../hooks";
+import { Handle, Position } from '@xyflow/react';
+import { useAppDispatch, useAppSelector } from "../../hooks";
 import {
     blockConnectedToPipeline,
     getActiveBlockId, getBlockById,
     getPipelineModel,
     setActiveBlockId
 } from "../../redux/pipelineSlice";
-import {ReactComponent as TrashSVG} from "../../assets/trash3-fill.svg";
-import {ReactComponent as InfoSVG} from "../../assets/info-circle-fill.svg"
-import {ReactComponent as CloseSVG} from '../../assets/x.svg';
-import {LineChart} from "../charts/LineChart";
-import {deleteBlockFromPipeline} from "../../redux/pipelineThunk";
-import {CustomNodeProps} from "../../types/reactFlowCustomTypes";
+import { BlockTypeModel } from '../../types/responseType';
+import { ReactComponent as TrashSVG } from "../../assets/trash3-fill.svg";
+import { ReactComponent as InfoSVG } from "../../assets/info-circle-fill.svg";
+import { ReactComponent as CloseSVG } from '../../assets/x.svg';
+import { LineChart } from "../charts/LineChart";
+import { deleteBlockFromPipeline } from "../../redux/pipelineThunk";
+import { CustomNodeProps } from '../../types/reactFlowCustomTypes';
+import { getBlockTypes } from '../../service/blockService';
 
 export const StyledNodeContainer = styled.div<{ $active?: boolean }>`
     padding: 5px;
@@ -96,9 +98,44 @@ export const StyledInfoPopup = styled.div<{ $visible: boolean, $scale?: number }
     overflow-y: auto;
     display: ${({$visible}) => ($visible ? 'block' : 'none')};
 
+    .description {
+        font-family: 'Archivo', sans-serif;
+        ::-webkit-scrollbar {
+            display: none;
+        }
+    }
+
+    .description-title {
+        display: none;
+    }
+    
+    .description-subtitle {
+        margin: 25px 0 10px 0;
+        font-size: 0.5rem;
+    }
+
+    .description-normal {
+        margin: 10px 0;
+        display:flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    & img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+        margin: 0 auto;
+    }
+    
+    .description-link a {
+        font-style: italic;
+        color: #73B5B4;
+    }
 
     &::-webkit-scrollbar {
-        width: 8px;
+        width: 4px;
+        height: 4px;
     }
 
     &::-webkit-scrollbar-track {
@@ -162,26 +199,37 @@ export const StyledNodeOutputPopup = styled.div`
     z-index: 100;
 `;
 
-const CustomNode = ({data}: {data: CustomNodeProps}) => {
+const CustomNode = ({ data }: { data: CustomNodeProps }) => {
     const [isInfoVisible, setIsInfoVisible] = useState(false);
     const pipeline = useAppSelector(getPipelineModel);
     const dispatch = useAppDispatch();
     const activeNodeId = useAppSelector(getActiveBlockId);
     const block = useAppSelector(state => getBlockById(state, data.blockId));
+    const [blockTypes, setBlockTypes] = useState<BlockTypeModel[]>([]);
+    const [blockType, setBlockType] = useState<BlockTypeModel>();
     const [showOutputPopup, setShowOutputPopup] = useState(false);
-    const blockConnected = useAppSelector(state => blockConnectedToPipeline(state, data.blockId))
+    const blockConnected = useAppSelector(state => blockConnectedToPipeline(state, data.blockId));
+
     const togglePopup = () => {
         setIsInfoVisible(prev => !prev);
     };
+
+    useEffect(() => {
+        getBlockTypes().then((types) => {
+            setBlockTypes(types);
+            const matchingType = types.find(type => type.name.toLowerCase() === data.type.toLowerCase());
+            setBlockType(matchingType);
+        });
+    }, [data.type]);
 
     return (
         <StyledNodeContainer $active={data.id === activeNodeId} onClick={() => dispatch(setActiveBlockId(data.id))}>
             <Handle type="target" position={Position.Top}/>
             <StyledDeleteButton title={"Delete Block"} onClick={(e) => {
-                dispatch(deleteBlockFromPipeline({pipelineId: pipeline.id, blockId: data.id}));
+                dispatch(deleteBlockFromPipeline({ pipelineId: pipeline.id, blockId: data.id }));
                 e.stopPropagation();
             }}>
-                <TrashSVG style={{width: "7px", height: "7px", fill: (data.id === activeNodeId ? '#939393BF' : '#f0f0f0f0') }}/>
+                <TrashSVG style={{ width: "7px", height: "7px", fill: (data.id === activeNodeId ? '#939393BF' : '#f0f0f0f0') }} />
             </StyledDeleteButton>
             <StyledNodeLabel $active={data.id === activeNodeId} $small={data.label.length > 14}>
                 {data.label}
@@ -195,20 +243,19 @@ const CustomNode = ({data}: {data: CustomNodeProps}) => {
                     togglePopup();
                 }}
             >
-                <InfoSVG/>
+                <InfoSVG />
             </StyledNodeInfoIcon>
             <StyledInfoPopup $visible={isInfoVisible}>
-                <StyledCloseInfoIcon onClick={(e) => {
-                    e.stopPropagation();
-                    setIsInfoVisible(false);
-                }}>
-                    <CloseSVG/>
+                <StyledCloseInfoIcon onClick={(e) => { e.stopPropagation(); setIsInfoVisible(false); }}>
+                    <CloseSVG />
                 </StyledCloseInfoIcon>
-                <p>{data.description}</p>
+                {blockType ? (
+                    <div dangerouslySetInnerHTML={{ __html: blockType.description }} />
+                ) : (
+                    <p>{data.description}</p>
+                )}
             </StyledInfoPopup>
-            <StyledTag>
-                {data.tag}
-            </StyledTag>
+            <StyledTag>{data.tag}</StyledTag>
             <Handle type="source" position={Position.Bottom}/>
             {blockConnected && block && block?.output?.Dataframe?.data !== undefined &&
                 <StyledNodeOutputContainer onMouseEnter={() => setShowOutputPopup(true)}
