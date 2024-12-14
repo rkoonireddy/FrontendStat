@@ -49,7 +49,7 @@ export function DeletePipelinePopup() {
 
     if (!deletePipelinePopup) return null;
     return (
-        <Popup title={"Delete Pipeline?\nWARNING: This action is irreversible!"}
+        <Popup title={"Delete Pipeline?\nWARNING: This action is irreversible!\n\nIt will delete the Pipeline and all associated Blocks and Data from the database"}
                onCloseAction={handleCancel}>
             <StyledDeleteButtonsContainer>
                 <PrimaryButton text={"Cancel"} action={handleCancel}/>
