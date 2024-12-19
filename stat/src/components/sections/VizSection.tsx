@@ -106,16 +106,17 @@ export function VizSection({block}: { block: BlockModel }) {
                 </div>}
 
             <StyledChartContainer $controlsVisible={controlsVisible}>
-
-                {isCompareMode ? (
+            {block.type === "CSVStringLoader" ? (
+                <DataLoaderSection block={block} />
+            ) : (
+                isCompareMode ? (
                     <>
-                        <CompareCharts/>
+                        <CompareCharts />
                     </>
-                ) : block.type === "CSVStringLoader" ? (
-                    <DataLoaderSection block={block}/>
                 ) : (
-                    <LineChart block={block}/>
-                )}
+                    <LineChart block={block} />
+                )
+            )}
             </StyledChartContainer>
 
             {controlsVisible && (

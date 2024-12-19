@@ -1,10 +1,14 @@
-import React, {useState} from "react";
-import {useAppSelector} from "../../hooks";
+import React, {useEffect} from "react";
+import {useAppSelector, useAppDispatch} from "../../hooks";
 import {BlockModel} from "../../types/responseType";
 import styled from "styled-components";
 import {CompareLineChart} from "../charts/CompareLineChart";
 import {COLOR_PALETTE} from "../../Theme";
 import {HorizontalScrollContainer} from "../pageElements/HorizontalScrollContainer";
+import { setBlocks, setSelectedOpacity, initializeSelectedFilters, setSelectedFilters, setSelectedColor} from "../../redux/compareChartSlice";
+import { RootState } from "../../store";
+import {fetchUpdateBlock} from "../../redux/pipelineThunk";
+import {setActiveBlockId, getActiveBlock} from "../../redux/pipelineSlice";
 
 const StyledBlocksContainer = styled.div`
     position: absolute;
@@ -26,6 +30,7 @@ const StyledBlockLineSelectorContainer = styled.div<{ $borderColor: string }>`
     flex-direction: column;
     align-items: flex-start;
     justify-content: flex-start;
+    cursor:pointer;
 `;
 
 const StyledLabel = styled.div`
@@ -75,29 +80,51 @@ const StyledBlockSubHead = styled.div`
     text-decoration-thickness: 2px;
 `;
 
-
 export function CompareCharts() {
-    const blocks = useAppSelector((state) => state.pipeline.blocks) || []; // Fallback to empty array if undefined
-    const [selectedFilters, setSelectedFilters] = useState<{ [key: string]: string[] }>({});
+    const dispatch = useAppDispatch();
+    const activeBlock = useAppSelector(getActiveBlock);
+    const blocks = useAppSelector((state: RootState) => state.compareCharts.blocks) || [];
+    const selectedFilters = useAppSelector((state: RootState) => state.compareCharts.selectedFilters);
+    const pipelineBlocks = useAppSelector((state: RootState) => state.pipeline.blocks);
+    const selectedColors = useAppSelector((state) => state.compareCharts.selectedColors);
+    const selectedOpacity = useAppSelector(state => state.compareCharts.selectedOpacity);
+
+    useEffect(() => {
+        if (pipelineBlocks.length > 0) {
+            dispatch(setBlocks(pipelineBlocks));
+            dispatch(initializeSelectedFilters());
+        }
+    }, [pipelineBlocks, dispatch]);
 
     const handleCheckboxChange = (blockId: string, filterName: string) => {
-        setSelectedFilters((prevSelected) => {
-            const currentFilters = prevSelected[blockId] || [];
-            const isSelected = currentFilters.includes(filterName);
+        const currentFilters = selectedFilters[blockId] || [];
+        const isSelected = currentFilters.includes(filterName);
 
-            const updatedFilters = isSelected
-                ? currentFilters.filter((f) => f !== filterName)
-                : [...currentFilters, filterName];
+        const updatedFilters = isSelected
+            ? currentFilters.filter((f) => f !== filterName)
+            : [...currentFilters, filterName];
 
-            return {
-                ...prevSelected,
-                [blockId]: updatedFilters,
-            };
-        });
+        dispatch(setSelectedFilters({ blockId, filters: updatedFilters }));
+    };
+
+    const handleColorChange = (blockId: string, color: string) => {
+        dispatch(setSelectedColor({ blockId, color }));
+    };
+    
+    const handleOpacityChange = (blockId: string, opacity: string) => {
+        const newOpacity = parseInt(opacity, 10);
+        dispatch(setSelectedOpacity({ blockId, opacity: newOpacity }));
+    };
+
+    const handleBlockSelect = (blockId: string) => {
+        dispatch(setActiveBlockId(blockId));
     };
 
     const filteredBlocks = blocks.filter((block) => block.type !== "CSVStringLoader");
-
+    
+    console.log(selectedColors);
+    console.log(selectedOpacity);
+           
     return (
         <StyledBlocksContainer>
             <StyledBlockIdLabel>Choose features on different blocks to compare</StyledBlockIdLabel>
@@ -105,12 +132,55 @@ export function CompareCharts() {
                 <HorizontalScrollContainer id={"compare-charts"}>
                     {filteredBlocks.map((block: BlockModel, index) => {
                         const filterKeys = Object.keys(block.filters).filter(key => key !== "cols_to_process");
+                        const blockColor = selectedColors[block.id] || COLOR_PALETTE[index % COLOR_PALETTE.length];
+                        const blockOpacity = selectedOpacity[block.id] || 100; // Default opacity to 100 if not set
+                        const rgbaColor = `rgba(${parseInt(blockColor.slice(1, 3), 16)}, 
+                                               ${parseInt(blockColor.slice(3, 5), 16)}, 
+                                               ${parseInt(blockColor.slice(5, 7), 16)}, 
+                                               ${blockOpacity / 100})`;
+    
                         return (
                             <StyledBlockLineSelectorContainer
                                 key={block.id}
-                                $borderColor={COLOR_PALETTE[index % COLOR_PALETTE.length]}
+                                $borderColor={blockColor}
+                                style={{ backgroundColor: rgbaColor }}
+                                onClick={() => handleBlockSelect(block.id)}
                             >
-                                <StyledBlockIdLabel>{block.name}</StyledBlockIdLabel>
+                                <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', marginTop: '5px' }}>
+                                    <div>
+                                        <StyledBlockIdLabel>{block.name}</StyledBlockIdLabel>
+                                    </div>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+                                        <StyledLabel style={{ color: 'white', marginRight: '5px' }} />
+                                        <input
+                                            type="color"
+                                            value={blockColor}
+                                            onChange={(e) => handleColorChange(block.id, e.target.value)} // Handle color change
+                                            style={{
+                                                width: '20px',
+                                                height: '20px',
+                                                border: 'none',
+                                                padding: 0,
+                                                background: 'none',
+                                                cursor: 'pointer',
+                                            }}
+                                        />
+                                        <input
+                                            type="range"
+                                            min="0"
+                                            max="100"
+                                            value={blockOpacity}
+                                            onChange={(e) => handleOpacityChange(block.id, e.target.value)}
+                                            style={{
+                                                width: '100px',
+                                                cursor: 'pointer',
+                                            }}
+                                        />
+                                        <StyledLabel style={{ color: 'white', fontSize: '0.75rem' }}>
+                                            {blockOpacity}%
+                                        </StyledLabel>
+                                    </div>
+                                </div>
                                 <StyledBlockContent>{block.type}</StyledBlockContent>
                                 <StyledCheckboxContainer>
                                     {block.cols_to_process ? (
@@ -129,15 +199,14 @@ export function CompareCharts() {
                                                 ))}
                                             </div>
                                             <hr style={{ margin: '0px 0', border: '1px solid #ccc' }} />
-    
-                                            <div style={{alignItems: 'center' }}>
+                                            <div style={{ alignItems: 'center' }}>
                                                 <StyledBlockSubHead>Filters</StyledBlockSubHead>
                                                 {filterKeys.length > 0 ? (
-                                                    <ul style={{ margin: 0, padding: '0 0 0 20px', textAlign: 'left', color: '#73B5B4'}}> {/* Increase padding to ensure bullets are indented */}
+                                                    <ul style={{ margin: 0, padding: '0 0 0 20px', textAlign: 'left', color: '#73B5B4' }}>
                                                         {filterKeys.map(filterKey => {
                                                             const filterValue = block[filterKey as keyof BlockModel];
                                                             return (
-                                                                <li key={filterKey} style={{ listStyleType: 'disc', marginBottom: '5px' }}>  {/* Bullet points and spacing */}
+                                                                <li key={filterKey} style={{ listStyleType: 'disc', marginBottom: '5px' }}>
                                                                     <StyledBlockContent>
                                                                         {filterKey}: {JSON.stringify(filterValue)}
                                                                     </StyledBlockContent>
@@ -145,7 +214,7 @@ export function CompareCharts() {
                                                             );
                                                         })}
                                                     </ul>
-                                                ): (
+                                                ) : (
                                                     <StyledBlockContent>--- No filters applied ---</StyledBlockContent>
                                                 )}
                                             </div>
@@ -162,8 +231,9 @@ export function CompareCharts() {
                 <div>No available data blocks to compare at this time.</div>
             )}
     
-            {Object.keys(selectedFilters).length > 0 && <CompareLineChart selectedFilters={selectedFilters} />}
+            {Object.keys(selectedFilters).length > 0 && (
+                <CompareLineChart selectedFilters={selectedFilters} selectedColors={selectedColors} selectedOpacity={selectedOpacity}/>
+            )}
         </StyledBlocksContainer>
     );
-  
 }
