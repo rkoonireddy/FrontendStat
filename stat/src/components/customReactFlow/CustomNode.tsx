@@ -6,7 +6,7 @@ import {
     blockConnectedToPipeline,
     getActiveBlockId, getBlockById,
     getPipelineModel,
-    setActiveBlockId
+    setActiveBlockId, setLoading
 } from "../../redux/pipelineSlice";
 import {ReactComponent as TrashSVG} from "../../assets/trash3-fill.svg";
 import {ReactComponent as InfoSVG} from "../../assets/info-circle-fill.svg"
@@ -178,6 +178,7 @@ const CustomNode = ({data}: {data: CustomNodeProps}) => {
         <StyledNodeContainer $active={data.id === activeNodeId} onClick={() => dispatch(setActiveBlockId(data.id))}>
             <Handle type="target" position={Position.Top}/>
             <StyledDeleteButton title={"Delete Block"} onClick={(e) => {
+                dispatch(setLoading(true));
                 dispatch(deleteBlockFromPipeline({pipelineId: pipeline.id, blockId: data.id}));
                 e.stopPropagation();
             }}>

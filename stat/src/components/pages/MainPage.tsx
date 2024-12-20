@@ -5,13 +5,14 @@ import {ReactComponent as PlusSVG} from "../../assets/plus-square.svg";
 import {useNavigate} from "react-router-dom";
 import {StepsSection} from "../sections/StepsSection";
 import {VizSection} from "../sections/VizSection";
-import {getActiveBlock, getLoading} from "../../redux/pipelineSlice";
-import {useAppSelector} from "../../hooks";
-import React, {useState} from "react";
+import {getActiveBlock, getAllNodes, getLoading} from "../../redux/pipelineSlice";
+import {useAppDispatch, useAppSelector} from "../../hooks";
+import React, {useEffect, useRef, useState} from "react";
 import {Loading} from "../pageElements/Loading";
 import {DeletePipelinePopup} from "../pageElements/popups/DeletePipelinePopup";
 import {BlockPopup} from "../pageElements/popups/BlockPopup";
 import {ErrorPopup} from "../pageElements/popups/ErrorPopup";
+import {saveLayout} from "../../util/blockUtil";
 
 
 const StyledMainPage = styled.div`
@@ -42,13 +43,23 @@ function MainPage() {
     const navigate = useNavigate();
     const [showCreateBlockPopup, setShowCreateBlockPopup] = useState(false);
     const activeBlock = useAppSelector(getActiveBlock);
+    const dispatch = useAppDispatch();
+    const nodes = useAppSelector(getAllNodes);
+    const nodesRef = useRef(nodes);
+
+    useEffect(() => {
+        nodesRef.current = nodes;
+    }, [nodes]);
 
     function showPopup() {
-        setShowCreateBlockPopup(!showCreateBlockPopup)
+        setShowCreateBlockPopup(!showCreateBlockPopup);
     }
 
     function closePopup() {
         setShowCreateBlockPopup(false);
+        setTimeout(() => {
+            saveLayout(nodesRef.current, dispatch);
+        }, 2000);
     }
 
     return (
