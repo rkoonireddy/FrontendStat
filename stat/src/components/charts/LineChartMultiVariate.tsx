@@ -104,7 +104,7 @@ export function LineChartMultiVariate({ block, dataLoader = false }: LineChartPr
                 .nice();
 
             const xAxis = axisBottom(xScale).ticks(5);
-            const yAxis = axisLeft(yScale).ticks(5);
+            const yAxis = axisLeft(yScale).ticks(2);
 
             chartGroup.append("g")
                 .attr("class", "x-axis")
