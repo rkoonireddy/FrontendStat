@@ -31,6 +31,8 @@ import {
     updatePipeline
 } from "../../redux/pipelineThunk";
 import {fetchPipeline} from "../../service/pipelineService";
+import {ReactComponent as ExamplesSVG} from "../../assets/examples.svg";
+import { HelpPopup } from "./HelpPage";
 
 const StyledHomeContainer = styled.div`
     width: 100vw;
@@ -267,12 +269,33 @@ export default function HomePage() {
         setIsFilePreviewOpen(false);
     }
 
+    const [isHelpOpen, setIsHelpOpen] = useState(false);
+
+    const toggleHelpPopup = () => {
+      setIsHelpOpen(!isHelpOpen);
+    };
+
     return (
         <StyledHomeContainer>
             {loading && <Loading/>}
             <StyledHeader>
-                <img src={logoNoBg} alt="Logo"/>
+                <img src={logoNoBg} alt="Logo" style={{ width: "1000px", height: "400px"}}/>
             </StyledHeader>
+            <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+            <ExamplesSVG
+                    onClick={toggleHelpPopup}
+                    title="Help and Examples"
+                    style={{
+                        width: "30px",
+                        height: "30px",
+                        fill: "#73B5B4",
+                        cursor: "pointer",
+                    }}
+                />
+            </div>
+
+            <HelpPopup isOpen={isHelpOpen} onClose={toggleHelpPopup} />
+
             <ErrorPopup/>
             <StyledHomeContentContainer>
 

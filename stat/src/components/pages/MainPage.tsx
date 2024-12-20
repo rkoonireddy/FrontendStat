@@ -12,6 +12,7 @@ import {Loading} from "../pageElements/Loading";
 import {DeletePipelinePopup} from "../pageElements/popups/DeletePipelinePopup";
 import {BlockPopup} from "../pageElements/popups/BlockPopup";
 import {ErrorPopup} from "../pageElements/popups/ErrorPopup";
+import { HelpPopup } from "./HelpPage";
 
 
 const StyledMainPage = styled.div`
@@ -51,6 +52,12 @@ function MainPage() {
         setShowCreateBlockPopup(false);
     }
 
+    const [isHelpOpen, setIsHelpOpen] = useState(false);
+
+    const toggleHelpPopup = () => {
+        setIsHelpOpen(!isHelpOpen);
+    };
+
     return (
         <StyledMainPage>
             {loading && <Loading/>}
@@ -64,7 +71,9 @@ function MainPage() {
                 <PlusSVG title={"Create a new block"}
                          style={{width: "50px", height: "50px", margin: "10px", fill: "#73B5B4"}}
                          onClick={() => showPopup()}/>
-                <ExamplesSVG title={"Examples"} style={{width: "50px", height: "50px", margin: "10px", fill: "#73B5B4"}}/>
+                <ExamplesSVG onClick={toggleHelpPopup} title={"Examples"} style={{width: "50px", height: "50px", margin: "10px", fill: "#73B5B4"}}/>
+                <HelpPopup isOpen={isHelpOpen} onClose={toggleHelpPopup} />
+                
             </StyledSideBar>
             <StepsSection/>
             {activeBlock && <VizSection block={activeBlock}/>}
