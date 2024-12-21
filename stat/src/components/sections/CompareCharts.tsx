@@ -122,8 +122,8 @@ export function CompareCharts() {
 
     const filteredBlocks = blocks.filter((block) => block.type !== "CSVStringLoader");
     
-    console.log(selectedColors);
-    console.log(selectedOpacity);
+    // console.log(selectedColors);
+    // console.log(selectedOpacity);
            
     return (
         <StyledBlocksContainer>

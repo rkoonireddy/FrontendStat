@@ -12,8 +12,7 @@ import {Loading} from "../pageElements/Loading";
 import {DeletePipelinePopup} from "../pageElements/popups/DeletePipelinePopup";
 import {BlockPopup} from "../pageElements/popups/BlockPopup";
 import {ErrorPopup} from "../pageElements/popups/ErrorPopup";
-import { HelpPopup } from "./HelpPage";
-
+import MarkdownViewer from "../helpMarkdown/convertMarkdownToHtml";
 
 const StyledMainPage = styled.div`
     position: relative;
@@ -37,7 +36,6 @@ const StyledSideBar = styled.div`
     }
 `;
 
-
 function MainPage() {
     const loading = useAppSelector(getLoading);
     const navigate = useNavigate();
@@ -54,9 +52,13 @@ function MainPage() {
 
     const [isHelpOpen, setIsHelpOpen] = useState(false);
 
-    const toggleHelpPopup = () => {
+    const handleHelpClick = () => {
         setIsHelpOpen(!isHelpOpen);
-    };
+      };
+    
+    const closeHelpPopup = () => {
+        setIsHelpOpen(false);
+      };
 
     return (
         <StyledMainPage>
@@ -71,9 +73,8 @@ function MainPage() {
                 <PlusSVG title={"Create a new block"}
                          style={{width: "50px", height: "50px", margin: "10px", fill: "#73B5B4"}}
                          onClick={() => showPopup()}/>
-                <ExamplesSVG onClick={toggleHelpPopup} title={"Examples"} style={{width: "50px", height: "50px", margin: "10px", fill: "#73B5B4"}}/>
-                <HelpPopup isOpen={isHelpOpen} onClose={toggleHelpPopup} />
-                
+                <ExamplesSVG onClick={handleHelpClick} title={"Examples"} style={{width: "50px", height: "50px", margin: "10px", fill: "#73B5B4"}}/>
+                {isHelpOpen && <MarkdownViewer isOpen={isHelpOpen} onClose={closeHelpPopup} />}                
             </StyledSideBar>
             <StepsSection/>
             {activeBlock && <VizSection block={activeBlock}/>}
