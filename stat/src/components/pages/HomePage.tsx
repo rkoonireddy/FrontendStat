@@ -20,7 +20,6 @@ import {
 import {StyledInput, StyledUnit} from "../controls/InputControl";
 import {PreviewTable} from "../tables/PreviewTable";
 import {checkFileValidity, preProcessCSVData} from "../../util/fileUtil";
-import {unwrapResult} from '@reduxjs/toolkit';
 import {Popup} from "../pageElements/popups/Popup";
 import {PrimaryButton} from "../pageElements/buttons/PrimaryButton";
 import {ErrorPopup} from "../pageElements/popups/ErrorPopup";
@@ -31,8 +30,8 @@ import {
     updatePipeline
 } from "../../redux/pipelineThunk";
 import {fetchPipeline} from "../../service/pipelineService";
-import {ReactComponent as ExamplesSVG} from "../../assets/examples.svg";
-import { HelpPopup } from "./HelpPage";
+import {ReactComponent as ExamplesSVG} from "../../assets/question-square.svg";
+import { HelpPopup } from "../pageElements/popups/HelpPopup";
 
 const StyledHomeContainer = styled.div`
     width: 100vw;

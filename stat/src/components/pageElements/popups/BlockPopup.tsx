@@ -16,12 +16,14 @@ const StyledCreateBlocksContainer = styled.div`
     align-items: center;
     width: 100%;
     height: 100%;
+    border-radius: inherit;
 `;
 
 const StyledBlockTypesContainer = styled.div`
     width: 200px;
     height: 100%;
     overflow-y: scroll;
+    border-radius: inherit;
 
     ::-webkit-scrollbar {
         display: none;
@@ -42,7 +44,8 @@ const StyledBlockTypeSelector = styled.div<{ $selected?: boolean }>`
     border-radius: 10px;
     color: ${props => props.$selected ? '#ffffff' : '#ffffffAA'};
     border: ${props => props.$selected ? "1px solid #ffffffAA" : ""};
-
+    margin: 0 0 5px 0;
+    
     &:hover {
         cursor: pointer;
         background: linear-gradient(to bottom right, #3D3D3DAA 0%, #000000AA 100%);

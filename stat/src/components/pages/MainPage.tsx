@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import {ReactComponent as STATIconSVG} from "../../assets/icon.svg";
-import {ReactComponent as ExamplesSVG} from "../../assets/examples.svg";
+import {ReactComponent as ExamplesSVG} from "../../assets/question-square.svg";
 import {ReactComponent as PlusSVG} from "../../assets/plus-square.svg";
 import {useNavigate} from "react-router-dom";
 import {StepsSection} from "../sections/StepsSection";
@@ -13,6 +13,7 @@ import {DeletePipelinePopup} from "../pageElements/popups/DeletePipelinePopup";
 import {BlockPopup} from "../pageElements/popups/BlockPopup";
 import {ErrorPopup} from "../pageElements/popups/ErrorPopup";
 import {saveLayout} from "../../util/blockUtil";
+import {HelpPopup} from "../pageElements/popups/HelpPopup";
 
 
 const StyledMainPage = styled.div`
