@@ -2,7 +2,6 @@ import {BlockModel} from "../types/responseType";
 import {DataDocument} from "../types/dataType";
 import {CompleteNode} from "../types/reactFlowCustomTypes";
 import {setReactFlowNodes} from "../redux/pipelineSlice";
-import {useAppDispatch} from "../hooks";
 import {AppDispatch} from "../store";
 
 export function createNodesFromBlocks(

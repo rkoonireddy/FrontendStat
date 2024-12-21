@@ -7,7 +7,7 @@ import {
     addEdge, useNodesState, useEdgesState, ReactFlowProvider, Panel, Edge, useReactFlow
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import React, {useCallback, useEffect} from "react";
+import React, {useCallback, useEffect, useRef} from "react";
 import {useAppDispatch, useAppSelector} from "../../hooks";
 import {
     blockConnectedToPipeline,
@@ -133,6 +133,12 @@ function Flow() {
     const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
     const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
+    const nodesRef = useRef(nodes);
+
+    useEffect(() => {
+        nodesRef.current = nodes;
+    }, [nodes]);
+
     useEffect(() => {
         const ns = createNodesFromBlocks(blocks, reactFlowNodes);
         setNodes(ns);
@@ -176,7 +182,7 @@ function Flow() {
                         })
                         .then(() => {
                             return addEdge(edge, eds);
-                        }).then(() => saveLayout(nodes, dispatch))
+                        }).then(() => saveLayout(nodesRef.current, dispatch))
                         .catch((err) => {
                             return eds;
                         })
