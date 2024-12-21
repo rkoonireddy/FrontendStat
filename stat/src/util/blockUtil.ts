@@ -1,6 +1,9 @@
 import {BlockModel} from "../types/responseType";
 import {DataDocument} from "../types/dataType";
 import {CompleteNode} from "../types/reactFlowCustomTypes";
+import {setReactFlowNodes} from "../redux/pipelineSlice";
+import {useAppDispatch} from "../hooks";
+import {AppDispatch} from "../store";
 
 export function createNodesFromBlocks(
     blocks: BlockModel[],
@@ -52,4 +55,12 @@ export function convertToDataDocument(data: any[]): DataDocument[] {
         });
         return rowObject;
     });
+}
+
+export function saveLayout(nodes: CompleteNode[], dispatch: AppDispatch) {
+    const reactFlowNodes = nodes.map(node => ({
+        nodeId: node.id,
+        position: { x: node.position.x, y: node.position.y }
+    }));
+    dispatch(setReactFlowNodes(reactFlowNodes));
 }

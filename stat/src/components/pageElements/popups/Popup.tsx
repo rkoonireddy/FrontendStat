@@ -19,7 +19,7 @@ const StyledPopup = styled.div<{ $large: boolean, $noPadding: boolean }>`
     border-radius: 15px;
     box-shadow: 5px 5px 5px 0 rgba(147, 147, 147, 0.75);
     padding: ${props => props.$noPadding ? '0' : '20px'};
-
+    border: 1px solid #ccc;
     & svg {
         fill: #ff0000;
         position: absolute;

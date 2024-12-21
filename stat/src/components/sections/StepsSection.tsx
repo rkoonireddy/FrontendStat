@@ -32,7 +32,7 @@ import {ReactComponent as AlignSVG} from "../../assets/align.svg";
 import {ReactComponent as ZoomInSVG} from "../../assets/zoom-in.svg";
 import {ReactComponent as ZoomOutSVG} from "../../assets/zoom-out.svg";
 import {ReactComponent as FitToViewSVG} from "../../assets/fit-to-screen.svg";
-import {createNodesFromBlocks} from "../../util/blockUtil";
+import {createNodesFromBlocks, saveLayout} from "../../util/blockUtil";
 import {connectTwoBlocks, executePipeline, fetchExportPipeline, snoopPipelineColumns} from "../../redux/pipelineThunk";
 import {CompleteNode} from "../../types/reactFlowCustomTypes";
 
@@ -71,7 +71,7 @@ const StyledActionButton = styled.div<{ $position?: string }>`
     & svg {
         fill: #ffffff;
     }
-    
+
     & svg.custom-line {
         stroke: #ffffff;
     }
@@ -136,7 +136,7 @@ function Flow() {
     useEffect(() => {
         const ns = createNodesFromBlocks(blocks, reactFlowNodes);
         setNodes(ns);
-    }, [blocks, edges])
+    }, [blocks])
 
     useEffect(() => {
         const es = createEdges(pipeline);
@@ -153,7 +153,7 @@ function Flow() {
 
             setTimeout(() => {
                 fitView({duration: 500});
-                saveLayout();
+                saveLayout([...layouted.nodes], dispatch);
             }, 100);
         },
         [nodes, edges],
@@ -176,7 +176,7 @@ function Flow() {
                         })
                         .then(() => {
                             return addEdge(edge, eds);
-                        }).then(() => saveLayout())
+                        }).then(() => saveLayout(nodes, dispatch))
                         .catch((err) => {
                             return eds;
                         })
@@ -188,19 +188,8 @@ function Flow() {
     )
 
     const onNodeDragStop = useCallback(() => {
-        saveLayout();
+        saveLayout(nodes, dispatch);
     }, [nodes]);
-
-    function saveLayout() {
-        const reactFlowNodes: {
-            nodeId: string;
-            position: { x: number; y: number }
-        }[] = nodes.map(node => ({
-            nodeId: node.id,
-            position: {x: node.position.x, y: node.position.y}
-        }));
-        dispatch(setReactFlowNodes(reactFlowNodes));
-    }
 
 
     return (
@@ -219,18 +208,18 @@ function Flow() {
             {/*<Controls position="top-left"/>*/}
             <Panel position="top-right">
                 <StyledToolbar $width={"200px"}>
-                <StyledActionButton title={"Align Blocks"} onClick={() => onLayout("TB")}>
-                    <AlignSVG style={{width: "35px", height: "35px"}}/>
-                </StyledActionButton>
-                <StyledActionButton title={"Fit Pipeline into view"} onClick={() => fitView()}>
-                    <FitToViewSVG style={{width: "35px", height: "35px"}}/>
-                </StyledActionButton>
-                <StyledActionButton title={"Zoom in"} onClick={() => zoomIn()}>
-                    <ZoomInSVG style={{width: "35px", height: "35px"}}/>
-                </StyledActionButton>
-                <StyledActionButton title={"Zoom out"} onClick={() => zoomOut()}>
-                    <ZoomOutSVG style={{width: "35px", height: "35px"}}/>
-                </StyledActionButton>
+                    <StyledActionButton title={"Align Blocks"} onClick={() => onLayout("TB")}>
+                        <AlignSVG style={{width: "35px", height: "35px"}}/>
+                    </StyledActionButton>
+                    <StyledActionButton title={"Fit Pipeline into view"} onClick={() => fitView()}>
+                        <FitToViewSVG style={{width: "35px", height: "35px"}}/>
+                    </StyledActionButton>
+                    <StyledActionButton title={"Zoom in"} onClick={() => zoomIn()}>
+                        <ZoomInSVG style={{width: "35px", height: "35px"}}/>
+                    </StyledActionButton>
+                    <StyledActionButton title={"Zoom out"} onClick={() => zoomOut()}>
+                        <ZoomOutSVG style={{width: "35px", height: "35px"}}/>
+                    </StyledActionButton>
                 </StyledToolbar>
             </Panel>
             <Panel position={"bottom-right"}>
@@ -253,7 +242,7 @@ function Flow() {
                             <ExportSVG style={{width: "35px", height: "35px"}}/>
                         </StyledActionButton> : <div style={{width: "35px", height: "35px"}}/>}
                     <StyledActionButton title={"Run Pipeline"} onClick={(e) => {
-                        saveLayout();
+                        saveLayout(nodes, dispatch);
                         dispatch(setLoading(true));
 
                         dispatch(executePipeline({
