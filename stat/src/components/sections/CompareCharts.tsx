@@ -133,7 +133,7 @@ export function CompareCharts() {
                     {filteredBlocks.map((block: BlockModel, index) => {
                         const filterKeys = Object.keys(block.filters).filter(key => key !== "cols_to_process");
                         const blockColor = selectedColors[block.id] || COLOR_PALETTE[index % COLOR_PALETTE.length];
-                        const blockOpacity = selectedOpacity[block.id] || 100; // Default opacity to 100 if not set
+                        const blockOpacity = selectedOpacity[block.id] ?? 100; // Default opacity to 100 if not set. Be careful, 0 is a valid value.
                         const rgbaColor = `rgba(${parseInt(blockColor.slice(1, 3), 16)}, 
                                                ${parseInt(blockColor.slice(3, 5), 16)}, 
                                                ${parseInt(blockColor.slice(5, 7), 16)}, 

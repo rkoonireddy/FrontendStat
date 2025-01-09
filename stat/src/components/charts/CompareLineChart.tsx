@@ -121,7 +121,7 @@ export function CompareLineChart({selectedFilters, selectedColors, selectedOpaci
                 const lineData = data.map(row => row[column]);
                 const lineIndex = blockIndex * columns.length + colIndex;
     
-                const blockOpacity = selectedOpacity[blockId] || 100;
+                const blockOpacity = selectedOpacity[blockId] ?? 100; // Make sure 0 is treated as valid value
     
                 svg.append("path")
                     .datum(lineData)
