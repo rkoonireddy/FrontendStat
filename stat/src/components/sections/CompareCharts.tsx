@@ -121,10 +121,7 @@ export function CompareCharts() {
     };
 
     const filteredBlocks = blocks.filter((block) => block.type !== "CSVStringLoader");
-    
-    // console.log(selectedColors);
-    // console.log(selectedOpacity);
-           
+         
     return (
         <StyledBlocksContainer>
             <StyledBlockIdLabel>Choose features on different blocks to compare</StyledBlockIdLabel>
@@ -138,6 +135,12 @@ export function CompareCharts() {
                                                ${parseInt(blockColor.slice(3, 5), 16)}, 
                                                ${parseInt(blockColor.slice(5, 7), 16)}, 
                                                ${blockOpacity / 100})`;
+                        
+                        // Extract all columns from the block output and the subset cols_to_process
+                        // Discard the first entry of blockAllColumns, which is the index column
+                        const blockAllColumns: string[] = block.output?.Dataframe?.data ? Object.values(block.output.Dataframe.data).map(obj => obj.name).slice(1) : [];
+                        const blockColsToProcess: string[] = (block.cols_to_process || []) as string[];
+                        const blockNotProcess = blockAllColumns.filter(col => !blockColsToProcess.includes(col));
     
                         return (
                             <StyledBlockLineSelectorContainer
@@ -187,7 +190,18 @@ export function CompareCharts() {
                                         <>
                                             <div>
                                                 <StyledBlockSubHead>Features</StyledBlockSubHead>
-                                                {(Object.values(block.cols_to_process) as string[]).map(featureName => (
+                                                {(Object.values(blockColsToProcess) as string[]).map(featureName => (
+                                                    <div key={featureName} style={{ display: 'flex', alignItems: 'center' }}>
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={selectedFilters[block.id]?.includes(featureName) || false}
+                                                            onChange={() => handleCheckboxChange(block.id, featureName)}
+                                                        />
+                                                        <StyledLabel style={{ color: 'white' }}>{featureName}</StyledLabel>
+                                                    </div>
+                                                ))}
+                                                <hr style={{ margin: '5px 0', border: '1px solid #666' }} />
+                                                {(Object.values(blockNotProcess) as string[]).map(featureName => (
                                                     <div key={featureName} style={{ display: 'flex', alignItems: 'center' }}>
                                                         <input
                                                             type="checkbox"
