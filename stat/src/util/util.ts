@@ -51,7 +51,7 @@ export function formatNumber (value: any) {
     // Check if value is a number or a string representation of a number
     if (typeof value === 'number' || (typeof value === 'string' && !isNaN(Number(value)))) {
         // Parse the number and convert to locale string
-        return Number(value).toLocaleString('en-US', { maximumFractionDigits: 10 });
+        return Number(value).toLocaleString('en-US', { maximumFractionDigits: 5 });
     }
     return value;
 }
@@ -77,6 +77,11 @@ export function getRange(data: (string | null)[]): number {
     return Math.max(...numericData) - Math.min(...numericData);
 }
 
+export function getMinMax(data: (string | null)[]): [number, number] {
+    const numericData = data.filter((value): value is string => value !== null).map(Number);
+    return [Math.min(...numericData), Math.max(...numericData)];
+}
+
 export function getVariance(data: (string | null)[]): number {
     const mean = getMean(data);
     const numericData = data.filter((value): value is string => value !== null).map(Number);
@@ -95,4 +100,13 @@ export function getQuartiles(data: (string | null)[]): number[] {
         quantile(sortedData, 0.5) ?? 0,
         quantile(sortedData, 0.75) ?? 0
     ];
+}
+
+export function getConfidenceInterval(data: (string | null)[]): [number, number] {
+    const numericData = data.filter((value): value is string => value !== null).map(Number);
+    const mean = getMean(data);
+    const standardError = getStandardDeviation(data) / Math.sqrt(numericData.length);
+    const criticalValue = 1.96; // 95% confidence
+    const marginOfError = criticalValue * standardError;
+    return [mean - marginOfError, mean + marginOfError];
 }
