@@ -3,7 +3,6 @@ import React, {useEffect, useRef, useState} from 'react';
 import {getData, getRawDataColumns} from "../../redux/dataSlice";
 import {useAppSelector} from "../../hooks";
 import {getQuartiles, getConfidenceInterval} from "../../util/util";
-import {StyledTableContainer} from "./CSVViewer";
 import styled from "styled-components";
 
 const StyledViolinPlotsContainer = styled.div<{ margin: number }>`

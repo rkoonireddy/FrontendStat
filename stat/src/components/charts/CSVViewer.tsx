@@ -13,7 +13,6 @@ import { useAppDispatch, useAppSelector } from "../../hooks";
 import { updateCSVLoaderBlock } from "../../service/blockService";
 import { fetchFullBlock, getFrequency } from "../../redux/pipelineSlice";
 import { formatNumber } from "../../util/util";
-import { index } from "d3";
 
 export const StyledTableContainer = styled.div`
     height: fit-content;

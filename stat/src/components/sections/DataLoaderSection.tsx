@@ -1,7 +1,6 @@
 import styled from "styled-components";
 import {LineChart} from "../charts/LineChart";
 import CSVViewer from "../charts/CSVViewer";
-import BoxPlot from "../charts/BoxPlot";
 import ViolinPlot from "../charts/ViolinPlot";
 import DescriptiveStatistics from "../charts/DescriptiveStatistics";
 import {BlockModel} from "../../types/responseType";
@@ -22,7 +21,6 @@ const StyledSelectorContainer = styled.div<{ $height: number }>`
     height: ${(props) => props.$height + '%'};
     overflow: auto;
     flex-grow: 1;
-    margin: auto 0 15px 0;
 `;
 
 const StyledStackedChartContainer = styled.div<{ $height: number }>`
@@ -42,15 +40,6 @@ const StyledToggleContainer = styled.div<{ $height: number }>`
   position: absolute;
   top: 0;
 `;
-
-/*const StyledToggleContainer = styled.div<{ $height: number }>`
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: ${(props) => props.$height + '%'};
-    flew-wrap: nowrap;
-`;*/
 
 
 const StyledDataViewContainer = styled.div<{ $height: number }>`
@@ -72,7 +61,7 @@ const StyledMainElementContainer = styled.div`
 `;
 
 const StyledStatisticsContainer = styled.div`
-    overflow: none;
+    overflow: hidden;
     min-width: fit-content;
 `;
 
