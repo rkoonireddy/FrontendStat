@@ -1,7 +1,7 @@
 import {useState} from "react";
 import {Knob} from "primereact/knob";
-import {MinusButton} from "../buttons/MinusButton";
-import {PlusButton} from "../buttons/PlusButton";
+import {MinusButton} from "../pageElements/buttons/MinusButton";
+import {PlusButton} from "../pageElements/buttons/PlusButton";
 import styled from "styled-components";
 import {ControlContainer} from "./ControlContainer";
 

@@ -1,18 +1,43 @@
 import {BlockModel} from "../types/responseType";
 import {DataDocument} from "../types/dataType";
+import {CompleteNode} from "../types/reactFlowCustomTypes";
+import {setReactFlowNodes} from "../redux/pipelineSlice";
+import {AppDispatch} from "../store";
 
-export function createNodesFromBlocks(blocks: BlockModel[]) {
+export function createNodesFromBlocks(
+    blocks: BlockModel[],
+    reactFlowNodes: {
+        nodeId: string,
+        position: {
+            x: number,
+            y: number
+        }
+    }[]): CompleteNode[] {
     let y = -100;
-    return blocks.map((block: any) => {
-        y += 100;
+    let x = 225;
+    return blocks.map((block: BlockModel) => {
+        const reactFlowNode = reactFlowNodes.find(node => node.nodeId === block.id);
+        if (reactFlowNode === undefined) {
+            y += 100;
+        } else {
+            y = reactFlowNode.position.y;
+            x = reactFlowNode.position.x;
+        }
         return {
             id: block.id,
             type: "customNode",
             description: block.descr,
             tag: block.tag ? block.tag : "General",
-            data: { id: block.id, label: block.name, type: block.type, description: block.descr, tag: block.tag, blockId: block.id},
-            position: { x: 225, y: y },
-            ...(y === 0 && { type: "customStartNode" })
+            data: {
+                id: block.id,
+                label: block.name,
+                type: block.type,
+                description: block.descr,
+                tag: block.tag ? block.tag : "General",
+                blockId: block.id
+            },
+            position: {x: x, y: y},
+            ...(y === 0 && {type: "customStartNode"})
         };
     });
 }
@@ -29,4 +54,12 @@ export function convertToDataDocument(data: any[]): DataDocument[] {
         });
         return rowObject;
     });
+}
+
+export function saveLayout(nodes: CompleteNode[], dispatch: AppDispatch) {
+    const reactFlowNodes = nodes.map(node => ({
+        nodeId: node.id,
+        position: { x: node.position.x, y: node.position.y }
+    }));
+    dispatch(setReactFlowNodes(reactFlowNodes));
 }

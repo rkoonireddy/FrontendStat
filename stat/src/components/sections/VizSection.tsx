@@ -7,7 +7,6 @@ import {ReactComponent as UpSVG} from "../../assets/caret-up-fill.svg";
 import {PipelineHistorySection} from "./PipelineHistorySection";
 import {DataLoaderSection} from "./DataLoaderSection";
 import {LineChart} from "../charts/LineChart";
-import CSVViewer from "../charts/CSVViewer";
 import {useAppDispatch} from "../../hooks";
 import {
     setBlockControlsExpanded,
@@ -15,7 +14,7 @@ import {
 } from "../../redux/pipelineSlice";
 import {BlockModel} from "../../types/responseType";
 import {CompareCharts} from "./CompareCharts";
-import {ToggleButton} from "../pageElements/ToggleButton";
+import {ToggleButton} from "../pageElements/buttons/ToggleButton";
 
 const StyledVizSectionContainer = styled.div`
     position: relative;
@@ -56,32 +55,6 @@ const StyledShowHideControls = styled.div<{ $marginTop?: string; $isExpanded: bo
     &:hover {
         cursor: pointer;
         opacity: 1;
-    }
-`;
-
-const StyledToggleButton = styled.div`
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 10px auto;
-    width: 200px;
-    cursor: pointer;
-    border: 1px solid #73b5b4;
-    border-radius: 15px;
-`;
-
-const StyledToggleOption = styled.div<{ $isSelected: boolean }>`
-    flex: 1;
-    text-align: center;
-    padding: 4px 10px;
-    color: ${(props) => (props.$isSelected ? "#73B5B4" : "#ffffff")};
-    background: ${props => props.$isSelected ? '#eeede9' : 'linear-gradient(to bottom right, #3D3D3D 0%, #000000 100%)'};
-    font-weight: ${(props) => (props.$isSelected ? "bold" : "normal")};
-    transition: background-color 0.3s, color 0.3s;
-    border-radius: 15px;
-
-    &:hover {
-        background-color: ${(props) => (props.$isSelected ? "#d0d0d0" : '#73b5b4')};
     }
 `;
 

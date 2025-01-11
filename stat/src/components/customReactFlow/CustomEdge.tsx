@@ -2,7 +2,8 @@ import {BaseEdge, getBezierPath, EdgeProps, EdgeLabelRenderer, useReactFlow} fro
 import {ReactComponent as TrashSVG} from "../../assets/trash3-fill.svg";
 import styled from "styled-components";
 import {useAppDispatch, useAppSelector} from "../../hooks";
-import {deleteEdgeFromPipeline, getPipelineModel} from "../../redux/pipelineSlice";
+import {getPipelineModel} from "../../redux/pipelineSlice";
+import {deleteEdgeFromPipeline} from "../../redux/pipelineThunk";
 
 const StyledBaseEdge = styled(BaseEdge)`
   stroke-width: 1;
@@ -24,12 +25,13 @@ const StyledDeleteIconContainer = styled.div<{ $transform: string }>`
   & svg {
     width: 7px;
     height: 7px;
-    color: #ff0000;
+    fill: #f0f0f0f0;
     opacity: 0.3;
   }
 
   & svg:hover {
     opacity: 0.8;
+      fill: #ff0000;
   }
 `;
 

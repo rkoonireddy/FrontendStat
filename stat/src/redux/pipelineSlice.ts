@@ -1,20 +1,18 @@
 import {PipelineModel} from "../types/dataType";
-import {createAsyncThunk, createSelector, createSlice, PayloadAction} from "@reduxjs/toolkit";
+import {createSelector, createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {RootState} from "../store";
-import {BlockModel, CreateBlockResponse} from "../types/responseType";
-import {createPipeline, exportPipeline, fetchPipeline, runPipeline, snoopPipeline} from "../service/pipelineService";
-import {
-    addBlockToPipeline,
-    createBlock,
-    deleteBlock,
-    getFullBlock,
-    runBlock,
-    updateBlock
-} from "../service/blockService";
+import {BlockModel} from "../types/responseType";
 import {createEdges} from "../util/util";
-import {addEdgeToPipeline, deleteEdge} from "../service/edgeService";
 import {downloadPythonScript} from "../util/fileUtil";
 import {createNodesFromBlocks} from "../util/blockUtil";
+import {
+    connectTwoBlocks,
+    createNewBlock,
+    createNewPipeline, deletePipelineThunk,
+    executePipeline, fetchExportPipeline,
+    fetchFullBlock, fetchUpdateBlock, putBlockToPipeline,
+    updatePipeline
+} from "./pipelineThunk";
 
 
 export interface IPipelineState {
@@ -25,11 +23,19 @@ export interface IPipelineState {
     loading: boolean,
     errorStatus: boolean,
     errorMessage: string | null,
+    deletePipelinePopup: boolean,
     controls: {
         [blockId: string]: {
             [controlName: string]: any
         }
-    }
+    },
+    reactFlowNodes: {
+        nodeId: string,
+        position: {
+            x: number,
+            y: number
+        }
+    }[],
 }
 
 const initialPipelineModel: PipelineModel = {
@@ -47,199 +53,12 @@ const initialState: IPipelineState = {
     loading: false,
     errorStatus: false,
     errorMessage: null,
-    controls: {}
+    deletePipelinePopup: false,
+    controls: {},
+    reactFlowNodes: [],
 }
 
-export const createNewPipeline = createAsyncThunk<PipelineModel, void, { rejectValue: string }>(
-    'pipeline/new',
-    async (_, thunkAPI) => {
-        try {
-            return await createPipeline();
-        } catch (error) {
-            return thunkAPI.rejectWithValue('Failed to create pipeline');
-        }
-    }
-);
 
-export const checkPipeline = createAsyncThunk<boolean, string, { rejectValue: string }>(
-    'pipeline/check',
-    async (pipelineId, thunkAPI) => {
-        try {
-            await fetchPipeline({pipelineId});
-            return true;
-        } catch (error) {
-            return thunkAPI.rejectWithValue('Failed to find pipeline in the database');
-        }
-    }
-);
-
-export const createNewBlock = createAsyncThunk<CreateBlockResponse, { blockType: string; blockName: string; }, {
-    rejectValue: string
-}>(
-    'pipeline/newBlock',
-    async ({blockType, blockName}, thunkAPI) => {
-        try {
-            const response = await createBlock({blockType, blockName});
-            const state = thunkAPI.getState() as RootState;
-            const pipeline = state.pipeline.pipelineModel;
-            thunkAPI.dispatch(fetchFullBlock(response.block_id));
-            thunkAPI.dispatch(putBlockToPipeline({blockId: response.block_id, pipelineId: pipeline.id}));
-            return response;
-        } catch (error) {
-            return thunkAPI.rejectWithValue('Failed to create block');
-        }
-    }
-);
-
-export const fetchFullBlock = createAsyncThunk<BlockModel, string, { rejectValue: string }>(
-    'pipeline/fetchFullBlock',
-    async (blockId, thunkAPI) => {
-        try {
-            return await getFullBlock({blockId});
-        } catch (error) {
-            return thunkAPI.rejectWithValue('Failed to fetch full block');
-        }
-    }
-);
-
-export const putBlockToPipeline = createAsyncThunk<PipelineModel, { blockId: string, pipelineId: string }, {
-    rejectValue: string
-}>(
-    'pipeline/putBlockToPipeline',
-    async ({blockId, pipelineId}, thunkAPI) => {
-        try {
-            return await addBlockToPipeline({blockId, pipelineId});
-        } catch (error) {
-            return thunkAPI.rejectWithValue('Failed to fetch full block');
-        }
-    }
-);
-
-export const connectTwoBlocks = createAsyncThunk <PipelineModel, {
-    fromBlockId: string,
-    toBlockId: string,
-    pipelineId: string
-}, { rejectValue: string }>(
-    'pipeline/connectTwoBlocks',
-    async ({fromBlockId, toBlockId, pipelineId}, thunkAPI) => {
-        try {
-            return await addEdgeToPipeline({fromBlockId, toBlockId, pipelineId});
-        } catch (error) {
-            return thunkAPI.rejectWithValue(`Failed to connect two blocks \n ${String(error)}`);
-        }
-    }
-);
-
-export const snoopPipelineColumns = createAsyncThunk<string, { pipelineId: string }, { rejectValue: string }>(
-    'pipeline/snoopPipelineColumns',
-    async ({pipelineId}, thunkAPI) => {
-        try {
-            const response_snoop = await snoopPipeline({pipelineId});
-            thunkAPI.dispatch(updatePipeline({pipelineId}));
-            return response_snoop;
-        } catch (error) {
-            return thunkAPI.rejectWithValue(`Failed to snoop pipeline \n ${String(error)}`);
-        }
-    }
-);
-
-export const updatePipeline = createAsyncThunk<PipelineModel, { pipelineId: string }, { rejectValue: string }>(
-    'pipeline/updatePipeline',
-    async ({pipelineId}, thunkAPI) => {
-        try {
-            const pipeline = await fetchPipeline({pipelineId});
-            const newBlockIds = Object.keys(pipeline.block_dict);
-            const newBlocks = await Promise.all(newBlockIds.map(blockId => thunkAPI.dispatch(fetchFullBlock(blockId)).unwrap()));
-            thunkAPI.dispatch(setBlocks(newBlocks));
-            return pipeline;
-        } catch (error) {
-            return thunkAPI.rejectWithValue(`Failed to update pipeline \n ${String(error)}`);
-        }
-    }
-);
-
-export const executeBlock = createAsyncThunk<string, { blockId: string }, { rejectValue: string }>(
-    'pipeline/runBlock',
-    async ({blockId}, thunkAPI) => {
-        try {
-            const response = await runBlock({blockId});
-            thunkAPI.dispatch(fetchFullBlock(blockId));
-            return response;
-        } catch (error) {
-            return thunkAPI.rejectWithValue(`Failed to run block \n ${String(error)}`);
-        }
-    }
-);
-
-export const executePipeline = createAsyncThunk<string, { pipelineId: string, startingBlockId: string }, {
-    rejectValue: string
-}>(
-    'pipeline/runPipeline',
-    async ({pipelineId, startingBlockId}, thunkAPI) => {
-        try {
-            const response = await runPipeline({pipelineId: pipelineId, startingBlockId: startingBlockId});
-            thunkAPI.dispatch(updatePipeline({pipelineId}));
-            return response;
-        } catch (error) {
-            return thunkAPI.rejectWithValue(`Failed to run pipeline \n ${String(error)}`);
-        }
-    }
-);
-
-export const fetchExportPipeline = createAsyncThunk<string, { pipelineId: string, startBlockId: string, endBlockId: string }, {
-    rejectValue: string
-}>(
-    'pipeline/exportPipeline',
-    async ({pipelineId, startBlockId, endBlockId}, thunkAPI) => {
-        try {
-            return await exportPipeline({pipelineId: pipelineId, startBlockId: startBlockId, endBlockId: endBlockId});
-        } catch (error) {
-            return thunkAPI.rejectWithValue(`Failed to export pipeline \n ${String(error)}`);
-        }
-    }
-);
-
-export const fetchUpdateBlock = createAsyncThunk<string, { pipelineId: string, blockId: string, filters: { [key: string]: string } }, { rejectValue: string }>(
-    'pipeline/updateBlock',
-    async ({pipelineId, blockId, filters}, thunkAPI) => {
-        try {
-            const response = await updateBlock({blockId, filters});
-            thunkAPI.dispatch(updatePipeline({pipelineId}));
-            return response
-        } catch (error) {
-            return thunkAPI.rejectWithValue(`Failed to update and fetch full block \n ${String(error)}`);
-        }
-    }
-);
-
-
-export const deleteBlockFromPipeline = createAsyncThunk<void, { blockId: string, pipelineId: string }, {
-    rejectValue: string
-}>(
-    'pipeline/deleteBlockFromPipeline',
-    async ({blockId, pipelineId}, thunkAPI) => {
-        try {
-            await deleteBlock({blockId, pipelineId});
-            thunkAPI.dispatch(updatePipeline({pipelineId}));
-        } catch (error) {
-            return thunkAPI.rejectWithValue(`Failed to delete block from pipeline \n ${String(error)}`);
-        }
-    }
-);
-
-export const deleteEdgeFromPipeline = createAsyncThunk<void, { edgeId: string, pipelineId: string }, {
-    rejectValue: string
-}>(
-    'pipeline/deleteEdgeFromPipeline',
-    async ({edgeId, pipelineId}, thunkAPI) => {
-        try {
-            await deleteEdge({edgeId, pipelineId});
-            thunkAPI.dispatch(updatePipeline({pipelineId}));
-        } catch (error) {
-            return thunkAPI.rejectWithValue(`Failed to delete edge from pipeline \n ${String(error)}`);
-        }
-    }
-);
 
 
 export const pipelineSlice = createSlice({
@@ -247,10 +66,17 @@ export const pipelineSlice = createSlice({
     initialState,
     reducers: {
         resetPipelineData: (state) => {
+            console.log("resetPipelineData")
             state.pipelineModel = initialPipelineModel;
             state.blocks = [];
             state.activeBlockId = null;
             state.frequency = 60;
+            state.loading = false;
+            state.errorStatus = false;
+            state.errorMessage = null;
+            state.deletePipelinePopup = false;
+            state.controls = {};
+            state.reactFlowNodes = [];
         },
         setBlocks: (state, action: PayloadAction<BlockModel[]>) => {
             state.blocks = action.payload;
@@ -313,19 +139,28 @@ export const pipelineSlice = createSlice({
             });
         },
         updateControl(state, action: PayloadAction<{ blockId: string, filter: { key: string, value: any } }>) {
-            // If the blockId contains the control action.payload.filter.key, update the value, otherwise do nothing
             if (action.payload.blockId in state.controls && action.payload.filter.key in state.controls[action.payload.blockId]) {
-                
-                // console.log("updateControl: using value ", action.payload.filter.value);
-
                 state.controls[action.payload.blockId][action.payload.filter.key] = action.payload.filter.value;
             } else {
                 console.log("updateControl: blockId or filter key not found in state.controls");
             }
         },
+        setError(state, action: PayloadAction<string>) {
+            state.errorStatus = true;
+            state.errorMessage = action.payload;
+        },
         clearError(state) {
             state.errorStatus = false;
             state.errorMessage = null;
+        },
+        showDeletePipelinePopup(state) {
+            state.deletePipelinePopup = true;
+        },
+        clearDeletePipelinePopup(state) {
+            state.deletePipelinePopup = false;
+        },
+        setReactFlowNodes(state, action: PayloadAction<{ nodeId: string, position: { x: number, y: number } }[]>) {
+            state.reactFlowNodes = action.payload;
         }
     },
     extraReducers: builder => {
@@ -339,10 +174,6 @@ export const pipelineSlice = createSlice({
         builder.addCase(createNewPipeline.rejected, (state, action) => {
             console.log(action.error.message);
             state.loading = false;
-            state.errorStatus = true;
-            state.errorMessage = String(action.payload);
-        });
-        builder.addCase(checkPipeline.rejected, (state, action) => {
             state.errorStatus = true;
             state.errorMessage = String(action.payload);
         });
@@ -430,6 +261,15 @@ export const pipelineSlice = createSlice({
             state.errorMessage = String(action.payload);
             state.loading = false;
         });
+        builder.addCase(deletePipelineThunk.pending, (state, action) => {
+            state.loading = true;
+        });
+        builder.addCase(deletePipelineThunk.rejected, (state, action) => {
+            state.errorStatus = true;
+            state.errorMessage = String(action.payload);
+            state.loading = false;
+        });
+        
     }
 })
 
@@ -446,10 +286,16 @@ export const {
     setLoading,
     addControl,
     updateControl,
-    clearError
+    setError,
+    clearError,
+    showDeletePipelinePopup,
+    clearDeletePipelinePopup,
+    setReactFlowNodes
 } = pipelineSlice.actions;
 
 export default pipelineSlice.reducer;
+
+export const getPipelineId = (state: RootState) => state.pipeline.pipelineModel.id;
 
 export const getPipeline = (state: RootState) => state.pipeline.pipelineModel;
 
@@ -458,11 +304,6 @@ export const getFrequency = (state: RootState) => state.pipeline.frequency;
 export const getBlocks = (state: RootState) => state.pipeline.blocks;
 
 export const getBlockById = (state: RootState, blockId: string) => state.pipeline.blocks.find(block => block.id === blockId);
-
-export const getAllNodes = createSelector(
-    [getBlocks],
-    (blocks) => createNodesFromBlocks(blocks)
-);
 
 export const getAllEdges = createSelector(
     [getPipeline],
@@ -488,5 +329,14 @@ export const blockConnectedToPipeline = createSelector(
     [(state: RootState, blockId: string) => blockId, getPipelineModel],
     (blockId, pipeline) => {
         return Object.values(pipeline.edge_dict).some(targets => targets.includes(blockId));
+    }
+);
+
+export const getReactFlowNodes = (state: RootState) => state.pipeline.reactFlowNodes;
+
+export const getAllNodes = createSelector(
+    [getBlocks, getReactFlowNodes],
+    (blocks, reactFlowNodes) => {
+        return createNodesFromBlocks(blocks, reactFlowNodes)
     }
 );

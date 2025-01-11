@@ -5,7 +5,7 @@ import ViolinPlot from "../charts/ViolinPlot";
 import DescriptiveStatistics from "../charts/DescriptiveStatistics";
 import {BlockModel} from "../../types/responseType";
 import {useState} from "react";
-import {ToggleButton} from "../pageElements/ToggleButton";
+import {ToggleButton} from "../pageElements/buttons/ToggleButton";
 
 
 const StyledDataLoaderSectionContainer = styled.div`

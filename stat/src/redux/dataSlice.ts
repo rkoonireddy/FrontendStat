@@ -51,10 +51,13 @@ export const dataSlice = createSlice({
         }) => {
             state.previewData = action.payload;
         },
-        setRawData: (state: { rawData: { [key: string]: string; }[]; }, action: {
+        setRawData: (state, action: {
             payload: { [key: string]: string; }[];
         }) => {
             state.rawData = action.payload;
+            state.filteredData = action.payload;
+            state.filteredDataChanged = true;
+            state.initialized = true;
         },
         setFilteredData: (state: {
             filteredData: { [key: string]: string; }[],

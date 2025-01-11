@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import {ReactComponent as PlusSVG} from "../../assets/plus-square.svg";
+import {ReactComponent as PlusSVG} from "../../../assets/plus-square.svg";
 
 
 const StyledPlusButton = styled.div`

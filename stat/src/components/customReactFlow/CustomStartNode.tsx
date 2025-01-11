@@ -1,6 +1,5 @@
 import React, {useState} from 'react';
 import {Handle, Position} from '@xyflow/react';
-import {CustomNodeProps} from "../../types/nodeTypes";
 import {
     StyledNodeContainer,
     StyledNodeLabel,
@@ -17,17 +16,11 @@ import {ReactComponent as InfoSVG} from "../../assets/info-circle-fill.svg"
 import { ReactComponent as CloseSVG } from '../../assets/x.svg';
 import {getActiveBlockId, getBlockById, setActiveBlockId} from "../../redux/pipelineSlice";
 import {LineChart} from "../charts/LineChart";
-import styled from "styled-components";
+import {CustomNodeProps} from "../../types/reactFlowCustomTypes";
 
 
-export const StyledNodeOutputPopupStart = styled(StyledNodeOutputPopup)`
-    left: -50px;
-    width: fit-content;
-    padding: 5px;
-`;
 
-
-const CustomStartNode = ({data}: CustomNodeProps) => {
+const CustomStartNode = ({data}: {data: CustomNodeProps}) => {
     const [isInfoVisible, setIsInfoVisible] = useState(false);
     const dispatch = useAppDispatch();
     const activeNodeId = useAppSelector(getActiveBlockId);

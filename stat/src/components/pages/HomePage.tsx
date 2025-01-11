@@ -1,11 +1,9 @@
 import styled from "styled-components";
 import logoNoBg from "../../assets/logo-no-bg.png";
-import {PrimaryButton} from "../buttons/PrimaryButton";
 import {useNavigate} from "react-router-dom";
-import {ChangeEvent, useState} from "react";
+import React, {ChangeEvent, useState} from "react";
 import {
     getPreviewData,
-    rawDataExists,
     previewDataExists,
     readData,
     setRawData,
@@ -14,21 +12,25 @@ import {
 } from "../../redux/dataSlice";
 import {useAppDispatch, useAppSelector} from "../../hooks";
 import {
+    getPipelineId,
     resetPipelineData,
-    createNewBlock,
-    createNewPipeline,
     setFileFrequency,
-    checkPipeline,
-    updatePipeline,
-    fetchFullBlock,
+    setError,
 } from "../../redux/pipelineSlice";
-import {LoaderModel} from "../../types/responseType";
-import {Popup} from "../pageElements/Popup";
 import {StyledInput, StyledUnit} from "../controls/InputControl";
 import {PreviewTable} from "../tables/PreviewTable";
 import {checkFileValidity, preProcessCSVData} from "../../util/fileUtil";
-import {ErrorPopup} from "../pageElements/ErrorPopup";
 import {unwrapResult} from '@reduxjs/toolkit';
+import {Popup} from "../pageElements/popups/Popup";
+import {PrimaryButton} from "../pageElements/buttons/PrimaryButton";
+import {ErrorPopup} from "../pageElements/popups/ErrorPopup";
+import {Loading} from "../pageElements/Loading";
+import {
+    createNewBlock,
+    createNewPipeline,
+    updatePipeline
+} from "../../redux/pipelineThunk";
+import {fetchPipeline} from "../../service/pipelineService";
 
 const StyledHomeContainer = styled.div`
     width: 100vw;
@@ -201,13 +203,14 @@ function FileUpload({onClose, onUpload}: { onClose: () => void, onUpload: (frequ
 export default function HomePage() {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
-    const dataExists = useAppSelector(rawDataExists);
+    const existingPipelineId = useAppSelector(getPipelineId);
     const previewData = useAppSelector(getPreviewData);
     const previewDataExistsBool = useAppSelector(previewDataExists);
     const [frequency, setFrequency] = useState(0);
     const [isFileUploadOpen, setIsFileUploadOpen] = useState(false);
     const [isFilePreviewOpen, setIsFilePreviewOpen] = useState(false);
-    const [pipelineLoad, setPipelineLoad] = useState<string>("");
+    const [pipelineIdToLoad, setPipelineIdToLoad] = useState<string>("");
+    const [loading, setLoading] = useState<boolean>(false);
 
     const handleFileUpload = (frequency: number) => {
         setFrequency(frequency);
@@ -230,73 +233,31 @@ export default function HomePage() {
         dispatch(setFileFrequency(frequency));
         dispatch(createNewBlock({blockType: 'CSVStringLoader', blockName: 'Data loader'}));
 
-        // Route to /main
         navigate('/main');
     };
 
-    function handlePipelineInput(value: string) {
-        setPipelineLoad(value.trim());
-    }
+    async function handlePipelineLoad(pipelineId: string = 'not set') {
+        setLoading(true);
 
-    const handlePipelineLoad = async () => {
-        // First try to fetch pipeline data to check if pipeline ID exists
+        if (pipelineId === 'not set') dispatch(resetData());
+
+        const existingPipelineId: string = pipelineId === 'not set' ? pipelineIdToLoad : pipelineId;
+
         try {
-            await dispatch(checkPipeline(pipelineLoad)).then(unwrapResult);
+            await fetchPipeline({pipelineId: existingPipelineId});
+
+            await dispatch(updatePipeline({pipelineId: existingPipelineId, resetPipeline: pipelineId === 'not set'}));
+
+            navigate('/main');
+
+            return;
         } catch (error) {
-            setPipelineLoad("");
-            return;
+            console.error("Error loading pipeline:", error);
+            setPipelineIdToLoad("");
+            setLoading(false);
+            const errorMessage = JSON.parse((error as Error).message).detail || "Error loading pipeline";
+            dispatch(setError(errorMessage));
         }
-
-        // If it exists, clear existing data
-        dispatch(resetData());
-        dispatch(resetPipelineData());
-
-        // Then update the pipeline data, repopulate the redux store
-        const pipeline_reloaded = await dispatch(updatePipeline({pipelineId: pipelineLoad})).then(unwrapResult);
-
-        // Then fetch the first block of the pipeline. It is expected to be a CSV loader block. Abort if it is not.
-        const loader_block_id = Object.keys(pipeline_reloaded.block_dict)[0];
-        const loader_block = await dispatch(fetchFullBlock(loader_block_id)).then(unwrapResult);
-
-        // Cast loader_block to LoaderModel
-        const loader_block_casted = loader_block as LoaderModel;
-
-        if (!(loader_block_casted.type === "CSVStringLoader")) {
-            alert("The first block in the pipeline is not a CSV loader block! Loading is only supported if the first block is a CSV loader block.");
-            setPipelineLoad("");
-            return;
-        }
-
-        // Unfortunately we only have the frequency when we load the CSV data in Upload. Get it from the loader block.
-        // Set the frequency on file and redux store
-        if (loader_block_casted.freq_hz === undefined) {
-            alert("Frequency not found in the loader block!");
-            return;
-        } else {
-            dispatch(setFileFrequency(loader_block_casted.freq_hz));
-        }
-
-        // Parse the csv_string field
-        if (loader_block_casted.csv_string === undefined) {
-            alert("csv_string not found in the loader block!");
-        }
-        const rows = loader_block_casted.csv_string.split('\n');
-        const headers = rows[0].split(',');
-        const data = rows.slice(1).map((row: string) => {
-            const values = row.split(',');
-            return headers.reduce((obj: { [key: string]: string }, header: string, index: number) => {
-                obj[header] = values[index];
-                return obj;
-            }, {});
-        });
-
-        const cleanedData = preProcessCSVData(data, headers);
-
-        // Now we can update the rawData in the redux store
-        dispatch(setRawData(cleanedData));
-
-        // Finally we route to /main
-        navigate('/main');
     }
 
     function handleOnClose() {
@@ -308,6 +269,7 @@ export default function HomePage() {
 
     return (
         <StyledHomeContainer>
+            {loading && <Loading/>}
             <StyledHeader>
                 <img src={logoNoBg} alt="Logo"/>
             </StyledHeader>
@@ -331,7 +293,14 @@ export default function HomePage() {
                         </p>
                         <StyledButtonContainer>
                             <PrimaryButton text={"Upload Sample"} action={() => setIsFileUploadOpen(true)}/>
-                            {dataExists ? <PrimaryButton text={"Resume"} action={() => navigate('/main')}/> : null}
+                            {
+                                existingPipelineId?.length > 0 ?
+                                    <PrimaryButton text={"Resume"}
+                                                   action={() => {
+                                                       handlePipelineLoad(existingPipelineId).then()
+                                                   }}/> :
+                                    null
+                            }
                         </StyledButtonContainer>
                     </StyledContentContainer>
                     <StyledVerticalDividor/>
@@ -340,28 +309,29 @@ export default function HomePage() {
                             Already worked on a pipeline and still have its ID? Load it here!
                         </p>
                         <StyledButtonContainer>
-                        <PrimaryButton text={"Load Pipeline"} action={() => handlePipelineLoad()}
-                                       disabled={pipelineLoad === ""}/>
-                        <StyledInput
-                            $width={"500px"}
-                            $margin={'auto'}
-                            value={pipelineLoad}
-                            onChange={(e) => handlePipelineInput(e.target.value)}
-                            placeholder="Enter pipeline ID"
-                        />
-                    </StyledButtonContainer>
-                </StyledContentContainer>
-            </StyledActionContentContainer>
-        </StyledHomeContentContainer>
-    {
-        isFileUploadOpen && <FileUpload onClose={handleOnClose} onUpload={handleFileUpload}/>
-    }
-    {
-        isFilePreviewOpen && previewDataExistsBool &&
-        <Popup title={"File preview"} onCloseAction={handleOnClose} large={true}>
-            <PreviewTable onAccept={handleAccept}></PreviewTable>
-        </Popup>
-    }
-</StyledHomeContainer>
-)
+                            <PrimaryButton text={"Load Pipeline"} action={() => {
+                                handlePipelineLoad().then()
+                            }} disabled={pipelineIdToLoad === ""}/>
+                            <StyledInput
+                                $width={"500px"}
+                                $margin={'auto'}
+                                value={pipelineIdToLoad}
+                                onChange={(e) => setPipelineIdToLoad(e.target.value.trim())}
+                                placeholder="Enter pipeline ID"
+                            />
+                        </StyledButtonContainer>
+                    </StyledContentContainer>
+                </StyledActionContentContainer>
+            </StyledHomeContentContainer>
+            {
+                isFileUploadOpen && <FileUpload onClose={handleOnClose} onUpload={handleFileUpload}/>
+            }
+            {
+                isFilePreviewOpen && previewDataExistsBool &&
+                <Popup title={"File preview"} onCloseAction={handleOnClose} large={true}>
+                    <PreviewTable onAccept={handleAccept}></PreviewTable>
+                </Popup>
+            }
+        </StyledHomeContainer>
+    )
 }

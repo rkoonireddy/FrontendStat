@@ -1,19 +1,19 @@
 import React, {useState} from 'react';
 import styled from 'styled-components';
 import {Handle, Position} from '@xyflow/react';
-import {CustomNodeProps} from "../../types/nodeTypes";
 import {useAppDispatch, useAppSelector} from "../../hooks";
 import {
     blockConnectedToPipeline,
-    deleteBlockFromPipeline,
     getActiveBlockId, getBlockById,
     getPipelineModel,
-    setActiveBlockId
+    setActiveBlockId, setLoading
 } from "../../redux/pipelineSlice";
 import {ReactComponent as TrashSVG} from "../../assets/trash3-fill.svg";
 import {ReactComponent as InfoSVG} from "../../assets/info-circle-fill.svg"
 import {ReactComponent as CloseSVG} from '../../assets/x.svg';
 import {LineChart} from "../charts/LineChart";
+import {deleteBlockFromPipeline} from "../../redux/pipelineThunk";
+import {CustomNodeProps} from "../../types/reactFlowCustomTypes";
 
 export const StyledNodeContainer = styled.div<{ $active?: boolean }>`
     padding: 5px;
@@ -57,6 +57,10 @@ export const StyledDeleteButton = styled.div`
     &:hover {
         cursor: pointer;
         opacity: 0.8;
+    }
+    
+    & svg:hover {
+        fill: #ff0000!important;
     }
 `;
 
@@ -158,7 +162,7 @@ export const StyledNodeOutputPopup = styled.div`
     z-index: 100;
 `;
 
-const CustomNode = ({data}: CustomNodeProps) => {
+const CustomNode = ({data}: {data: CustomNodeProps}) => {
     const [isInfoVisible, setIsInfoVisible] = useState(false);
     const pipeline = useAppSelector(getPipelineModel);
     const dispatch = useAppDispatch();
@@ -174,10 +178,11 @@ const CustomNode = ({data}: CustomNodeProps) => {
         <StyledNodeContainer $active={data.id === activeNodeId} onClick={() => dispatch(setActiveBlockId(data.id))}>
             <Handle type="target" position={Position.Top}/>
             <StyledDeleteButton title={"Delete Block"} onClick={(e) => {
+                dispatch(setLoading(true));
                 dispatch(deleteBlockFromPipeline({pipelineId: pipeline.id, blockId: data.id}));
                 e.stopPropagation();
             }}>
-                <TrashSVG style={{width: "7px", height: "7px", color: "#ff0000"}}/>
+                <TrashSVG style={{width: "7px", height: "7px", fill: (data.id === activeNodeId ? '#939393BF' : '#f0f0f0f0') }}/>
             </StyledDeleteButton>
             <StyledNodeLabel $active={data.id === activeNodeId} $small={data.label.length > 14}>
                 {data.label}

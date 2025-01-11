@@ -9,6 +9,25 @@ export function convertToCSV(data: { [key: string]: string }[]): string {
     return [header, ...rows].join('\n');
 }
 
+export function parseCSVString(csv_string: string | undefined) {
+    if (csv_string === undefined) {
+        alert("csv_string not found in the loader block!");
+        return [];
+    }
+
+    const rows = csv_string.split('\n');
+    const headers = rows[0].split(',');
+    const data = rows.slice(1).map((row: string) => {
+        const values = row.split(',');
+        return headers.reduce((obj: { [key: string]: string }, header: string, index: number) => {
+            obj[header] = values[index];
+            return obj;
+        }, {});
+    });
+
+    return preProcessCSVData(data, headers);
+};
+
 export function preProcessCSVData(csvString: { [key: string]: string; }[], selectedColumns: string[]) {
     let newRawData = csvString.map(row =>
         Object.fromEntries(Object.entries(row).filter(([key]) => selectedColumns.includes(key)))

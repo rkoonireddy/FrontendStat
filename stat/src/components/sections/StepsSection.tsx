@@ -1,23 +1,24 @@
 import styled from "styled-components";
+import Dagre from '@dagrejs/dagre';
 import {
     ReactFlow,
     Controls,
     Background,
-    addEdge, useNodesState, useEdgesState, useReactFlow, ReactFlowProvider, Panel
+    addEdge, useNodesState, useEdgesState, ReactFlowProvider, Panel, Edge, useReactFlow
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import React, {useCallback, useEffect, useState} from "react";
+import React, {useCallback, useEffect, useRef} from "react";
 import {useAppDispatch, useAppSelector} from "../../hooks";
 import {
     blockConnectedToPipeline,
-    connectTwoBlocks,
-    executePipeline, fetchExportPipeline, getActiveBlock, getActiveBlockId,
+    getActiveBlock,
+    getActiveBlockId,
     getAllEdges,
     getAllNodes,
     getBlocks,
-    getPipeline,
-    setLoading,
-    snoopPipelineColumns
+    getPipeline, getReactFlowNodes,
+    setLoading, setReactFlowNodes,
+    showDeletePipelinePopup
 } from "../../redux/pipelineSlice";
 import {createEdges, getFirstKey} from "../../util/util";
 import CustomNode from "../customReactFlow/CustomNode";
@@ -26,7 +27,14 @@ import CustomEdge from "../customReactFlow/CustomEdge";
 import {ReactComponent as RunSVG} from "../../assets/run.svg";
 import {ReactComponent as ExportSVG} from "../../assets/filetype-py.svg";
 import {ReactComponent as CopySVG} from "../../assets/copy.svg";
-import {createNodesFromBlocks} from "../../util/blockUtil";
+import {ReactComponent as TrashSVG} from "../../assets/trash.svg";
+import {ReactComponent as AlignSVG} from "../../assets/align.svg";
+import {ReactComponent as ZoomInSVG} from "../../assets/zoom-in.svg";
+import {ReactComponent as ZoomOutSVG} from "../../assets/zoom-out.svg";
+import {ReactComponent as FitToViewSVG} from "../../assets/fit-to-screen.svg";
+import {createNodesFromBlocks, saveLayout} from "../../util/blockUtil";
+import {connectTwoBlocks, executePipeline, fetchExportPipeline, snoopPipelineColumns} from "../../redux/pipelineThunk";
+import {CompleteNode} from "../../types/reactFlowCustomTypes";
 
 const NodeTypes = {customNode: CustomNode, customStartNode: CustomStartNode};
 const edgeTypes = {
@@ -41,31 +49,75 @@ const StyledStepsContainer = styled.div`
     background-color: #ffffff08;
 `;
 
-const StyledToolbar = styled.div`
+const StyledToolbar = styled.div<{ $width?: string }>`
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    margin: 2px;
+    width: ${props => props.$width ? props.$width : "450px"};
+    left: 0;
+    right: 0;
+    margin: 0 auto;
 `;
 
-const StyledActionButton = styled.div`
+const StyledActionButton = styled.div<{ $position?: string }>`
     display: flex;
     justify-content: center;
     align-items: center;
     width: fit-content;
     height: fit-content;
 
+    ${props => props.$position === "left" ? "margin-right: auto;" : ""}
+    & svg {
+        fill: #ffffff;
+    }
+
+    & svg.custom-line {
+        stroke: #ffffff;
+    }
+
     &:hover {
         cursor: pointer;
         scale: 1.05;
     }
+
+    & svg.delete:hover {
+        fill: #ff0000;
+    }
 `;
 
-const flowKey = 'react-flow-flow';
+const getLayoutedElements = (nodes: CompleteNode[], edges: Edge[], options: { direction: string }) => {
+    const g = new Dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
+    g.setGraph({rankdir: options.direction});
+
+    edges.forEach((edge) => g.setEdge(edge.source, edge.target));
+    nodes.forEach((node) =>
+        g.setNode(node.id, {
+            ...node,
+            width: 100,
+            height: 25,
+        }),
+    );
+
+    Dagre.layout(g);
+
+    return {
+        nodes: nodes.map((node) => {
+            const position = g.node(node.id);
+            const x = position.x - 100 / 2;
+            const y = position.y - 25 / 2;
+
+            return {...node, position: {x, y}};
+        }),
+        edges: edges.map((edge) => ({
+            ...edge,
+            type: edge.type ?? 'custom-edge',
+        })),
+    };
+};
 
 function Flow() {
-    const {fitView} = useReactFlow();
+    const {fitView, zoomIn, zoomOut} = useReactFlow();
     const dispatch = useAppDispatch();
     const pipeline = useAppSelector(getPipeline);
     const blocks = useAppSelector(getBlocks);
@@ -76,27 +128,42 @@ function Flow() {
     const pipelineExportableRunnable = useAppSelector(state =>
         activeBlockId ? blockConnectedToPipeline(state, activeBlockId) : false
     );
+    const reactFlowNodes = useAppSelector(getReactFlowNodes);
+
     const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
     const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-    const [isDragging, setIsDragging] = useState(false);
-    const [onGraphChange, setOnGraphChange] = useState(0);
+
+    const nodesRef = useRef(nodes);
 
     useEffect(() => {
-        const ns = createNodesFromBlocks(blocks);
+        nodesRef.current = nodes;
+    }, [nodes]);
+
+    useEffect(() => {
+        const ns = createNodesFromBlocks(blocks, reactFlowNodes);
         setNodes(ns);
     }, [blocks])
 
     useEffect(() => {
         const es = createEdges(pipeline);
         setEdges(es);
-    }, [pipeline])
+    }, [pipeline]);
 
-    useEffect(() => {
-        if (!isDragging) {
-            fitView();
-        }
-    }, [nodes, edges, fitView, isDragging]);
 
+    const onLayout = useCallback(
+        (direction: string) => {
+            const layouted = getLayoutedElements(nodes, edges, {direction});
+
+            setNodes([...layouted.nodes]);
+            setEdges([...layouted.edges]);
+
+            setTimeout(() => {
+                fitView({duration: 500});
+                saveLayout([...layouted.nodes], dispatch);
+            }, 100);
+        },
+        [nodes, edges],
+    );
 
     const onConnect = useCallback(
         (connection: any) => {
@@ -110,12 +177,12 @@ function Flow() {
                         connectTwoBlocks({fromBlockId: edge.source, toBlockId: edge.target, pipelineId: pipeline.id}))
                         .unwrap()
                         .then(() => {
-                            // If edge creation is successful, first let the pipieline snoop the columns
+                            // If edge creation is successful, first let the pipeline snoop the columns
                             return dispatch(snoopPipelineColumns({pipelineId: pipeline.id})).unwrap();
                         })
                         .then(() => {
                             return addEdge(edge, eds);
-                        })
+                        }).then(() => saveLayout(nodesRef.current, dispatch))
                         .catch((err) => {
                             return eds;
                         })
@@ -124,37 +191,12 @@ function Flow() {
             });
         },
         [setEdges, dispatch, pipeline.id]
-    );
+    )
 
-    const onNodeDragStart = () => {
-        setIsDragging(true);
-        setOnGraphChange(1);
-    };
+    const onNodeDragStop = useCallback(() => {
+        saveLayout(nodes, dispatch);
+    }, [nodes]);
 
-    const onNodeDragStop = () => {
-        setIsDragging(false);
-        setOnGraphChange(1);
-        onSave();
-    };
-
-    // Save function
-    const onSave = useCallback(() => {
-        const flow = {nodes, edges};
-        localStorage.setItem(flowKey, JSON.stringify(flow));
-    }, [nodes, edges]);
-
-    // Restore function
-    const onRestore = useCallback(() => {
-        const flowString = localStorage.getItem(flowKey);
-        if (flowString) {
-            const {nodes: restoredNodes, edges: restoredEdges} = JSON.parse(flowString);
-            setNodes(restoredNodes);
-            setEdges(restoredEdges);
-            fitView().then();
-        } else {
-            console.log("No saved flow found.");
-        }
-    }, [setNodes, setEdges, fitView]);
 
     return (
         <ReactFlow
@@ -163,24 +205,36 @@ function Flow() {
             edges={edges}
             onEdgesChange={onEdgesChange}
             onConnect={onConnect}
-            onNodeDragStart={onNodeDragStart}
             onNodeDragStop={onNodeDragStop}
             nodeTypes={NodeTypes}
             edgeTypes={edgeTypes}
             fitView
         >
             <Background/>
-            <Controls/>
+            {/*<Controls position="top-left"/>*/}
             <Panel position="top-right">
-                <button onClick={onSave}>
-                    Save graph view
-                </button>
-                <button onClick={onRestore}>
-                    Restore saved view
-                </button>
+                <StyledToolbar $width={"200px"}>
+                    <StyledActionButton title={"Align Blocks"} onClick={() => onLayout("TB")}>
+                        <AlignSVG style={{width: "35px", height: "35px"}}/>
+                    </StyledActionButton>
+                    <StyledActionButton title={"Fit Pipeline into view"} onClick={() => fitView()}>
+                        <FitToViewSVG style={{width: "35px", height: "35px"}}/>
+                    </StyledActionButton>
+                    <StyledActionButton title={"Zoom in"} onClick={() => zoomIn()}>
+                        <ZoomInSVG style={{width: "35px", height: "35px"}}/>
+                    </StyledActionButton>
+                    <StyledActionButton title={"Zoom out"} onClick={() => zoomOut()}>
+                        <ZoomOutSVG style={{width: "35px", height: "35px"}}/>
+                    </StyledActionButton>
+                </StyledToolbar>
             </Panel>
             <Panel position={"bottom-right"}>
                 <StyledToolbar>
+                    <StyledActionButton $position={"left"} title={"Delete Pipeline"} onClick={() => {
+                        dispatch(showDeletePipelinePopup());
+                    }}>
+                        <TrashSVG className={"delete"} style={{width: "35px", height: "35px"}}/>
+                    </StyledActionButton>
                     {pipelineExportableRunnable && activeBlock && activeBlock?.output?.Dataframe?.data !== undefined ?
                         <StyledActionButton title={"Export Pipeline"} onClick={(e) => {
                             dispatch(setLoading(true));
@@ -191,27 +245,25 @@ function Flow() {
                             }));
                             e.stopPropagation();
                         }}>
-                            <ExportSVG style={{width: "35px", height: "35px", color: "#ffffff"}}/>
+                            <ExportSVG style={{width: "35px", height: "35px"}}/>
                         </StyledActionButton> : <div style={{width: "35px", height: "35px"}}/>}
-                        <StyledActionButton title={"Run Pipeline"} onClick={(e) => {
-                        onSave();
+                    <StyledActionButton title={"Run Pipeline"} onClick={(e) => {
+                        saveLayout(nodes, dispatch);
                         dispatch(setLoading(true));
+
                         dispatch(executePipeline({
                             pipelineId: pipeline.id,
                             startingBlockId: getFirstKey(pipeline.block_dict) as string
-                        }))
-                            .then(() => {
-                                onRestore();
-                            });
+                        }));
                         e.stopPropagation();
                     }}>
-                        <RunSVG style={{width: "50px", height: "50px", color: "#00ff00"}}/>
+                        <RunSVG style={{width: "50px", height: "50px", fill: "#00ff00"}}/>
                     </StyledActionButton>
                     <StyledActionButton title={"Copy Pipeline ID"} onClick={() => {
                         navigator.clipboard.writeText(pipeline.id);
                         alert("Pipeline ID copied to clipboard.");
                     }}>
-                        <CopySVG style={{width: "35px", height: "35px", fill: "#ffffff"}}/>
+                        <CopySVG style={{width: "35px", height: "35px"}}/>
                     </StyledActionButton>
                 </StyledToolbar>
             </Panel>

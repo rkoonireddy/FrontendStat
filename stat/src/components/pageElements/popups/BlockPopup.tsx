@@ -1,13 +1,13 @@
-import {StyledInput} from "../controls/InputControl";
-import {Dropdown} from "primereact/dropdown";
+import {StyledInput} from "../../controls/InputControl";
 import {PrimaryButton} from "../buttons/PrimaryButton";
 import {Popup} from "./Popup";
 import {useEffect, useState} from "react";
-import {getBlockTypes} from "../../service/blockService";
-import {createNewBlock, getActiveBlock, getPipelineModel, updatePipeline} from "../../redux/pipelineSlice";
-import {useAppDispatch, useAppSelector} from "../../hooks";
+import {getBlockTypes} from "../../../service/blockService";
+import {getPipelineModel} from "../../../redux/pipelineSlice";
+import {useAppDispatch, useAppSelector} from "../../../hooks";
 import styled from "styled-components";
-import {BlockTypeModel} from "../../types/responseType";
+import {BlockTypeModel} from "../../../types/responseType";
+import {createNewBlock, updatePipeline} from "../../../redux/pipelineThunk";
 
 const StyledCreateBlocksContainer = styled.div`
     display: flex;
@@ -172,7 +172,7 @@ export function BlockPopup({onCloseAction}: { onCloseAction: () => void }) {
         getBlockTypes().then((types) => {
             setBlockTypes(types);
             if (pipeline.id !== "") {
-                dispatch(updatePipeline({pipelineId: pipeline.id}));
+                dispatch(updatePipeline({pipelineId: pipeline.id, resetPipeline: false}));
             }
         });
     }, []);

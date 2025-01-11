@@ -11,8 +11,9 @@ import styled from "styled-components";
 import { useState, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../hooks";
 import { updateCSVLoaderBlock } from "../../service/blockService";
-import { fetchFullBlock, getFrequency } from "../../redux/pipelineSlice";
+import { getFrequency } from "../../redux/pipelineSlice";
 import { formatNumber } from "../../util/util";
+import {fetchFullBlock} from "../../redux/pipelineThunk";
 
 export const StyledTableContainer = styled.div`
     height: fit-content;
@@ -46,10 +47,6 @@ export const StyledTableCell = styled.td<{ $isSelected: boolean, $mini?: boolean
     background-color: ${props => (props.$isSelected ? '#3D3D3D' : '#adacac')};
 `;
 
-export const StyledFilterContainer = styled.div`
-    margin-bottom: 20px;
-`;
-
 export const StyledCheckbox = styled.input`
     margin-right: 10px;
     color: white;
@@ -80,7 +77,6 @@ const CSVViewer: React.FC<CSVViewerProps> = ({ blockId, small, mini, sample = 20
     const data = rawData.slice(0, sample);
     const columns = useAppSelector(getRawDataColumns);
     const filteredColumns = useAppSelector(getFilteredDataColumns);
-
     const [selectedColumns, setSelectedColumns] = useState<string[]>(filteredColumns);
 
 

@@ -6,9 +6,10 @@ import * as d3 from "d3";
 import { useState, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../hooks";
 import { updateCSVLoaderBlock } from "../../service/blockService";
-import { fetchFullBlock, getFrequency } from "../../redux/pipelineSlice";
+import { getFrequency } from "../../redux/pipelineSlice";
 import { getQuartiles } from "../../util/util";
 import {StyledTableCell, StyledTableContainer, StyledTableHeader, StyledCheckbox, StyledCSVTable} from "./CSVViewer";
+import {fetchFullBlock} from "../../redux/pipelineThunk";
 
 
 export default function BoxPlot({ blockId, setHoveredColumn }: { blockId: string, setHoveredColumn: (column: string | null) => void }) {
