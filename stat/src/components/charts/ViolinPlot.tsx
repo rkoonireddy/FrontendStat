@@ -1,20 +1,29 @@
 import * as d3 from 'd3';
-import React, { useEffect, useRef, useState } from 'react';
-import { getData, getRawDataColumns } from "../../redux/dataSlice";
-import { useAppSelector } from "../../hooks";
-import { getQuartiles, getConfidenceInterval } from "../../util/util";
+import React, {useEffect, useRef, useState} from 'react';
+import {getData, getRawDataColumns} from "../../redux/dataSlice";
+import {useAppSelector} from "../../hooks";
+import {getQuartiles, getConfidenceInterval} from "../../util/util";
+import {StyledTableContainer} from "./CSVViewer";
+import styled from "styled-components";
+
+const StyledViolinPlotsContainer = styled.div<{ margin: number }>`
+    width: 100%;
+    height: calc(100% - ${props => props.margin}px);
+`;
 
 interface ViolinPlotProps {
     setHoveredColumn: (column: string | null) => void;
 }
 
-const ViolinPlot: React.FC<ViolinPlotProps> = ({ setHoveredColumn }) => {
+const ViolinPlot: React.FC<ViolinPlotProps> = ({setHoveredColumn}) => {
     const svgRef = useRef<SVGSVGElement | null>(null);
     const rawData = useAppSelector(getData);
     const rawDataColumns = useAppSelector(getRawDataColumns);
-    const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+    const [dimensions, setDimensions] = useState({width: 0, height: 0});
     const inputColumns = rawDataColumns //Filter out the first column
         .filter((column, columnIndex): column is string => columnIndex !== 0);
+
+    const margin = {top: 10, right: 30, bottom: 20, left: 40};
 
     useEffect(() => { // Resize observer
         const svgElement = svgRef.current;
@@ -22,9 +31,9 @@ const ViolinPlot: React.FC<ViolinPlotProps> = ({ setHoveredColumn }) => {
 
         const resizeObserver = new ResizeObserver(entries => {
             if (!entries || entries.length === 0) return;
-            const { width, height } = entries[0].contentRect;
+            const {width, height} = entries[0].contentRect;
             d3.select(svgElement).selectAll("g").remove(); // Clear the svg, TODO: find a better way to update the graph
-            setDimensions({ width, height });
+            setDimensions({width, height});
         });
 
         resizeObserver.observe(svgElement);
@@ -40,14 +49,13 @@ const ViolinPlot: React.FC<ViolinPlotProps> = ({ setHoveredColumn }) => {
         if (!svgRef.current || dimensions.width === 0 || dimensions.height === 0) return;
 
         // Set the dimensions and margins of the graph
-        const margin = { top: 10, right: 30, bottom: 20, left: 40 };
         const height = dimensions.height - margin.top - margin.bottom;
-        let width  = (dimensions.width - margin.left - margin.right);
-        
-        if(inputColumns.length < 3) {
+        let width = (dimensions.width - margin.left - margin.right);
+
+        if (inputColumns.length < 3) {
             width = width * inputColumns.length * 0.33;
         }
-        if(width < inputColumns.length * 100) { // Minimum width 100 px per column
+        if (width < inputColumns.length * 100) { // Minimum width 100 px per column
             width = inputColumns.length * 100;
         }
 
@@ -57,7 +65,7 @@ const ViolinPlot: React.FC<ViolinPlotProps> = ({ setHoveredColumn }) => {
             .attr('height', height + margin.top + margin.bottom)
             .append('g')
             .attr('transform', `translate(${margin.left},${margin.top})`);
-            
+
         const maxNum = d3.max(rawData.flatMap(row => {
             return inputColumns.map(column => Number(row[column]));
         })) || 1;
@@ -170,7 +178,11 @@ const ViolinPlot: React.FC<ViolinPlotProps> = ({ setHoveredColumn }) => {
         });
     }, [rawData, dimensions]);
 
-    return <svg ref={svgRef} style={{ width: '100%', height: '100%' }}></svg>;
+    return (
+        <StyledViolinPlotsContainer margin={margin.top + margin.bottom}>
+            <svg ref={svgRef} style={{width: '100%', minWidth: rawDataColumns.length * 100 + 'px', height: '100%'}}></svg>
+        </StyledViolinPlotsContainer>
+    );
 };
 
 // Kernel density estimator
