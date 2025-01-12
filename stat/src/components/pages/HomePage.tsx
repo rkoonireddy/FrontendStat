@@ -20,7 +20,6 @@ import {
 import {StyledInput, StyledUnit} from "../controls/InputControl";
 import {PreviewTable} from "../tables/PreviewTable";
 import {checkFileValidity, preProcessCSVData} from "../../util/fileUtil";
-import {unwrapResult} from '@reduxjs/toolkit';
 import {Popup} from "../pageElements/popups/Popup";
 import {PrimaryButton} from "../pageElements/buttons/PrimaryButton";
 import {ErrorPopup} from "../pageElements/popups/ErrorPopup";
@@ -31,6 +30,9 @@ import {
     updatePipeline
 } from "../../redux/pipelineThunk";
 import {fetchPipeline} from "../../service/pipelineService";
+import {ReactComponent as ExamplesSVG} from "../../assets/question-square.svg";
+import MarkdownViewer from "../helpMarkdown/convertMarkdownToHtml";
+
 
 const StyledHomeContainer = styled.div`
     width: 100vw;
@@ -38,14 +40,12 @@ const StyledHomeContainer = styled.div`
     background: linear-gradient(to bottom right, #3D3D3D 0%, #000000 100%);
     color: white;
 `;
-
 const StyledHeader = styled.div`
     width: 500px;
     display: flex;
     justify-content: center;
     margin: 0 auto 0 auto;
 `;
-
 const StyledHomeContentContainer = styled.div`
     display: flex;
     flex-direction: column;
@@ -53,7 +53,6 @@ const StyledHomeContentContainer = styled.div`
     height: fit-content;
     width: 100vw;
 `;
-
 const StyledWelcomeContentContainer = styled.div`
     display: flex;
     justify-content: center;
@@ -61,44 +60,36 @@ const StyledWelcomeContentContainer = styled.div`
     font-size: 1.5rem;
     max-width: 75vw;
     margin: 0 auto;
-
     & p {
         text-align: center;
         margin: 20px 50px;
     }
 `;
-
 const StyledActionContentContainer = styled.div`
     display: flex;
     justify-content: space-evenly;
-
 `;
-
 const StyledContentContainer = styled.div`
     display: flex;
     justify-content: center;
     flex-direction: column;
     font-size: 1.5rem;
     max-width: 50vw;
-
     & p {
         text-align: center;
         margin: 20px 50px;
     }
 `;
-
 const StyledVerticalDividor = styled.div`
     width: 0;
     border-right: 4px solid #73B5B4;
 `;
-
 const StyledHorizontalDividor = styled.div`
     height: 0;
     border-bottom: 4px solid #73B5B4;
     width: 75vw;
     margin: 25px auto;
 `;
-
 const StyledButtonContainer = styled.div`
     display: flex;
     flex-direction: row;
@@ -107,7 +98,6 @@ const StyledButtonContainer = styled.div`
     flex-wrap: wrap;
     margin: 0 50px;
 `;
-
 const StyledFrequencyInputContainer = styled.div`
     margin: auto;
     max-width: 150px;
@@ -116,52 +106,41 @@ const StyledFrequencyInputContainer = styled.div`
     align-items: center;
     justify-content: center;
 `;
-
 const StyledFileUploadInfo = styled.p`
     color: white;
     margin-top: 10px;
 `;
-
 const StyledFileUploadInfoSpan = styled.span`
     display: inline-block;
     margin: 8px 0;
 `;
-
 function FileUpload({onClose, onUpload}: { onClose: () => void, onUpload: (frequency: number) => void }) {
     const [file, setFile] = useState<File | null>(null);
     const [frequency, setFrequency] = useState<number>(0);
     const dispatch = useAppDispatch();
-
     const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (file) {
             setFile(file);
         }
     }
-
     const handleFrequencyChange = (event: ChangeEvent<HTMLInputElement>) => {
         setFrequency(parseInt(event.target.value));
     }
-
     const handleUpload = async () => {
         if (file && frequency) {
             const formData = new FormData();
             formData.append('csvFile', file);
-
             const reader = new FileReader();
-
             reader.onload = async (event) => {
                 const target = event.target;
                 if (target && target.result) {
                     const text = target.result as string;
-
                     const {isValid, message} = await checkFileValidity(text);
-
                     if (!isValid) {
                         alert(message);
                         return;
                     }
-
                     // Proceed with the upload if no empty rows or invalid values are found
                     try {
                         // Optionally set the cleaned data to formData or other logic
@@ -172,11 +151,9 @@ function FileUpload({onClose, onUpload}: { onClose: () => void, onUpload: (frequ
                     }
                 }
             };
-
             reader.readAsText(file);
         }
     };
-
     return (
         <Popup title={"File upload"} onCloseAction={onClose} large={false}>
             <StyledInput $width={"300px"} $margin={'20px 0 0 0'} type="file" accept=".csv" onChange={handleFileChange}/>
@@ -199,7 +176,6 @@ function FileUpload({onClose, onUpload}: { onClose: () => void, onUpload: (frequ
         </Popup>
     )
 }
-
 export default function HomePage() {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
@@ -211,45 +187,32 @@ export default function HomePage() {
     const [isFilePreviewOpen, setIsFilePreviewOpen] = useState(false);
     const [pipelineIdToLoad, setPipelineIdToLoad] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(false);
-
     const handleFileUpload = (frequency: number) => {
         setFrequency(frequency);
         setIsFileUploadOpen(false);
         setIsFilePreviewOpen(true);
     }
-
     const handleAccept = async (selectedColumns: string[]) => {
         // First reset rawData and pipelineData
         dispatch(resetData());
         dispatch(resetPipelineData());
-
         const cleanedData = preProcessCSVData(previewData, selectedColumns);
-
         // Update the rawData in the redux store
         dispatch(setRawData(cleanedData));
-
         // Create pipeline and block
         await dispatch(createNewPipeline());
         dispatch(setFileFrequency(frequency));
         dispatch(createNewBlock({blockType: 'CSVStringLoader', blockName: 'Data loader'}));
-
         navigate('/main');
     };
-
     async function handlePipelineLoad(pipelineId: string = 'not set') {
         setLoading(true);
-
         if (pipelineId === 'not set') dispatch(resetData());
-
         const existingPipelineId: string = pipelineId === 'not set' ? pipelineIdToLoad : pipelineId;
-
         try {
             await fetchPipeline({pipelineId: existingPipelineId});
-
             await dispatch(updatePipeline({pipelineId: existingPipelineId, resetPipeline: pipelineId === 'not set'}));
-
             navigate('/main');
-
             return;
         } catch (error) {
             console.error("Error loading pipeline:", error);
@@ -259,23 +222,43 @@ export default function HomePage() {
             dispatch(setError(errorMessage));
         }
     }
-
     function handleOnClose() {
         // Reset the previewData in the redux store
         dispatch(resetPreviewData());
         setIsFileUploadOpen(false);
         setIsFilePreviewOpen(false);
     }
+    const [isHelpOpen, setIsHelpOpen] = useState(false);
+
+    const handleHelpClick = () => {
+        setIsHelpOpen(!isHelpOpen);
+      };
+    
+    const closeHelpPopup = () => {
+        setIsHelpOpen(false);
+      };
 
     return (
         <StyledHomeContainer>
             {loading && <Loading/>}
             <StyledHeader>
-                <img src={logoNoBg} alt="Logo"/>
+                <img src={logoNoBg} alt="Logo" style={{ width: "1000px", height: "400px"}}/>
             </StyledHeader>
+            <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+            <ExamplesSVG
+                    onClick={handleHelpClick}
+                    title="Help and Examples"
+                    style={{
+                        width: "30px",
+                        height: "30px",
+                        fill: "#73B5B4",
+                        cursor: "pointer",
+                    }}
+                />
+            </div>
+            {isHelpOpen && <MarkdownViewer isOpen={isHelpOpen} onClose={closeHelpPopup} />}
             <ErrorPopup/>
             <StyledHomeContentContainer>
-
                 <StyledWelcomeContentContainer>
                     <p>
                         Welcome to the Statistical Timeseries Analysis Toolkit! <br/> This is a web-based tool for

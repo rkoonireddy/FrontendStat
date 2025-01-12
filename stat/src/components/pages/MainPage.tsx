@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import {ReactComponent as STATIconSVG} from "../../assets/icon.svg";
-import {ReactComponent as ExamplesSVG} from "../../assets/examples.svg";
+import {ReactComponent as ExamplesSVG} from "../../assets/question-square.svg";
 import {ReactComponent as PlusSVG} from "../../assets/plus-square.svg";
 import {useNavigate} from "react-router-dom";
 import {StepsSection} from "../sections/StepsSection";
@@ -13,7 +13,7 @@ import {DeletePipelinePopup} from "../pageElements/popups/DeletePipelinePopup";
 import {BlockPopup} from "../pageElements/popups/BlockPopup";
 import {ErrorPopup} from "../pageElements/popups/ErrorPopup";
 import {saveLayout} from "../../util/blockUtil";
-
+import MarkdownViewer from "../helpMarkdown/convertMarkdownToHtml";
 
 const StyledMainPage = styled.div`
     position: relative;
@@ -36,7 +36,6 @@ const StyledSideBar = styled.div`
         cursor: pointer;
     }
 `;
-
 
 function MainPage() {
     const loading = useAppSelector(getLoading);
@@ -62,6 +61,16 @@ function MainPage() {
         }, 2000);
     }
 
+    const [isHelpOpen, setIsHelpOpen] = useState(false);
+
+    const handleHelpClick = () => {
+        setIsHelpOpen(!isHelpOpen);
+      };
+    
+    const closeHelpPopup = () => {
+        setIsHelpOpen(false);
+      };
+
     return (
         <StyledMainPage>
             {loading && <Loading/>}
@@ -75,7 +84,8 @@ function MainPage() {
                 <PlusSVG title={"Create a new block"}
                          style={{width: "50px", height: "50px", margin: "10px", fill: "#73B5B4"}}
                          onClick={() => showPopup()}/>
-                <ExamplesSVG title={"Examples"} style={{width: "50px", height: "50px", margin: "10px", fill: "#73B5B4"}}/>
+                <ExamplesSVG onClick={handleHelpClick} title={"Examples"} style={{width: "50px", height: "50px", margin: "10px", fill: "#73B5B4"}}/>
+                {isHelpOpen && <MarkdownViewer isOpen={isHelpOpen} onClose={closeHelpPopup} />}                
             </StyledSideBar>
             <StepsSection/>
             {activeBlock && <VizSection block={activeBlock}/>}

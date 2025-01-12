@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STAT - Statistical Time Series Analysis Toolkit</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        header {
+            background-color: #73B5B4;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            margin: 0;
+        }
+
+        section {
+            padding: 20px;
+            margin: 20px 0;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        section h2 {
+            color: #333;
+            font-size: 24px;
+        }
+
+        section p {
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .icon {
+            font-size: 20px;
+            color: #73B5B4;
+            margin-right: 8px;
+        }
+
+        .section-header {
+            font-size: 22px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .section-content {
+            font-size: 16px;
+            color: #666;
+        }
+
+        .signal-description {
+            background-color: #E9F7F7;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .common-issues,
+        .solutions {
+            background-color: #f1f1f1;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .solution-list {
+            list-style-type: disc;
+            margin-left: 20px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #333;
+            color: white;
+        }
+
+        .signal-section {
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .section-header {
+            font-size: 24px;
+            color: #0056b3;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .icon {
+            color: #73B5B4;
+            font-size: 24px;
+        }
+
+        .signal-cards-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .signal-card {
+            background-color: #f9f9f9;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            flex: 1;
+            min-width: 250px;
+            max-width: 30%;
+        }
+
+        .signal-card h3 {
+            margin-top: 0;
+        }
+
+        .subsection-header {
+            font-size: 18px;
+            color: #0056b3;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .subsection-content {
+            margin-bottom: 10px;
+        }
+
+        .reference-link {
+            color: #0056b3;
+            text-decoration: underline;
+        }
+
+        .reference-link:hover {
+            color: #003f8c;
+        }
+
+        @media (max-width: 768px) {
+            .signal-cards-container {
+                flex-direction: column;
+            }
+
+            .signal-card {
+                max-width: 100%;
+            }
+        }
+
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>STAT - Statistical Time Series Analysis Toolkit</h1>
+        <p>Your Toolkit for Analyzing Biomedical Time Series Data</p>
+    </header>
+    <!-- Introduction Section -->
+    <section id="introduction">
+        <img src="/logo-no-bg.png" alt="Logo" style="width: 100px; height: auto;"/>
+        <h1>Statistical Time Series Analysis Toolkit (STAT)</h1>
+        <p>
+            Welcome to STAT, your go-to toolkit for analyzing and interpreting biomedical time-series data. 
+            From cardiac rhythms to muscle activity, STAT equips researchers, healthcare professionals, 
+            and engineers with powerful tools to uncover insights and address challenges in biomedical signal analysis.
+        </p>
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;">
+
+            <ul style="max-width: 60%; list-style: none; padding: 0;">
+                <li>🎯 <b>Comprehensive Signal Support:</b> Analyze ECG, EMG, EEG, and more.</li>
+                <li>🚀 <b>User-Friendly Pipelines:</b> Quickly apply and test workflows.</li>
+                <li>📊 <b>Advanced Visualizations:</b> Generate plots and visual summaries.</li>
+                <li>🔧 <b>Customizable Workflows:</b> Save reusable workflows for ongoing projects.</li>
+                <li>✨ <b>Built-In Filters:</b> Apply denoising and preprocessing methods easily.</li>
+            </ul>
+        </div>
+        
+        <p>
+            Biomedical signals hold the key to understanding the human body. However, they often come with 
+            challenges such as noise and artifacts. STAT provides robust solutions to tackle these problems, 
+            enabling clear and actionable insights.
+        </p>
+    
+        <p>
+            Ready to explore STAT? Check out <a href="#signals">supported signals</a> to see how it can help 
+            with your specific needs.
+        </p>
+    </section>
+    <section class="index-section">
+        <h2 class="section-header">
+            <i class="fas fa-list icon"></i> Table of Contents
+        </h2>
+        <p class="section-content">
+            Navigate through the various sections of the STAT Toolkit Documentation to learn more about the features and capabilities of our toolkit:
+        </p>
+        <ul class="index-list">
+            <li><a href="#signal-overview">Challenges with Biomedical Signals</a></li>
+            <li><a href="#signal-solutions">Solutions for Signal Challenges</a></li>
+            <li><a href="#pipelines">Available Pipelines</a></li>
+            <li><a href="#how-to-use">How to Use STAT: Start Now</a></li>
+        </ul>
+    </section>
+  
+    <section class="signal-section" id="signal-overview">
+        <h2 class="section-header">
+            <i class="fas fa-heartbeat icon"></i>Supported Biomedical Signals
+        </h2>
+        <p class="section-content">
+            STAT supports the analysis of multiple biomedical signals, each critical in understanding and diagnosing physiological and neurological conditions. Learn more about each signal below.
+        </p>
+    
+        <div class="signal-cards-container">
+            <!-- ECG -->
+            <div class="signal-card">
+                <h3 class="subsection-header">
+                    <i class="fas fa-wave-square icon"></i>ECG (Electrocardiogram)
+                </h3>
+                <p class="subsection-content">
+                    Measures the electrical activity of the heart, essential for diagnosing cardiac conditions such as arrhythmias and myocardial infarction.
+                    <a href="https://en.wikipedia.org/wiki/Electrocardiography" target="_blank" class="reference-link">Learn more about ECG</a>.
+                </p>
+                <p class="subsection-content">
+                    <strong>Common Challenges:</strong>
+                </p>
+                <ul class="challenges-list">
+                    <li>Baseline wander due to patient movement or electrode drift.</li>
+                    <li>Powerline interference from external electrical equipment.</li>
+                    <li>Motion artifacts caused by physical activity or poor electrode contact.</li>
+                    <li>Muscle noise overlapping with the ECG signal.</li>
+                </ul>
+            </div>
+    
+            <!-- EMG -->
+            <div class="signal-card">
+                <h3 class="subsection-header">
+                    <i class="fas fa-dumbbell icon"></i>EMG (Electromyography)
+                </h3>
+                <p class="subsection-content">
+                    Records muscle electrical activity, aiding in the diagnosis of muscle and nerve disorders.
+                    <a href="https://en.wikipedia.org/wiki/Electromyography" target="_blank" class="reference-link">Learn more about EMG</a>.
+                </p>
+                <p class="subsection-content">
+                    <strong>Common Challenges:</strong>
+                </p>
+                <ul class="challenges-list">
+                    <li>Cross-talk between neighboring muscle groups, reducing signal clarity.</li>
+                    <li>Motion artifacts introduced during body movements.</li>
+                    <li>Powerline noise from external electrical sources.</li>
+                    <li>Electrode placement variability causing inconsistent recordings.</li>
+                </ul>
+            </div>
+    
+            <!-- EEG -->
+            <div class="signal-card">
+                <h3 class="subsection-header">
+                    <i class="fas fa-brain icon"></i>EEG (Electroencephalogram)
+                </h3>
+                <p class="subsection-content">
+                    Captures brain electrical activity and is commonly used to diagnose epilepsy, sleep disorders, and other neurological conditions.
+                    <a href="https://en.wikipedia.org/wiki/Electroencephalography" target="_blank" class="reference-link">Learn more about EEG</a>.
+                </p>
+                <p class="subsection-content">
+                    <strong>Common Challenges:</strong>
+                </p>
+                <ul class="challenges-list">
+                    <li>Eye blink artifacts causing significant distortions in the EEG signal.</li>
+                    <li>Muscle activity interference from facial or scalp muscles.</li>
+                    <li>Environmental noise from nearby electronic devices or power sources.</li>
+                    <li>Electrode impedance issues leading to poor signal quality.</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+    
+    <section class="solutions-section" id="signal-solutions">
+        <h2 class="section-header">
+            <i class="fas fa-tools icon"></i>How STAT Resolves Signal Challenges
+        </h2>
+        <p class="section-content">
+            STAT provides robust tools and pipelines to mitigate common issues in biomedical signals, enhancing their quality for accurate analysis. Below are the challenges we tackle for each signal and how we address them, along with visual examples.
+        </p>
+    
+        <div class="signal-cards-container">
+            <!-- ECG Solutions -->
+            <div class="signal-card">
+                <h3 class="subsection-header">
+                    <i class="fas fa-wave-square icon"></i>ECG (Electrocardiogram)
+                </h3>
+                <p class="subsection-content">
+                    Our toolkit effectively cleans ECG data and prepares it for diagnostic or research purposes.
+                </p>
+                <p class="subsection-content"><strong>Solutions:</strong></p>
+                <ul class="solutions-list">
+                    <li>
+                        <strong>Baseline Wander Removal:</strong> High-pass filters to eliminate low-frequency drifts. 
+                        <a href="https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/ECG_Baseline_Wander.png/800px-ECG_Baseline_Wander.png" target="_blank">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/ECG_Baseline_Wander.png/200px-ECG_Baseline_Wander.png" alt="Baseline Wander" class="solution-image">
+                        </a>
+                    </li>
+                    <li>
+                        <strong>Powerline Interference:</strong> Notch filters to suppress 50/60 Hz powerline noise.
+                        <a href="https://upload.wikimedia.org/wikipedia/commons/8/83/Powerline_noise.png" target="_blank">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Powerline_noise.png/200px-Powerline_noise.png" alt="Powerline Noise" class="solution-image">
+                        </a>
+                    </li>
+                    <li>
+                        <strong>Motion Artifacts:</strong> Adaptive filtering techniques to remove movement-induced distortions.
+                        <a href="https://upload.wikimedia.org/wikipedia/commons/a/a1/Motion_artifact.png" target="_blank">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Motion_artifact.png/200px-Motion_artifact.png" alt="Motion Artifacts" class="solution-image">
+                        </a>
+                    </li>
+                    <li>
+                        <strong>Muscle Noise Suppression:</strong> Wavelet denoising to separate ECG from EMG contamination.
+                        <a href="https://upload.wikimedia.org/wikipedia/commons/d/dc/Muscle_Noise_ECG.png" target="_blank">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/dc/Muscle_Noise_ECG.png/200px-Muscle_Noise_ECG.png" alt="Muscle Noise" class="solution-image">
+                        </a>
+                    </li>
+                </ul>
+            </div>
+    
+            <!-- EMG Solutions -->
+            <div class="signal-card">
+                <h3 class="subsection-header">
+                    <i class="fas fa-dumbbell icon"></i>EMG (Electromyography)
+                </h3>
+                <p class="subsection-content">
+                    STAT’s tools refine EMG data for detailed muscle activity analysis.
+                </p>
+                <p class="subsection-content"><strong>Solutions:</strong></p>
+                <ul class="solutions-list">
+                    <li>
+                        <strong>Cross-Talk Reduction:</strong> Spatial filtering to isolate muscle-specific signals. 
+                        <a href="https://upload.wikimedia.org/wikipedia/commons/3/30/EMG_Cross_Talk.png" target="_blank">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/EMG_Cross_Talk.png/200px-EMG_Cross_Talk.png" alt="Cross-Talk Reduction" class="solution-image">
+                        </a>
+                    </li>
+                    <li>
+                        <strong>Motion Artifact Removal:</strong> ICA to separate noise components.
+                        <a href="https://upload.wikimedia.org/wikipedia/commons/6/69/Motion_Artifacts_EMG.png" target="_blank">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Motion_Artifacts_EMG.png/200px-Motion_Artifacts_EMG.png" alt="Motion Artifacts EMG" class="solution-image">
+                        </a>
+                    </li>
+                    <li>
+                        <strong>Powerline Noise Filtering:</strong> Band-stop filters targeting noise frequencies.
+                        <a href="https://upload.wikimedia.org/wikipedia/commons/2/23/EMG_Powerline_Noise.png" target="_blank">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/EMG_Powerline_Noise.png/200px-EMG_Powerline_Noise.png" alt="EMG Powerline Noise" class="solution-image">
+                        </a>
+                    </li>
+                </ul>
+            </div>
+    
+            <!-- EEG Solutions -->
+            <div class="signal-card">
+                <h3 class="subsection-header">
+                    <i class="fas fa-brain icon"></i>EEG (Electroencephalogram)
+                </h3>
+                <p class="subsection-content">
+                    STAT enhances EEG signals for precise analysis of brain activity.
+                </p>
+                <p class="subsection-content"><strong>Solutions:</strong></p>
+                <ul class="solutions-list">
+                    <li>
+                        <strong>Eye Blink Artifact Removal:</strong> Automatic detection and removal of eye artifacts. 
+                        <a href="https://upload.wikimedia.org/wikipedia/commons/9/9e/EEG_Eye_Blink.png" target="_blank">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/EEG_Eye_Blink.png/200px-EEG_Eye_Blink.png" alt="EEG Eye Blink" class="solution-image">
+                        </a>
+                    </li>
+                    <li>
+                        <strong>Environmental Noise Suppression:</strong> Signal-to-noise ratio enhancement.
+                        <a href="https://upload.wikimedia.org/wikipedia/commons/e/ea/EEG_Noise_Filtering.png" target="_blank">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/EEG_Noise_Filtering.png/200px-EEG_Noise_Filtering.png" alt="EEG Noise Filtering" class="solution-image">
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section class="pipelines-section" id="pipelines">
+        <h2 class="section-header">
+            <i class="fas fa-cogs icon"></i>STAT Pipelines
+        </h2>
+        <p class="section-content">
+            The STAT toolkit provides several powerful pipelines for processing biomedical signals. These pipelines are designed to handle different types of noise and improve the quality of signals like ECG, EMG, and EEG. Below are some example pipelines for each type of signal, detailing the steps involved in removing noise.
+        </p>
+    
+        <!-- ECG Pipelines -->
+        <div class="signal-pipeline-container">
+            <h3 class="subsection-header">
+                <i class="fas fa-heartbeat icon"></i>ECG (Electrocardiogram) Pipelines
+            </h3>
+    
+            <!-- Pipeline 1 -->
+            <div class="pipeline-card">
+                <h4 class="pipeline-title">Pipeline 1: Baseline Wander Removal</h4>
+                <p class="pipeline-description">
+                    This pipeline starts with an ECG signal containing baseline wander and powerline noise. The sequence of steps helps to remove these noise types and enhance the signal.
+                </p>
+                <ul class="pipeline-steps">
+                    <li><strong>Step 1:</strong> Input ECG signal with baseline wander and powerline noise.</li>
+                    <li><strong>Step 2:</strong> Apply a high-pass filter to remove baseline wander.</li>
+                    <li><strong>Step 3:</strong> Apply a notch filter to remove powerline noise.</li>
+                    <li><strong>Step 4:</strong> Output clean ECG signal with minimal noise.</li>
+                </ul>
+                <a href="https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/ECG_Baseline_Wander.png/800px-ECG_Baseline_Wander.png" target="_blank">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/ECG_Baseline_Wander.png/200px-ECG_Baseline_Wander.png" alt="ECG Pipeline Example" class="pipeline-image">
+                </a>
+            </div>
+    
+            <!-- Pipeline 2 -->
+            <div class="pipeline-card">
+                <h4 class="pipeline-title">Pipeline 2: Motion Artifact Removal</h4>
+                <p class="pipeline-description">
+                    This pipeline addresses ECG signals contaminated with motion artifacts, using adaptive filtering techniques.
+                </p>
+                <ul class="pipeline-steps">
+                    <li><strong>Step 1:</strong> Input ECG signal with motion artifacts.</li>
+                    <li><strong>Step 2:</strong> Use an adaptive filter to isolate and remove motion artifacts.</li>
+                    <li><strong>Step 3:</strong> Output the cleaned ECG signal with reduced motion artifacts.</li>
+                </ul>
+                <a href="https://upload.wikimedia.org/wikipedia/commons/a/a1/Motion_artifact.png" target="_blank">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Motion_artifact.png/200px-Motion_artifact.png" alt="Motion Artifact Removal" class="pipeline-image">
+                </a>
+            </div>
+    
+            <!-- Pipeline 3 -->
+            <div class="pipeline-card">
+                <h4 class="pipeline-title">Pipeline 3: Muscle Noise Suppression</h4>
+                <p class="pipeline-description">
+                    In this pipeline, ECG signals contaminated with muscle noise are processed using wavelet denoising techniques.
+                </p>
+                <ul class="pipeline-steps">
+                    <li><strong>Step 1:</strong> Input ECG signal with muscle noise.</li>
+                    <li><strong>Step 2:</strong> Apply wavelet transform to separate muscle noise from the ECG signal.</li>
+                    <li><strong>Step 3:</strong> Use thresholding to suppress muscle noise components.</li>
+                    <li><strong>Step 4:</strong> Output the clean ECG signal.</li>
+                </ul>
+                <a href="https://upload.wikimedia.org/wikipedia/commons/d/dc/Muscle_Noise_ECG.png" target="_blank">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/dc/Muscle_Noise_ECG.png/200px-Muscle_Noise_ECG.png" alt="Muscle Noise Suppression" class="pipeline-image">
+                </a>
+            </div>
+        </div>
+    
+        <!-- EMG Pipelines -->
+        <div class="signal-pipeline-container">
+            <h3 class="subsection-header">
+                <i class="fas fa-dumbbell icon"></i>EMG (Electromyography) Pipelines
+            </h3>
+    
+            <!-- Pipeline 1 -->
+            <div class="pipeline-card">
+                <h4 class="pipeline-title">Pipeline 1: Cross-Talk Reduction</h4>
+                <p class="pipeline-description">
+                    This pipeline aims to reduce cross-talk from adjacent muscle groups in EMG signals.
+                </p>
+                <ul class="pipeline-steps">
+                    <li><strong>Step 1:</strong> Input EMG signal with cross-talk from adjacent muscles.</li>
+                    <li><strong>Step 2:</strong> Apply spatial filtering techniques to isolate the target muscle signal.</li>
+                    <li><strong>Step 3:</strong> Output clean EMG signal with reduced cross-talk.</li>
+                </ul>
+                <a href="https://upload.wikimedia.org/wikipedia/commons/3/30/EMG_Cross_Talk.png" target="_blank">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/EMG_Cross_Talk.png/200px-EMG_Cross_Talk.png" alt="Cross-Talk Reduction" class="pipeline-image">
+                </a>
+            </div>
+    
+            <!-- Pipeline 2 -->
+            <div class="pipeline-card">
+                <h4 class="pipeline-title">Pipeline 2: Motion Artifact Removal</h4>
+                <p class="pipeline-description">
+                    This pipeline removes unwanted motion artifacts in EMG signals using independent component analysis (ICA).
+                </p>
+                <ul class="pipeline-steps">
+                    <li><strong>Step 1:</strong> Input EMG signal with motion artifacts.</li>
+                    <li><strong>Step 2:</strong> Use ICA to separate motion artifact components.</li>
+                    <li><strong>Step 3:</strong> Remove the motion artifact components.</li>
+                    <li><strong>Step 4:</strong> Output the cleaned EMG signal.</li>
+                </ul>
+                <a href="https://upload.wikimedia.org/wikipedia/commons/6/69/Motion_Artifacts_EMG.png" target="_blank">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Motion_Artifacts_EMG.png/200px-Motion_Artifacts_EMG.png" alt="EMG Motion Artifact" class="pipeline-image">
+                </a>
+            </div>
+    
+            <!-- Pipeline 3 -->
+            <div class="pipeline-card">
+                <h4 class="pipeline-title">Pipeline 3: Powerline Noise Filtering</h4>
+                <p class="pipeline-description">
+                    In this pipeline, EMG signals contaminated by powerline noise are processed using band-stop filters.
+                </p>
+                <ul class="pipeline-steps">
+                    <li><strong>Step 1:</strong> Input EMG signal with powerline noise.</li>
+                    <li><strong>Step 2:</strong> Apply a band-stop filter at the powerline frequency (50/60 Hz).</li>
+                    <li><strong>Step 3:</strong> Output the clean EMG signal.</li>
+                </ul>
+                <a href="https://upload.wikimedia.org/wikipedia/commons/2/23/EMG_Powerline_Noise.png" target="_blank">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/EMG_Powerline_Noise.png/200px-EMG_Powerline_Noise.png" alt="Powerline Noise Filtering" class="pipeline-image">
+                </a>
+            </div>
+        </div>
+    
+        <!-- EEG Pipelines -->
+        <div class="signal-pipeline-container">
+            <h3 class="subsection-header">
+                <i class="fas fa-brain icon"></i>EEG (Electroencephalogram) Pipelines
+            </h3>
+    
+            <!-- Pipeline 1 -->
+            <div class="pipeline-card">
+                <h4 class="pipeline-title">Pipeline 1: Eye Blink Artifact Removal</h4>
+                <p class="pipeline-description">
+                    This pipeline addresses EEG signals contaminated by eye blink artifacts, using automatic artifact detection and removal.
+                </p>
+                <ul class="pipeline-steps">
+                    <li><strong>Step 1:</strong> Input EEG signal with eye blink artifacts.</li>
+                    <li><strong>Step 2:</strong> Apply artifact detection algorithm to identify eye blink events.</li>
+                    <li><strong>Step 3:</strong> Remove identified artifacts from the signal.</li>
+                    <li><strong>Step 4:</strong> Output the cleaned EEG signal.</li>
+                </ul>
+                <a href="https://upload.wikimedia.org/wikipedia/commons/9/9e/EEG_Eye_Blink.png" target="_blank">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/EEG_Eye_Blink.png/200px-EEG_Eye_Blink.png" alt="EEG Eye Blink" class="pipeline-image">
+                </a>
+            </div>
+    
+            <!-- Pipeline 2 -->
+            <div class="pipeline-card">
+                <h4 class="pipeline-title">Pipeline 2: Environmental Noise Suppression</h4>
+                <p class="pipeline-description">
+                    This pipeline addresses environmental noise and enhances signal-to-noise ratio in EEG data.
+                </p>
+                <ul class="pipeline-steps">
+                    <li><strong>Step 1:</strong> Input EEG signal with environmental noise.</li>
+                    <li><strong>Step 2:</strong> Apply filtering techniques (e.g., low-pass, band-pass) to reduce environmental noise.</li>
+                    <li><strong>Step 3:</strong> Output the enhanced EEG signal with improved signal-to-noise ratio.</li>
+                </ul>
+                <a href="https://upload.wikimedia.org/wikipedia/commons/e/ea/EEG_Noise_Filtering.png" target="_blank">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/EEG_Noise_Filtering.png/200px-EEG_Noise_Filtering.png" alt="EEG Noise Filtering" class="pipeline-image">
+                </a>
+            </div>
+        </div>
+    </section>
+    
+    <section class="how-to-use-section" id = "how-to-use">
+        <h2 class="section-header">
+            <i class="fas fa-play-circle icon"></i>How to Use STAT: Start Now
+        </h2>
+        <p class="section-content">
+            Getting started with the STAT toolkit is easy and can help you quickly begin analyzing biomedical time series data. Follow these simple steps to get started:
+        </p>
+        
+        <div class="how-to-steps-container">
+            <!-- Step 1 -->
+            <div class="how-to-step">
+                <h3 class="step-title">Step 1: Install the Toolkit</h3>
+                <p class="step-description">
+                    Download and install the STAT toolkit from our official website or GitHub repository. The toolkit is compatible with various operating systems, including Windows, macOS, and Linux. Follow the installation instructions in the documentation to set up the toolkit on your system.
+                </p>
+            </div>
+    
+            <!-- Step 2 -->
+            <div class="how-to-step">
+                <h3 class="step-title">Step 2: Load Your Data</h3>
+                <p class="step-description">
+                    Once installed, you can start by loading your biomedical signal data into the STAT environment. Supported formats include CSV, JSON, and standard signal file types such as .edf for EEG, .mat for ECG, etc. You can easily import your data by following the instructions in the user guide.
+                </p>
+            </div>
+    
+            <!-- Step 3 -->
+            <div class="how-to-step">
+                <h3 class="step-title">Step 3: Select Your Signal Type</h3>
+                <p class="step-description">
+                    Choose the type of biomedical signal you want to process (e.g., ECG, EMG, EEG, etc.). Based on your choice, STAT will guide you through the available preprocessing and noise removal pipelines tailored for that specific signal.
+                </p>
+            </div>
+    
+            <!-- Step 4 -->
+            <div class="how-to-step">
+                <h3 class="step-title">Step 4: Apply Pipelines</h3>
+                <p class="step-description">
+                    STAT offers a variety of pipelines that can be applied to remove noise, handle artifacts, and improve signal quality. You can select one or more pipelines to process your data and see the results in real-time. Each pipeline is designed to address specific challenges in biomedical signal processing.
+                </p>
+            </div>
+    
+            <!-- Step 5 -->
+            <div class="how-to-step">
+                <h3 class="step-title">Step 5: Analyze Your Results</h3>
+                <p class="step-description">
+                    Once the pipelines are applied, you can analyze the cleaned and processed signal using various visualization tools and statistical analysis methods. The toolkit provides you with powerful tools to explore trends, patterns, and insights from your biomedical data.
+                </p>
+            </div>
+    
+            <!-- Step 6 -->
+            <div class="how-to-step">
+                <h3 class="step-title">Step 6: Save and Export Results</h3>
+                <p class="step-description">
+                    After completing the analysis, you can save your results in different formats for further use or sharing. STAT allows you to export your data in formats like CSV, Excel, or as graphical plots to include in reports or presentations.
+                </p>
+            </div>
+        </div>
+    
+        <p class="section-content">
+            By following these steps, you can quickly get started with the STAT toolkit and begin analyzing your biomedical time series data. For more detailed information, refer to our comprehensive user guide or contact our support team for assistance.
+        </p>
+    </section>
+
+    <section class="signal-section">
+        <h2 class="section-header">
+            <i class="fas fa-exclamation-triangle icon"></i>How to reach us!!
+        </h2>
+        <p>
+            You just cannot. Sorry!! 
+        </p>
+    </section>
+
+    <!-- Footer Section -->
+    <footer>
+        <p>&copy; 2024 STAT - Statistical Time Series Analysis Toolkit. All Rights Reserved.</p>
+    </footer>
+
+</body>
+
+</html>
