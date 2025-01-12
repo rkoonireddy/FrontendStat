@@ -7,7 +7,7 @@ import {COLOR_PALETTE} from "../../Theme";
 import {HorizontalScrollContainer} from "../pageElements/HorizontalScrollContainer";
 import { setBlocks, setSelectedOpacity, initializeSelectedFilters, setSelectedFilters, setSelectedColor} from "../../redux/compareChartSlice";
 import { RootState } from "../../store";
-import {fetchUpdateBlock} from "../../redux/pipelineThunk";
+import { ReactComponent as ColorPickerSVG } from "../../assets/palette.svg";
 import {setActiveBlockId, getActiveBlock} from "../../redux/pipelineSlice";
 
 const StyledBlocksContainer = styled.div`
@@ -19,6 +19,7 @@ const StyledBlocksContainer = styled.div`
 `;
 
 const StyledBlockLineSelectorContainer = styled.div<{ $borderColor: string }>`
+    position: relative;
     padding: 10px;
     margin: 10px;
     border: 2px solid ${(props) => props.$borderColor}; /* Apply the dynamic border color */
@@ -64,20 +65,26 @@ const StyledRunBlockMsg = styled.div`
 
 const StyledBlockContent = styled.div`
     font-size: 0.75rem;
-    font-weight: thin;
+    font-weight: lighter;
     color: #73B5B4;
     margin-left: 5px;
 `;
 
 const StyledBlockSubHead = styled.div`
     font-size: 0.75rem;
-    font-weight: thin;
+    font-weight: lighter;
     color: white;
     padding-bottom: 5px;
     margin-left: 5px;
     text-decoration: underline;
     text-decoration-color: #ccc;
     text-decoration-thickness: 2px;
+`;
+
+const StyledColorPickerContainer = styled.div`
+    position: absolute;
+    right: 5px;
+    top: 5px;
 `;
 
 export function CompareCharts() {
@@ -121,9 +128,6 @@ export function CompareCharts() {
     };
 
     const filteredBlocks = blocks.filter((block) => block.type !== "CSVStringLoader");
-    
-    // console.log(selectedColors);
-    // console.log(selectedOpacity);
            
     return (
         <StyledBlocksContainer>
@@ -150,21 +154,8 @@ export function CompareCharts() {
                                     <div>
                                         <StyledBlockIdLabel>{block.name}</StyledBlockIdLabel>
                                     </div>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
-                                        <StyledLabel style={{ color: 'white', marginRight: '5px' }} />
-                                        <input
-                                            type="color"
-                                            value={blockColor}
-                                            onChange={(e) => handleColorChange(block.id, e.target.value)} // Handle color change
-                                            style={{
-                                                width: '20px',
-                                                height: '20px',
-                                                border: 'none',
-                                                padding: 0,
-                                                background: 'none',
-                                                cursor: 'pointer',
-                                            }}
-                                        />
+                                    <div style={{display: 'flex', alignItems: 'center', gap: '2px'}}>
+                                        <StyledLabel style={{color: 'white', marginRight: '5px'}}/>
                                         <input
                                             type="range"
                                             min="0"
@@ -176,9 +167,28 @@ export function CompareCharts() {
                                                 cursor: 'pointer',
                                             }}
                                         />
-                                        <StyledLabel style={{ color: 'white', fontSize: '0.75rem' }}>
+                                        <StyledLabel style={{color: 'white', fontSize: '0.75rem'}}>
                                             {blockOpacity}%
                                         </StyledLabel>
+                                        <StyledColorPickerContainer>
+                                        <label htmlFor="color-picker"
+                                               style={{ color: 'white', fontSize: '0.75rem', position: "relative"}}>
+                                            <ColorPickerSVG style={{
+                                                borderLeft: '20px',
+                                                width: '20px',
+                                                height: '20px',
+                                                cursor: 'pointer',
+                                                fill: blockColor
+                                            }}/>
+                                            <input
+                                                id="color-picker"
+                                                type="color"
+                                                value={blockColor}
+                                                onChange={(e) => handleColorChange(block.id, e.target.value)} // Handle color change
+                                                style={{width: 0, height: 0, opacity: 0}}
+                                            />
+                                        </label>
+                                        </StyledColorPickerContainer>
                                     </div>
                                 </div>
                                 <StyledBlockContent>{block.type}</StyledBlockContent>
@@ -188,7 +198,8 @@ export function CompareCharts() {
                                             <div>
                                                 <StyledBlockSubHead>Features</StyledBlockSubHead>
                                                 {(Object.values(block.cols_to_process) as string[]).map(featureName => (
-                                                    <div key={featureName} style={{ display: 'flex', alignItems: 'center' }}>
+                                                    <div key={featureName}
+                                                         style={{display: 'flex', alignItems: 'center'}}>
                                                         <input
                                                             type="checkbox"
                                                             checked={selectedFilters[block.id]?.includes(featureName) || false}
