@@ -59,8 +59,6 @@ const initialState: IPipelineState = {
 }
 
 
-
-
 export const pipelineSlice = createSlice({
     name: 'pipeline',
     initialState,

@@ -15,6 +15,7 @@ import {
 import {BlockModel} from "../../types/responseType";
 import {CompareCharts} from "./CompareCharts";
 import {ToggleButton} from "../pageElements/buttons/ToggleButton";
+import { LineChartMultiVariate } from "../charts/LineChartMultiVariate";
 
 const StyledVizSectionContainer = styled.div`
     position: relative;
@@ -66,6 +67,11 @@ export function VizSection({block}: { block: BlockModel }) {
     const [controlsVisible, setControlsVisible] = useState<boolean>(false);
     const [controlsExpanded, setControlsExpanded] = useState<boolean>(false);
     const [isCompareMode, setIsCompareMode] = useState(false);
+    const [isMultiVariate, setisMultiVariate] = useState(false);
+
+    const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setisMultiVariate(e.target.checked);
+    };
 
     useEffect(() => {
         setHistoryVisible(block.config_params.historyVisible);
@@ -106,16 +112,26 @@ export function VizSection({block}: { block: BlockModel }) {
                 </div>}
 
             <StyledChartContainer $controlsVisible={controlsVisible}>
-
-                {isCompareMode ? (
+            {block.type === "CSVStringLoader" ? (
+                <DataLoaderSection block={block} />
+            ) : (
+                isCompareMode ? (
                     <>
-                        <CompareCharts/>
+                        <CompareCharts />
                     </>
-                ) : block.type === "CSVStringLoader" ? (
-                    <DataLoaderSection block={block}/>
                 ) : (
-                    <LineChart block={block}/>
-                )}
+                    <>
+                        <label>
+                            <input
+                                type="checkbox"
+                                checked={isMultiVariate}
+                                onChange={handleCheckboxChange}
+                            />
+                            <span style={{color: 'white'}}>Multi-variate view</span>
+                        </label>
+                        {isMultiVariate ? <LineChartMultiVariate block={block} /> : <LineChart block={block} />}
+                </>)
+            )}
             </StyledChartContainer>
 
             {controlsVisible && (

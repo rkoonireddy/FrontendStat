@@ -3,6 +3,7 @@ import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import dataReducer from './redux/dataSlice';
 import pipelineReducer from './redux/pipelineSlice';
+import compareChartReducer from './redux/compareChartSlice';
 
 const persistConfig = {
   key: 'root',
@@ -12,6 +13,7 @@ const persistConfig = {
 const rootReducer = combineReducers({
   data: dataReducer,
   pipeline: pipelineReducer,
+  compareCharts: compareChartReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)

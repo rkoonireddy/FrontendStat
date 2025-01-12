@@ -17,10 +17,10 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "noEmit": false  // Set this to false to allow file generation
   },
   "include": [
-    "src"
+    "src/**/*"
   ]
 }
