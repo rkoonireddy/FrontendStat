@@ -9,6 +9,7 @@ import { setBlocks, setSelectedOpacity, initializeSelectedFilters, setSelectedFi
 import { RootState } from "../../store";
 import { ReactComponent as ColorPickerSVG } from "../../assets/palette.svg";
 import {setActiveBlockId, getActiveBlock} from "../../redux/pipelineSlice";
+import {Slider} from "primereact/slider";
 
 const StyledBlocksContainer = styled.div`
     position: absolute;
@@ -34,11 +35,18 @@ const StyledBlockLineSelectorContainer = styled.div<{ $borderColor: string }>`
     cursor:pointer;
 `;
 
-const StyledLabel = styled.div`
+const StyledLabel = styled.div<{ $absolute?: boolean }>`
     font-size: 0.75rem;
     font-weight: normal;
-    color: #73B5B4;
+    color: #ffffff;
     margin-left: 5px;
+    
+    ${(props) => props.$absolute && `
+        position: absolute;
+        right: 0;
+        left: 0;
+        margin: 0 auto 15px auto;
+    `}
 `;
 
 const StyledCheckboxContainer = styled.div`
@@ -83,8 +91,20 @@ const StyledBlockSubHead = styled.div`
 
 const StyledColorPickerContainer = styled.div`
     position: absolute;
-    right: 5px;
-    top: 5px;
+    right: -12px;
+    top: -12px;
+`;
+
+const StyledOpacitySliderContainer = styled.div`
+    position: relative;
+    display: flex; 
+    align-items: center; 
+    gap: 2px;
+    
+    & .p-slider .p-slider-handle {
+        width: 1rem;
+        height: 1rem;
+    }
 `;
 
 export function CompareCharts() {
@@ -118,9 +138,8 @@ export function CompareCharts() {
         dispatch(setSelectedColor({ blockId, color }));
     };
     
-    const handleOpacityChange = (blockId: string, opacity: string) => {
-        const newOpacity = parseInt(opacity, 10);
-        dispatch(setSelectedOpacity({ blockId, opacity: newOpacity }));
+    const handleOpacityChange = (blockId: string, opacity: number) => {
+        dispatch(setSelectedOpacity({ blockId, opacity: opacity }));
     };
 
     const handleBlockSelect = (blockId: string) => {
@@ -150,26 +169,21 @@ export function CompareCharts() {
                                 style={{ backgroundColor: rgbaColor }}
                                 onClick={() => handleBlockSelect(block.id)}
                             >
-                                <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', marginTop: '5px' }}>
+                                <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', marginTop: '5px', width: '100%' }}>
                                     <div>
                                         <StyledBlockIdLabel>{block.name}</StyledBlockIdLabel>
                                     </div>
-                                    <div style={{display: 'flex', alignItems: 'center', gap: '2px'}}>
-                                        <StyledLabel style={{color: 'white', marginRight: '5px'}}/>
-                                        <input
-                                            type="range"
-                                            min="0"
-                                            max="100"
-                                            value={blockOpacity}
-                                            onChange={(e) => handleOpacityChange(block.id, e.target.value)}
-                                            style={{
-                                                width: '100px',
-                                                cursor: 'pointer',
-                                            }}
-                                        />
-                                        <StyledLabel style={{color: 'white', fontSize: '0.75rem'}}>
-                                            {blockOpacity}%
+                                    <StyledOpacitySliderContainer>
+                                        <StyledLabel>Opacity</StyledLabel>
+                                        <StyledLabel $absolute={true}>{blockOpacity}%
                                         </StyledLabel>
+                                        <Slider min={0}
+                                                max={100}
+                                                step={1}
+                                                value={blockOpacity}
+                                                orientation={"horizontal"}
+                                                style={{width: "100px", cursor: 'pointer', marginRight: '20px'}}
+                                                onChange={(e) => handleOpacityChange(block.id, e.value as number)}/>
                                         <StyledColorPickerContainer>
                                         <label htmlFor="color-picker"
                                                style={{ color: 'white', fontSize: '0.75rem', position: "relative"}}>
@@ -189,7 +203,7 @@ export function CompareCharts() {
                                             />
                                         </label>
                                         </StyledColorPickerContainer>
-                                    </div>
+                                    </StyledOpacitySliderContainer>
                                 </div>
                                 <StyledBlockContent>{block.type}</StyledBlockContent>
                                 <StyledCheckboxContainer>
