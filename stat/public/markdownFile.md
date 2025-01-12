@@ -1,8 +1,8 @@
+![Logo](logo.png)
+
 # STAT - Statistical Time Series Analysis Toolkit
 
 ## Introduction
-
-![Logo](logo-no-bg.png)
 
 ### About STAT
 
