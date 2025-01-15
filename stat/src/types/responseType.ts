@@ -61,6 +61,8 @@ export type BlockModel = {
         created_at: string;
         some_other_metadata: string;
     };
+    x_axis_name: string;
+    y_axis_name: string;
     filters: {[key: string]: FilterModel};
     cols_to_process: number[] | (number | string | null)[];
 };
