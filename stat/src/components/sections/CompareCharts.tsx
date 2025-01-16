@@ -135,6 +135,7 @@ export function CompareCharts() {
     };
 
     const handleColorChange = (blockId: string, color: string) => {
+        console.log(blockId);
         dispatch(setSelectedColor({ blockId, color }));
     };
     
@@ -163,12 +164,17 @@ export function CompareCharts() {
                                                ${blockOpacity / 100})`;
     
                         return (
-                            <StyledBlockLineSelectorContainer
-                                key={block.id}
-                                $borderColor={blockColor}
-                                style={{ backgroundColor: rgbaColor }}
-                                onClick={() => handleBlockSelect(block.id)}
-                            >
+                                <StyledBlockLineSelectorContainer
+                                    key={block.id}
+                                    $borderColor={blockColor}
+                                    style={{ backgroundColor: rgbaColor }}
+                                    onClick={(e) => {
+                                        const target = e.target as HTMLElement;
+                                        if (target.tagName !== 'INPUT') {
+                                            handleBlockSelect(block.id);
+                                        }
+                                    }}
+                                >
                                 <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', marginTop: '5px', width: '100%' }}>
                                     <div>
                                         <StyledBlockIdLabel>{block.name}</StyledBlockIdLabel>
@@ -185,23 +191,30 @@ export function CompareCharts() {
                                                 style={{width: "100px", cursor: 'pointer', marginRight: '20px'}}
                                                 onChange={(e) => handleOpacityChange(block.id, e.value as number)}/>
                                         <StyledColorPickerContainer>
-                                        <label htmlFor="color-picker"
-                                               style={{ color: 'white', fontSize: '0.75rem', position: "relative"}}>
-                                            <ColorPickerSVG style={{
-                                                borderLeft: '20px',
-                                                width: '20px',
-                                                height: '20px',
-                                                cursor: 'pointer',
-                                                fill: blockColor
-                                            }}/>
-                                            <input
-                                                id="color-picker"
-                                                type="color"
-                                                value={blockColor}
-                                                onChange={(e) => handleColorChange(block.id, e.target.value)} // Handle color change
-                                                style={{width: 0, height: 0, opacity: 0}}
-                                            />
-                                        </label>
+                                            <label
+                                                htmlFor="color-picker"
+                                                style={{ color: 'white', fontSize: '0.75rem', position: 'relative' }}
+                                            >
+                                                <ColorPickerSVG
+                                                    style={{
+                                                        borderLeft: '20px',
+                                                        width: '20px',
+                                                        height: '20px',
+                                                        cursor: 'pointer',
+                                                        fill: blockColor,
+                                                    }}
+                                                />
+                                                <input
+                                                    id="color-picker"
+                                                    type="color"
+                                                    value={blockColor}
+                                                    onChange={(e) => {
+                                                        handleColorChange(block.id, e.target.value); // Handle color change
+                                                        handleBlockSelect(block.id); // Explicitly select the block
+                                                    }}
+                                                    style={{ width: 0, height: 0, opacity: 0 }}
+                                                />
+                                            </label>
                                         </StyledColorPickerContainer>
                                     </StyledOpacitySliderContainer>
                                 </div>

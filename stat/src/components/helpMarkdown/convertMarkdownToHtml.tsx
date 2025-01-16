@@ -9,9 +9,10 @@ const StyledPopupContainer = styled.div`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: white;
+  background: #1e1e1e;
+  color: white;
   padding: 20px;
-  border: 1px solid #ccc;
+  border: 1px solid #444; /* Dark border */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   border-radius: 5px;
   z-index: 1000;
@@ -39,7 +40,7 @@ const StyledOverlay = styled.div`
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.5); /* Dark overlay */
   z-index: 999;
 `;
 
