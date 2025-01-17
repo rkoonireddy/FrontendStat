@@ -31,6 +31,10 @@ extendability.
         - **small** - This boolean value controls the size of the displayed table.
       - `LineChart` - This component utilizes the D3 React library to create a line chart. It calculates min/max values from the provided list of data points and dynamically changes the size of the chart based on window and component resize events. The expected parameter is:
         - **block** -  A Block model which contains output data which then can be displayed.
+      - `DescriptiveStatistics` - This component lists various descriptive statistic values for each feature of the input (mean, median, Standard Deviation, Data Coverage)
+      - `BoxPlot` - This component creates a visual representation of descriptive statistics in the form of block plots for each feature of the initial dataset. It's a deprecated visual component, substituted by `ViolinPlot`.
+      - `ViolinPlot` - This component creates a visual representation of descritive statistics (IQR 0,25 - 0,75, median, distribution of observations and confidence interval assuming a normal distribution ) in the form of ViolinPlon for each feature of the input dataset.
+
     - `controls/` - This folder holds all the configuration components that are used to configure the different steps in the data pre-processing pipeline. Filters, knobs, sliders, etc. are all found here. The components are based on [primereact](https://primereact.org/) components.
       - `ControlTitle` - This is the title component used in the different control components. It's attributes are:
         - **title** - The title of the control.
@@ -91,6 +95,7 @@ extendability.
       - `PipelineHistory` - This section is the ribbon above the main visualization. It takes all the blocks in the pipeline and creates a small visualization for each one of them in a compact and scrollable view. Each small section can be clicked to select the respective block in the pipeline.
       - `StepsSection` - This section is located to the right of the main visualization. It displays the whole pipeline with its blocks and edges. It utilizes ReactFlow to create a Directed Acyclic Graph (DAG). It fetches the nodes and edges, tries to sort them and. The logic to connect two blocks is also located in this component.
       - `VizSection` - The main part of this section is the chart which displays the data in the selected block. As an addition, this section controls the display of the `ControlSection`and `PipelineHistory`. They can be displayed/hidden and expanded/minimized.
+      - `DataLoaderSection` - The DataLoader Section combines the charts of `DescriptiveStatistics`, `ViolinPlot` and `CSVViewer`. It's only displayed above the `LineChart` when the `DataLoader` block is selected.
     - `tables/` - This folder contains all tables not related to a block directly.
       - `PreviewTable`displays the data to the user before it is uploaded and added to the pipeline.
 - `fonts/` - Contains the fonts used in the project.
