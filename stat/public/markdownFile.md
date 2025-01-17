@@ -3,13 +3,21 @@
 
 ---
 
-## Introduction
+## Statistical Time Series Analysis Toolkit (STAT)
 
-![Logo](/logo-no-bg.png)
+Welcome to **STAT**, Your all-in-one toolkit for analyzing and interpreting biomedical time-series data. Whether you're exploring cardiac rhythms, muscle activity, or other physiological signals, **STAT** empowers researchers, healthcare professionals, and engineers to uncover actionable insights and address complex challenges in biomedical signal analysis.
+Biomedical signals hold the key to understanding the human body. 
 
-### Statistical Time Series Analysis Toolkit (STAT)
+#### Why Choose STAT?
 
-Welcome to STAT, your go-to toolkit for analyzing and interpreting biomedical time-series data. From cardiac rhythms to muscle activity, STAT equips researchers, healthcare professionals, and engineers with powerful tools to uncover insights and address challenges in biomedical signal analysis.
+While Python libraries like [**NeuroKit**](https://pypi.org/project/neurokit2/), [**BioSPPy**](https://biosppy.readthedocs.io/en/latest/index.html), and [**SciPy**](https://docs.scipy.org/doc/scipy/) offer robust tools for biomedical signal analysis, **STAT** takes it a step further:
+
+- **Unified Visualization**: Seamlessly integrate capabilities from these libraries into a single, user-friendly visual interface.
+- **No Technical Overhead**: Analyze signals without worrying about complex setups or deep programming expertise.
+- **Streamlined Workflow**: Focus on insights and innovation, not on configuring tools.
+
+With **STAT**, you get the power of the best libraries combined with a simple and intuitive visual platform tailored for biomedical signal analysis.
+
 
 #### Key Features:
 - 🎯 **Comprehensive Signal Support:** Analyze ECG, EMG, EEG, and more.
@@ -18,7 +26,6 @@ Welcome to STAT, your go-to toolkit for analyzing and interpreting biomedical ti
 - 🔧 **Customizable Workflows:** Save reusable workflows for ongoing projects.
 - ✨ **Built-In Filters:** Apply denoising and preprocessing methods easily.
 
-Biomedical signals hold the key to understanding the human body. However, they often come with challenges such as noise and artifacts. STAT provides robust solutions to tackle these problems, enabling clear and actionable insights.
 
 Ready to explore STAT? Check out [supported signals](#signals) to see how it can help with your specific needs.
 
@@ -28,10 +35,45 @@ Ready to explore STAT? Check out [supported signals](#signals) to see how it can
 
 Navigate through the various sections of the STAT Toolkit Documentation to learn more about the features and capabilities of our toolkit:
 
-- [Challenges with Biomedical Signals](#signal-overview)
-- [Solutions for Signal Challenges](#signal-solutions)
-- [Available Pipelines](#pipelines)
-- [How to Use STAT: Start Now](#how-to-use)
+- [Challenges with Biomedical Signals](#supported-biomedical-signals)
+- [Solutions for Signal Challenges](#how-stat-resolves-signal-challenges)
+- [Available Pipelines](#available-pipelines)
+- [How to Use STAT: Start Now](#how-to-use-stat)
+
+---
+
+## How to Use STAT
+Getting started with the STAT toolkit is easy and can help you quickly begin analyzing biomedical time series data. Follow these simple steps to get started:
+
+### Step 1: Prepare your data
+Since STAT is an online tool hosted on the web, all you need is to come with clean data, preferably in CSV format. Make sure that your data doesn't contain any empty columns or rows or any non-numerical values. We check for these too.
+
+### Step 2: Load Your Data
+Once your data is ready, you can start by loading your biomedical signal data into the STAT environment. Currently we support only **CSV** data and many functions for **ECG**. In the future, we aim to support standard signal file types such as JSON, .edf for EEG, .mat for ECG, etc. You can easily import your data by following the instructions in the [user guide](#user-guide).
+
+### Step 3: Select Your Signal Type (Optional)
+Right now, we do not ask you for the signal type, we assume that your given file is ECG. Once you load the data. In the future, we support choosing the signal type to ensure that you see the right functions for the given signal type along with some general functions.
+
+### Step 4: Apply Pipelines
+We have 3 steps to apply pipelines:
+  1. Create blocks such as "Notch Filter", "Butterworth" etc. and connect them.
+  2. Choose the controls for these blocks, selct the features for which you want to apply the filters of the block.
+  3. Run the pipleine using **play** icon.
+
+### Step 5: Analyze Your Results
+You will be offered 2 swichable tabs in the graph view called **Visualize** and **Compare**. Visualize showcases all the features (some may call these columns of the data) either overlapping each other or in a row view seperately (we call this Multivariate View) using a Multivariate view check box.
+
+#### Step 5.1: Analyze Your Results - Visualize View 
+In the **Visualize** view you will see all the features of the selected bloc. You can click on a different block other than the selected block to view the view for a different box. You have the opportunity to view magnified view of the graph here for the experts.
+
+#### Step 5.2: Analyze Your Results - Compare View
+In the **Compare** view you have the possibility to compare features and their transformations applied by different blocks at once. You can check / uncheck the features and change colors of the features by block. You are given an opportunity to compare the same features at different blocks or even different features at once.
+
+### Step 6: View Pipeline History
+You can check the entire history of what your pipeline has gone through. Each graph represents the order in which functional blocks are applied to signals (if they are no branching).
+
+### Step 6: Save and Export Results
+You can get replicate the results of the pipeline in 2 ways, exporting a **.py (python)** file or by giving your fellow researchers your **pipeline id** (eg. 1b06b9f4-f8f7-4d8c-b773-940ef41d6679). 
 
 ---
 
@@ -43,6 +85,9 @@ STAT supports the analysis of multiple biomedical signals, each critical in unde
 Measures the electrical activity of the heart, essential for diagnosing cardiac conditions such as arrhythmias and myocardial infarction. [Learn more about ECG](https://en.wikipedia.org/wiki/Electrocardiography).
 
 **Common Challenges:**
+
+![Common ECG Artifacts](ECGTypicalArtifacts.png)
+
 - Baseline wander due to patient movement or electrode drift.
 - Powerline interference from external electrical equipment.
 - Motion artifacts caused by physical activity or poor electrode contact.
@@ -139,27 +184,7 @@ STAT enhances EEG signals for precise analysis of brain activity.
 
 ---
 
-## How to Use STAT: Start Now
-
-Getting started with the STAT toolkit is easy and can help you quickly begin analyzing biomedical time series data. Follow these simple steps to get started:
-
-### Step 1: Install the Toolkit
-Download and install the STAT toolkit from our official website or GitHub repository. The toolkit is compatible with various operating systems, including Windows, macOS, and Linux. Follow the installation instructions in the documentation to set up the toolkit on your system.
-
-### Step 2: Load Your Data
-Once installed, you can start by loading your biomedical signal data into the STAT environment. Supported formats include CSV, JSON, and standard signal file types such as .edf for EEG, .mat for ECG, etc. You can easily import your data by following the instructions in the user guide.
-
-### Step 3: Select Your Signal Type
-Choose the type of biomedical signal you want to process (e.g., ECG, EMG, EEG, etc.). Based on your choice, STAT will guide you through the available preprocessing and noise removal pipelines tailored for that specific signal.
-
-### Step 4: Apply Pipelines
-STAT offers a variety of pipelines that can be applied to remove noise, handle artifacts, and improve signal quality. You can select one or more pipelines to process your data and see the results in real-time. Each pipeline is designed to address specific challenges in biomedical signal processing.
-
-### Step 5: Analyze Your Results
-Once the pipelines are applied, you can analyze the cleaned and processed signal using various visualization tools and statistical analysis methods. The toolkit provides you with powerful tools to explore trends, patterns, and insights from your biomedical data.
-
-### Step 6: Save and Export Results
-After completing the analysis, you can save your results in different formats for further use or sharing. STAT allows you to export your data in formats like CSV, Excel, or as graphical plots to include in reports or presentations.
+## User Guide
 
 ---
 
