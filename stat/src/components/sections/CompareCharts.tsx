@@ -97,6 +97,13 @@ const StyledBlockContent = styled.div`
     margin-left: 0px;
 `;
 
+const StyledBlockType = styled.div`
+    font-size: 0.75rem;
+    font-weight: lighter;
+    color: #73B5B4;
+    margin-left: 0px;
+`;
+
 const StyledBlockSubHead = styled.div`
     font-size: 1rem;
     font-weight: lighter;
@@ -257,8 +264,10 @@ export function CompareCharts() {
                                                         width: '20px',
                                                         height: '20px',
                                                         cursor: 'pointer',
-                                                        fill: blockColor,
+                                                        // fill: blockColor,
+                                                        fill:  '#73B5B4',
                                                     }} 
+                                                    title="Pick a different color" 
                                                 />
                                             </label>
                                             {activeColorPicker === block.id && (
@@ -280,7 +289,7 @@ export function CompareCharts() {
                                         </StyledColorPickerContainer>
                                     </StyledOpacitySliderContainer>
                                 </div>
-                                <StyledBlockContent>{block.type}</StyledBlockContent>
+                                <StyledBlockType>{block.type}</StyledBlockType>
                                 <StyledCheckboxContainer>
                                     {block.cols_to_process ? (
                                         <>
