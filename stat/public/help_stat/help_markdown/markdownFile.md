@@ -221,7 +221,7 @@ Other recycle bins usually delete the block or connections between blocks in the
 
 ![Delete Pipeline](help_stat/help_images/Product1_DeletePipeLinePopup.PNG)
 
-*Happy STATing!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*
+---------------------------- *Happy      STATing !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!* ----------------------------
 ---
 
 ## Development Team

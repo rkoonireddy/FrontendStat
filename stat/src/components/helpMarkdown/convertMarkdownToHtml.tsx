@@ -114,7 +114,7 @@ const MarkdownViewer: React.FC<HelpPopupProps> = ({ isOpen, onClose }) => {
   useEffect(() => {
     const fetchMarkdown = async () => {
       try {
-        const response = await fetch('/markdownFile.md');
+        const response = await fetch('/help_stat/help_markdown/markdownFile.md');
         const markdownText = await response.text();
         setMarkdownContent(markdownText);
       } catch (error) {
