@@ -72,8 +72,11 @@ In the **Compare** view you have the possibility to compare features and their t
 ### Step 6: View Pipeline History
 You can check the entire history of what your pipeline has gone through. Each graph represents the order in which functional blocks are applied to signals (if they are no branching).
 
-### Step 6: Save and Export Results
+### Step 7: Save and Export Results
 You can get replicate the results of the pipeline in 2 ways, exporting a **.py (python)** file or by giving your fellow researchers your **pipeline id** (eg. 1b06b9f4-f8f7-4d8c-b773-940ef41d6679). 
+
+### Step 8: Delete Pipeline
+We recommend you deleting the pipline at the end of your analysis unless you want the pipeline to be shared to someone. Since biomedical signals are considered to be personal information revealing, we strongly recommend anonymsing and deleting pipeline data.
 
 ---
 
@@ -86,32 +89,13 @@ Measures the electrical activity of the heart, essential for diagnosing cardiac 
 
 **Common Challenges:**
 
-![Common ECG Artifacts](ECGTypicalArtifacts.png)
+![Common ECG Artifacts](help_stat/help_images/ECGTypicalArtifacts.png)
 
 - Baseline wander due to patient movement or electrode drift.
 - Powerline interference from external electrical equipment.
 - Motion artifacts caused by physical activity or poor electrode contact.
 - Muscle noise overlapping with the ECG signal.
 
-### EMG (Electromyography)
-Records muscle electrical activity, aiding in the diagnosis of muscle and nerve disorders. [Learn more about EMG](https://en.wikipedia.org/wiki/Electromyography).
-
-**Common Challenges:**
-- Cross-talk between neighboring muscle groups, reducing signal clarity.
-- Motion artifacts introduced during body movements.
-- Powerline noise from external electrical sources.
-- Electrode placement variability causing inconsistent recordings.
-
-### EEG (Electroencephalogram)
-Captures brain electrical activity and is commonly used to diagnose epilepsy, sleep disorders, and other neurological conditions. [Learn more about EEG](https://en.wikipedia.org/wiki/Electroencephalography).
-
-**Common Challenges:**
-- Eye blink artifacts causing significant distortions in the EEG signal.
-- Muscle activity interference from facial or scalp muscles.
-- Environmental noise from nearby electronic devices or power sources.
-- Electrode impedance issues leading to poor signal quality.
-
----
 
 ## How STAT Resolves Signal Challenges
 
@@ -123,43 +107,12 @@ Our toolkit effectively cleans ECG data and prepares it for diagnostic or resear
 
 **Solutions:**
 - **Baseline Wander Removal:** High-pass filters to eliminate low-frequency drifts.  
-  ![Baseline Wander](https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/ECG_Baseline_Wander.png/200px-ECG_Baseline_Wander.png)
 
-- **Powerline Interference:** Notch filters to suppress 50/60 Hz powerline noise.  
-  ![Powerline Noise](https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Powerline_noise.png/200px-Powerline_noise.png)
+- **Powerline Interference:** Notch / BandStop filters to suppress 50/60 Hz powerline noise.  
 
 - **Motion Artifacts:** Adaptive filtering techniques to remove movement-induced distortions.  
-  ![Motion Artifacts](https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Motion_artifact.png/200px-Motion_artifact.png)
 
-- **Muscle Noise Suppression:** Wavelet denoising to separate ECG from EMG contamination.  
-  ![Muscle Noise](https://upload.wikimedia.org/wikipedia/commons/thumb/d/dc/Muscle_Noise_ECG.png/200px-Muscle_Noise_ECG.png)
-
-### EMG (Electromyography)
-
-STAT’s tools refine EMG data for detailed muscle activity analysis.
-
-**Solutions:**
-- **Cross-Talk Reduction:** Spatial filtering to isolate muscle-specific signals.  
-  ![Cross-Talk Reduction](https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/EMG_Cross_Talk.png/200px-EMG_Cross_Talk.png)
-
-- **Motion Artifact Removal:** ICA to separate noise components.  
-  ![Motion Artifacts EMG](https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Motion_Artifacts_EMG.png/200px-Motion_Artifacts_EMG.png)
-
-- **Powerline Noise Filtering:** Band-stop filters targeting noise frequencies.  
-  ![EMG Powerline Noise](https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/EMG_Powerline_Noise.png/200px-EMG_Powerline_Noise.png)
-
-### EEG (Electroencephalogram)
-
-STAT enhances EEG signals for precise analysis of brain activity.
-
-**Solutions:**
-- **Eye Blink Artifact Removal:** Automatic detection and removal of eye artifacts.  
-  ![EEG Eye Blink](https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/EEG_Eye_Blink.png/200px-EEG_Eye_Blink.png)
-
-- **Environmental Noise Suppression:** Signal-to-noise ratio enhancement.  
-  ![EEG Noise Filtering](https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/EEG_Noise_Filtering.png/200px-EEG_Noise_Filtering.png)
-
----
+- **Muscle Noise Suppression:** Wavelet denoising to separate ECG from EMG contamination.
 
 ## Available Pipelines
 
@@ -185,14 +138,101 @@ STAT enhances EEG signals for precise analysis of brain activity.
 ---
 
 ## User Guide
+This section helps users to understand the standard flow of STAT. The screenshot below shows the home of stat. You press the upload button or copy a pipeline id shared by one of your fellow researchers.
+
+![Home](help_stat/help_images/home.png)
+
+You will upload the CSV data as prescribed by us and enter the sampling frequency of the data. Since this is ECG data, we default this to 200 Hz, if you do not give any.
+
+![UploadHome](help_stat/help_images/home_upload.PNG)
+
+You will see a preview of data where you can select only the required features as shown here. This will let only the selected features to be selected for analysis. You press **UPLOAD**.
+
+![SelectFeatures](help_stat/help_images/home_select_unselect_features.PNG)
+
+### Analysis Home
+Now we see the home page of the **Analysis** where we see the **Data Loader** view which shows a **table view** and **stat view** showcasing statistics of the data and violin plots respectively.
+
+![Analysis TableView Home](help_stat/help_images/Product1_DataLoader_TableView1.PNG)
+
+![Analysis StatView Home](help_stat/help_images/Product1_DataLoader_StatView1.PNG)
+
+
+### Adding Function Blocks and Managing the Pipeline
+The **canvas of the react-flow** lets you to add new blocks with the **+** icon you see on the canvas. We call the final output you create by adding the blocks a **pipeline**.
+
+![Canvas](help_stat/help_images/Product1_Canvas.PNG)
+
+ The canvas also offers options to adjust position and maginify the pipeline as you can see.
+
+![Canvas Adjustment](help_stat/help_images/Product1_ReactFlow_Options.PNG)
+
+
+To create a new block, you see all the existing function blocks when you click on the **+** icon. You can see what that function does and how the block can influence a signal.
+
+![Add Block Full View](help_stat/help_images/Product1_AddBlock_allblocks.PNG)
+
+You create a new block, connect these blocks together, and press the **run** icon.
+
+![Plus](help_stat/help_images/Product1_AddBlock.PNG)
+
+### Analysing Graphs
+Now, we see what happens when you click run. You see the **Analyze** view which shows the graph including all the included signals and **The Controls** for the respective block. You can adjust these controls and re-run the pipeline.
+
+![Analyse View 1](help_stat/help_images/Product1_Visualize1.PNG)
+
+Another feature of the STAT is that you can create branches from the blocks to see how blocks transferred the same signal. For example, if you want to verify power line noise's presence when you are not aware - 50Hz or 60Hz, you will be able to easily verify visually.
+
+![Analyse View 2](help_stat/help_images/Product1_Visualize2_Branch.PNG)
+### Comparing Graphs
+Compare view takes the analysis to a more intersting phase by enabling single screen analysis of all the block outputs at once while enabling users to select desired features, assignable colors to the features, and controlling the transparency of the lines.
+
+Each block takes a color and all the features from that block will have same color but different patterns. Patterns are asigned in the order of selection.
+
+![Compare View 1](help_stat/help_images/Product1_Compare1.PNG)
+
+Here, you will see patters application of different featrues of the same block.
+![Compare View 2](help_stat/help_images/Product1_Compare2_SameBlock1.PNG)
+
+Here, you will see the comparison between same features of different blocks.
+![Compare View 2](help_stat/help_images/Product1_Compare2_SameSignal1.PNG)
+
+We also provide users the ability to select dynamic colors so that they are not restricted by set colors or any color pallette. We default a good color pallette too.
+![Compare Color 1](help_stat/help_images/Product1_CompareView_selectColor.PNG)
+
+### Pipeline History
+Along with the visualise and comapare views you can check **the pipeline history** dropup which shows the graphs variation with each block in an order. When there is branching this can be slightly unclear, however, this provides a snapshot view of the features progress through the pipeline.
+
+![Compare Color 1](help_stat/help_images/Product1_PipeLineHistroyView.PNG)
+
+### Replication Options
+We provide replication options both in offline and online forms. For more tech savvy users, we enable users to **download pipeline in a python file** format which can be used locally with a similar signal input.
+
+For more research inclined users who would like to see the ouputs and changes in pipelines of other researchers, we enable **copy pipeline** which produces a unique id for your pipeline which can be shared. Others can just enter this pipeline id in the home screeen and see / continue you work with the signals.
+
+[!Replication Options](help_stat/help_images/Product1_ExportOptions.PNG)
+
+### Deleting Pipeline
+Finally, clicking on the large **Recycle Bin** icon will delete your pipeline entirely, even from our database in the backend. We ensure that you are sure. 
+
+Other recycle bins usually delete the block or connections between blocks in the canvas.
+
+![Delete Pipeline](help_stat/help_images/Product1_DeletePipeLine.PNG)
+
+![Delete Pipeline](help_stat/help_images/Product1_DeletePipeLinePopup.PNG)
+
+*Happy STATing!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*
+---
+
+## Development Team
+Pictures here
 
 ---
 
 ## How to reach us!!
-
 You just cannot. Sorry!!
 
 ---
 
-### Footer
+## Footer
 &copy; 2024 STAT - Statistical Time Series Analysis Toolkit. All Rights Reserved.
