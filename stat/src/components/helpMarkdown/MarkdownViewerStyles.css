@@ -1,92 +1,65 @@
-.markdown-viewer {
-    padding: 20px;
-    max-width: 800px;
-    margin: 0 auto;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  .markdown-content h1 {
-    font-size: 2.5rem;
-    color: #2c3e50;
-    margin-bottom: 20px;
-  }
-  
-  .markdown-content h2 {
-    font-size: 2rem;
-    color: #34495e;
-    margin-bottom: 18px;
-  }
-  
-  .markdown-content h3 {
-    font-size: 1.75rem;
-    color: #16a085;
-    margin-bottom: 16px;
-  }
-  
-  .markdown-content p {
-    font-size: 1rem;
-    color: #333;
-    line-height: 1.6;
-    margin-bottom: 16px;
-  }
-  
-  .markdown-content ul {
-    list-style-type: disc;
-    margin-left: 20px;
-    margin-bottom: 16px;
-  }
-  
-  .markdown-content ol {
-    list-style-type: decimal;
-    margin-left: 20px;
-    margin-bottom: 16px;
-  }
-  
-  .markdown-content li {
-    margin-bottom: 8px;
-  }
-  
-  .markdown-content blockquote {
-    background-color: #ecf0f1;
-    padding: 10px;
-    border-left: 5px solid #7f8c8d;
-    margin: 20px 0;
-  }
-  
-  .markdown-content code {
-    font-family: monospace;
-    background-color: #f4f4f4;
-    padding: 4px;
-    border-radius: 4px;
-  }
-  
-  .markdown-content pre {
-    background-color: #2d3e50;
-    color: #f4f4f4;
-    padding: 16px;
-    border-radius: 4px;
-    overflow-x: auto;
-  }
-  
-  .markdown-content a {
-    color: #3498db;
-    text-decoration: none;
-  }
-  
-  .markdown-content a:hover {
-    text-decoration: underline;
-  }
-  
-  .markdown-content img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 4px;
-  }
+/* Markdown-specific styles with black background */
 
-  p img {
-    width: 250px;
-    height: 250px;
-  }
-  
+.markdown-content {
+  background-color: #1e1e1e; /* Black background */
+  color: white; /* Light text color for readability */
+  padding: 20px;
+  border-radius: 5px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.markdown-content h1, .markdown-content h2, .markdown-content h3 {
+  color: #f0f0f0; /* Lighter color for headings */
+}
+
+.markdown-content p {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #d3d3d3; /* Light text for paragraphs */
+}
+
+.markdown-content a {
+  color: #73b5b4; /* Light blue for links */
+  text-decoration: none;
+}
+
+.markdown-content a:hover {
+  text-decoration: underline;
+}
+
+.markdown-content code {
+  background-color: #2c3e50; /* Darker code background */
+  color: #ecf0f1; /* Light code text */
+  padding: 4px;
+  border-radius: 3px;
+}
+
+.markdown-content pre {
+  background-color: #333333; /* Dark background for code blocks */
+  color: #ecf0f1; /* Light text for code blocks */
+  padding: 15px;
+  border-radius: 5px;
+  overflow-x: auto;
+}
+
+.markdown-content img {
+  max-width: 100%;
+  height: auto;
+  max-height: 20rem;
+  border-radius: 5px;
+  object-fit: cover;
+  display: block;
+  margin: 0 auto;
+}
+
+/* Optional: Add styles for links and blockquotes to be more prominent */
+.markdown-content blockquote {
+  border-left: 5px solid #73b5b4;
+  padding-left: 15px;
+  color: #bbb;
+}
+
+.markdown-content ul, .markdown-content ol {
+  color: #bbb;
+}
