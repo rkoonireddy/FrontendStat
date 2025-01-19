@@ -3,34 +3,71 @@ import MarkdownIt from 'markdown-it';
 import DOMPurify from 'dompurify';
 import styled from 'styled-components';
 import './MarkdownViewerStyles.css';
+import {ReactComponent as CloseSVG} from '../../assets/x.svg';
 
 const StyledPopupContainer = styled.div`
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: white;
-  padding: 20px;
-  border: 1px solid #ccc;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  border-radius: 5px;
-  z-index: 1000;
-  width: 80%;
-  height: 80%;
-  overflow-y: auto;
+  background: #2e2e2e;
+  color: #f5f5f5;
+  padding: 0px;
+  border: 2px solid #73b5b4;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  z-index: 1001;
+  width: 70%;
+  max-width: 1000px;
+  max-height: 90%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 `;
 
-const StyledCloseButton = styled.button`
-  padding: 5px 10px;
-  background: #73b5b4;
-  color: white;
-  border: none;
-  border-radius: 3px;
-  cursor: pointer;
+const StyledContent = styled.div`
+  width: 100%;
+  height: calc(100% - 40px);
+  overflow-y: auto;
+  padding: 0px;
+  box-sizing: border-box;
+
+  &::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #73b5b4;
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #5ea09f;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #1e1e1e;
+  }
+
+  &::-webkit-scrollbar-track:hover {
+    background: #333;
+  }
+`;
+
+const StyledCloseIcon = styled(CloseSVG)`
   position: absolute;
-  bottom: 10px;
-  left: 50%;
-  transform: translateX(-50%);
+  top: 10px;
+  right: 10px;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  fill: #73b5b4;
+  transition: fill 0.3s;
+  z-index: 1002;
+
+  &:hover {
+    fill: red;
+  }
 `;
 
 const StyledOverlay = styled.div`
@@ -39,9 +76,12 @@ const StyledOverlay = styled.div`
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 999;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 1000;
+  backdrop-filter: blur(4px);
 `;
+
+
 
 type HelpPopupProps = {
   isOpen: boolean;
@@ -74,7 +114,7 @@ const MarkdownViewer: React.FC<HelpPopupProps> = ({ isOpen, onClose }) => {
   useEffect(() => {
     const fetchMarkdown = async () => {
       try {
-        const response = await fetch('/markdownFile.md');
+        const response = await fetch('/help_stat/help_markdown/markdownFile.md');
         const markdownText = await response.text();
         setMarkdownContent(markdownText);
       } catch (error) {
@@ -134,16 +174,13 @@ const MarkdownViewer: React.FC<HelpPopupProps> = ({ isOpen, onClose }) => {
     <>
       <StyledOverlay onClick={onClose} />
       <StyledPopupContainer>
-        <div
-          className="markdown-content"
-          dangerouslySetInnerHTML={{ __html: htmlContent }}
-          style={{
-            width: '100%',
-            height: 'calc(100% - 60px)',
-            overflowY: 'auto',
-          }}
-        />
-        <StyledCloseButton onClick={onClose}>Close</StyledCloseButton>
+        <StyledCloseIcon onClick={onClose} />
+        <StyledContent>
+          <div
+            className="markdown-content"
+            dangerouslySetInnerHTML={{ __html: htmlContent }}
+          />
+        </StyledContent>
       </StyledPopupContainer>
     </>
   );
