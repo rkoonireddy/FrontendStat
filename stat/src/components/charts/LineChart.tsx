@@ -276,7 +276,7 @@ export function LineChart({ block, small = false, mini = false, dataLoader = fal
                 .attr("x", width / 2 + margin.left)
                 .attr("y", height + margin.top + 40)
                 .style("fill", "white")
-                .text("Domain ( Time / Frequency)");
+                .text(block?.x_axis_name || "Time");
 
             svg.selectAll(".y-axis-label")
                 .data([null])
@@ -287,7 +287,7 @@ export function LineChart({ block, small = false, mini = false, dataLoader = fal
                 .attr("y", margin.left - 35)
                 .attr("transform", "rotate(-90)")
                 .style("fill", "white")
-                .text("Measure ( Amplitude / Count)");
+                .text(block?.y_axis_name || "Amplitude");
 
             legendGroup.selectAll(".legend-item").remove();
 
